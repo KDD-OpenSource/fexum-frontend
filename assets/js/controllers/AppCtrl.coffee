@@ -114,7 +114,8 @@ app.controller 'AppCtrl', ['$scope', ($scope) ->
       return "translate(#{x}, #{y})"
 
     getFeatureLink = (feature) ->
-      return "/feature/#{feature.name}"
+      encodedName = window.encodeURIComponent feature.name
+      return "/feature/#{encodedName}"
 
     # Update feature map using d3
     nodes = d3.select '#feature-map'

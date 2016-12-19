@@ -1,1 +1,20 @@
-h1 Test
+.md-padding.left-pane(ng-cloak, layout)
+	md-card#feature-info.overlay-window(flex)
+		md-toolbar
+			.md-toolbar-tools
+				span Feature "{{feature.name}}"
+		md-content(flex)
+			section
+				md-list
+					md-list-item
+						p Mean: {{feature.mean}}
+					md-list-item
+						p Variance: {{feature.variance}}
+			section
+				md-subheader.md-primary Line chart
+				.layout-padding
+					nvd3.chart(options='lineChart.options', data='lineChart.data')
+			section
+				md-subheader.md-primary Histogram
+				.layout-padding
+					nvd3.chart(options='histogram.options', data='histogram.data')

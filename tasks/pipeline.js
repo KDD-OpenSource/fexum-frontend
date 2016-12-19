@@ -26,6 +26,8 @@ var cssFilesToInject = [
 // (uses Grunt-style wildcard/glob/splat expressions)
 var jsFilesToInject = [
   'vendor/angular/*.js',
+  'vendor/d3/*.js',
+  'vendor/nvd3/*.js',
   'vendor/**/*.js',
 
   // Load sails.io before everything else

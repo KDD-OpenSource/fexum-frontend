@@ -33,6 +33,7 @@ html(ng-app='predots')
 
     // STYLES
     link(rel="stylesheet", href="/vendor/angular-material/angular-material.css")
+    link(rel="stylesheet", href="/vendor/nvd3/nv.d3.css")
     link(rel="stylesheet", href="/styles/importer.css")
     // STYLES END
 
@@ -87,16 +88,19 @@ html(ng-app='predots')
 
     // SCRIPTS
     script(src="/vendor/angular/angular.js")
+    script(src="/vendor/d3/d3.js")
+    script(src="/vendor/nvd3/nv.d3.js")
     script(src="/vendor/angular-animate/angular-animate.js")
     script(src="/vendor/angular-aria/angular-aria.js")
     script(src="/vendor/angular-material/angular-material.js")
     script(src="/vendor/angular-messages/angular-messages.js")
+    script(src="/vendor/angular-nvd3/angular-nvd3.js")
     script(src="/vendor/angular-route/angular-route.js")
-    script(src="/vendor/d3/d3.js")
     script(src="/vendor/svg-pan-zoom/svg-pan-zoom.js")
     script(src="/js/dependencies/sails.io.js")
     script(src="/js/ng-app.js")
     script(src="/js/controllers/AppCtrl.js")
+    script(src="/js/controllers/FeatureInfoCtrl.js")
     script(src="/js/controllers/FeatureListCtrl.js")
     // SCRIPTS END
 

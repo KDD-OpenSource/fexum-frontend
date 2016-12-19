@@ -1,5 +1,6 @@
 .left-pane {
-	width: 300px;
+	width: 320px;
+	box-sizing: border-box;
 }
 #feature-map, #map-overlay {
 	width: 100%;
@@ -36,11 +37,21 @@
 	// to allow the events to propagate to the feature map
 	pointer-events: none;
 }
+md-card {
+	&.overlay-window {
+		margin: 0px;
+		transform: translate(-100%, 0);
+		animation: slide 0.5s forwards;
+	}
+	md-content {
+		background-color: white;
+	}
+}
 .overlay-window {
 	// enable the pointer events for this window
 	pointer-events: auto;
-	background-color: white;
 }
-#feature-list {
-	overflow-y: scroll;
+
+@keyframes slide {
+	100% { transform: translate(0, 0); }
 }

@@ -1,3 +1,9 @@
-md-list#feature-list.md-whiteframe.md-whiteframe-2dp.left-pane.overlay-window(ng-cloak)
-	md-list-item(ng-repeat='feature in features', ng-click='setTarget(feature)')
-		p {{feature.name}}
+.md-padding.left-pane(ng-cloak, layout)
+	md-card#feature-list.overlay-window(flex)
+		md-toolbar
+			.md-toolbar-tools
+				span Feature List
+		md-content
+			md-list
+				md-list-item(ng-repeat='feature in features', ng-click='setTarget(feature)')
+					p {{feature.name}}
