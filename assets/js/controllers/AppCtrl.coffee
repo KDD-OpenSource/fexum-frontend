@@ -11,5 +11,10 @@ app.controller 'AppCtrl', ['$scope', ($scope) ->
       $scope.searchText = targetFeature.name
       console.log targetFeature
 
+  # Enable feature map paning and zooming
+  svgPanZoom '#feature-map',
+    fit: false
+    controlIconsEnabled: true
+
   return
 ]
