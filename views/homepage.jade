@@ -10,7 +10,7 @@ block body
           md-autocomplete(md-selected-item='selectedTarget',
                           md-search-text='searchText',
                           md-selected-item-change='setTarget(selectedTarget)',
-                          md-items='item in features',
+                          md-items='item in features | filter:{name: searchText}',
                           md-item-text='item.name',
                           placeholder='Search for target feature')
             md-item-template
