@@ -4,6 +4,10 @@ app.controller 'AppCtrl', ['$scope', ($scope) ->
   # TODO replace from endpoint
   $scope.features = [
     {
+      name: 'fuel-consumption'
+      relevancy: 0.9
+    }
+    {
       name: 'degeneration-grade'
       relevancy: 0.1
     }
@@ -17,11 +21,51 @@ app.controller 'AppCtrl', ['$scope', ($scope) ->
     }
     {
       name: 'acceleration'
-      relevancy: 0.8
+      relevancy: 0.6
     }
     {
-      name: 'fuel-consumption'
+      name: 'fuel-gauge'
       relevancy: 0.9
+    }
+    {
+      name: 'mass'
+      relevancy: 0.1
+    }
+    {
+      name: 'brakes-state'
+      relevancy: 0.2
+    }
+    {
+      name: 'age'
+      relevancy: 0.4
+    }
+    {
+      name: 'elapsed-time'
+      relevancy: 0.2
+    }
+    {
+      name: 'feature #1'
+      relevancy: 0.3
+    }
+    {
+      name: 'feature #2'
+      relevancy: 0.3
+    }
+    {
+      name: 'feature #3'
+      relevancy: 0.4
+    }
+    {
+      name: 'feature #4'
+      relevancy: 0.45
+    }
+    {
+      name: 'feature #5'
+      relevancy: 0.75
+    }
+    {
+      name: 'feature #6'
+      relevancy: 0.15
     }
   ]
 
@@ -40,13 +84,14 @@ app.controller 'AppCtrl', ['$scope', ($scope) ->
   $scope.updateMap = ->
     featureCount = $scope.features.length
     MAX_DISTANCE = 500
+    OFFSET = 100
 
     # evenly arrange the features around the target feature
     getFeaturePosition = (feature, idx) ->
       isTarget = $scope.isTarget feature
       if isTarget
         return [0, 0]
-      radius = (1 - feature.relevancy) * MAX_DISTANCE
+      radius = (1 - feature.relevancy) * MAX_DISTANCE + OFFSET
       # index is 1 too big if this item is behind the target in the list
       if idx > $scope.targetFeatureIndex
         idx -= 1
