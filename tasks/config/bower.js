@@ -14,10 +14,10 @@ module.exports = function(grunt) {
 			options: {
 				targetDir: './assets/vendor',
 				layout: 'byType',
-				install: true,
+				install: false,
 				verbose: false,
 				cleanTargetDir: true,
-				cleanBowerDir: true,
+				cleanBowerDir: false,
 				bowerOptions: {}
 			}
 		}

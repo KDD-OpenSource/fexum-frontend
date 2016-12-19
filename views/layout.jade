@@ -1,5 +1,5 @@
 doctype html
-html
+html(ng-app='predots')
   head
     if locals.title
       title= title
@@ -8,6 +8,8 @@ html
 
     // Viewport mobile tag for sensible mobile support
     meta(name="viewport",content="width=device-width, initial-scale=1, maximum-scale=1")
+
+    base(href="/")
 
     //-
       Stylesheets and Preprocessors
@@ -60,7 +62,7 @@ html
             stringfile before they're served.
 
     // TEMPLATES
-    
+    script(type="text/javascript", src="/jst.js")
     // TEMPLATES END
 
     //-
@@ -89,6 +91,10 @@ html
     script(src="/vendor/angular-aria/angular-aria.js")
     script(src="/vendor/angular-material/angular-material.js")
     script(src="/vendor/angular-messages/angular-messages.js")
+    script(src="/vendor/angular-route/angular-route.js")
     script(src="/js/dependencies/sails.io.js")
+    script(src="/js/ng-app.js")
+    script(src="/js/controllers/AppCtrl.js")
+    script(src="/js/controllers/FeatureListCtrl.js")
     // SCRIPTS END
 

@@ -2,3 +2,18 @@ extends ./layout
 
 
 block body
+  md-content(ng-controller='AppCtrl', layout='column', layout-fill)
+    .md-padding(layout='row')
+      form.left-pane(ng-submit='$event.preventDefault()',ng-cloak)
+        md-autocomplete(md-selected-item='selectedTarget',
+                        md-search-text='searchText',
+                        md-selected-item-change='setTarget(selectedTarget)',
+                        md-items='item in features',
+                        md-item-text='item.name',
+                        placeholder='Search for target feature')
+          md-item-template
+            span(md-highlight-text='searchText', md-highlight-flags='^i')
+              {{item.name}}
+          md-not-found No feature found
+    #content.md-padding(flex,layout="row",ng-view)
+
