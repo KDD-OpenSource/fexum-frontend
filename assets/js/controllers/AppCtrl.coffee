@@ -69,11 +69,18 @@ app.controller 'AppCtrl', ['$scope', ($scope) ->
     }
   ]
 
+  $scope.updateRelevancies = ->
+    # TODO actually update the features
+    $scope.features.forEach (feature) ->
+      randomRelevancy = Math.random()
+      feature.relevancy = randomRelevancy
+
   $scope.setTarget = (targetFeature) ->
     if targetFeature
       $scope.searchText = targetFeature.name
       $scope.targetFeature = targetFeature
       $scope.targetFeatureIndex = $scope.features.indexOf targetFeature
+      $scope.updateRelevancies()
     $scope.updateMap()
     return
 
