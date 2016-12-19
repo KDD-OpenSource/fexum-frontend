@@ -1,10 +1,6 @@
 {
-  "name": "predots-mockup",
-  "private": true,
-  "version": "0.0.0",
-  "description": "A mockup for the predots prototype",
-  "keywords": [],
   "dependencies": {
+    "grunt-bower-task": "^0.3.4",
     "ejs": "2.3.4",
     "grunt": "1.0.1",
     "grunt-contrib-clean": "1.0.0",
@@ -23,6 +19,11 @@
     "sails": "~0.12.11",
     "sails-disk": "~0.10.9"
   },
+  "name": "predots-mockup",
+  "private": true,
+  "version": "0.0.0",
+  "description": "A mockup for the predots prototype",
+  "keywords": [],
   "scripts": {
     "debug": "node debug app.js",
     "start": "node app.js"

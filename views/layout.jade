@@ -4,7 +4,7 @@ html
     if locals.title
       title= title
     else
-      title New Sails App
+      title PreDOTS
 
     // Viewport mobile tag for sensible mobile support
     meta(name="viewport",content="width=device-width, initial-scale=1, maximum-scale=1")
@@ -30,6 +30,7 @@ html
           + Use a different or additional preprocessor, like SASS, SCSS or Stylus
 
     // STYLES
+    link(rel="stylesheet", href="/vendor/angular-material/angular-material.css")
     link(rel="stylesheet", href="/styles/importer.css")
     // STYLES END
 
@@ -59,7 +60,7 @@ html
             stringfile before they're served.
 
     // TEMPLATES
-
+    
     // TEMPLATES END
 
     //-
@@ -83,6 +84,11 @@ html
           + Use a different preprocessor, like TypeScript
 
     // SCRIPTS
+    script(src="/vendor/angular/angular.js")
+    script(src="/vendor/angular-animate/angular-animate.js")
+    script(src="/vendor/angular-aria/angular-aria.js")
+    script(src="/vendor/angular-material/angular-material.js")
+    script(src="/vendor/angular-messages/angular-messages.js")
     script(src="/js/dependencies/sails.io.js")
     // SCRIPTS END
 
