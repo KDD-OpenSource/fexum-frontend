@@ -5,6 +5,24 @@
 	width: 100%;
 	height: 100%;
 	position: fixed;
+
+	g.feature {
+		font-size: 12pt;
+
+		ellipse {
+			rx: 80;
+			ry: 40;
+			stroke: #BDBDBD;
+			fill: #29B6F6;
+		}
+
+		text {
+			text-anchor: middle;
+		}
+	}
+	g.feature.is-target ellipse {
+		fill: #E57373;
+	}
 }
 #map-overlay {
 	// disable all pointer events on the overlay except the windows
@@ -15,4 +33,7 @@
 	// enable the pointer events for this window
 	pointer-events: auto;
 	background-color: white;
+}
+#feature-list {
+	overflow-y: scroll;
 }

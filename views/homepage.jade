@@ -4,7 +4,6 @@ extends ./layout
 block body
   md-content(ng-controller='AppCtrl')
     svg#feature-map
-      ellipse(cx='0', cy='0', rx='100', ry='50')
     #map-overlay(layout='column', layout-fill)
       .md-padding.left-pane
         form.overlay-window(ng-submit='$event.preventDefault()',ng-cloak)
