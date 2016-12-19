@@ -113,15 +113,22 @@ app.controller 'AppCtrl', ['$scope', ($scope) ->
       [x, y] = getFeaturePosition feature, idx
       return "translate(#{x}, #{y})"
 
+    getFeatureLink = (feature) ->
+      return "/feature/#{feature.name}"
+
+    # Update feature map using d3
     nodes = d3.select '#feature-map'
                 .selectAll 'g.feature'
                 .data $scope.features
     newNodes = nodes.enter().append 'g'
                 .classed 'feature', true
-    newNodes.append 'ellipse'
-    newNodes.append 'text'
+    newLinks = newNodes.append 'a'
+    newLinks.append 'ellipse'
+    newLinks.append 'text'
                 .merge(nodes.selectAll 'text')
                 .text (feature) -> feature.name
+    newLinks.merge(nodes.selectAll 'a')
+                .attr 'xlink:href', getFeatureLink
     allNodes = newNodes.merge nodes
                 .attr 'transform', getFeatureTranslationString
                 .classed 'is-target', $scope.isTarget
