@@ -1,4 +1,4 @@
-app = angular.module 'predots', ['ngMaterial', 'ngRoute']
+app = angular.module 'predots', ['ngMaterial', 'ngRoute', 'nvd3']
 app.config ['$mdThemingProvider', ($mdThemingProvider) ->
   predotsMap = $mdThemingProvider.extendPalette 'blue'
   $mdThemingProvider.definePalette 'predots', predotsMap

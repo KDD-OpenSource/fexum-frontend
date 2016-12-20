@@ -12,9 +12,9 @@
 						p Variance: {{feature.variance}}
 			section
 				md-subheader.md-primary Line chart
-				.layout-padding
+				.chart-holder
 					nvd3.chart(options='lineChart.options', data='lineChart.data')
 			section
 				md-subheader.md-primary Histogram
-				.layout-padding
+				.chart-holder
 					nvd3.chart(options='histogram.options', data='histogram.data')

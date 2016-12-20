@@ -37,10 +37,16 @@
 	// to allow the events to propagate to the feature map
 	pointer-events: none;
 }
+#feature-info {
+	.chart-holder {
+		padding-left: 8px;
+		padding-right: 8px;
+		height: 200px;
+	}
+}
 md-card {
 	&.overlay-window {
 		margin: 0px;
-		transform: translate(-100%, 0);
 		animation: slide 0.5s forwards;
 	}
 	md-content {
@@ -51,7 +57,7 @@ md-card {
 	// enable the pointer events for this window
 	pointer-events: auto;
 }
-
 @keyframes slide {
-	100% { transform: translate(0, 0); }
+	from 	{ transform: translate(-100%, 0); }
+	to 		{ transform: translate(0, 0); }
 }
