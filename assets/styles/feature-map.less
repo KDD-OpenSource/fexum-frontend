@@ -1,0 +1,27 @@
+// Style the feature map bubbles
+#feature-map {
+	g.feature {
+		font-size: 12pt;
+
+		&:hover {
+			ellipse {
+				fill: #E0E0E0 !important;
+			}
+			cursor: pointer;
+		}
+
+		ellipse {
+			rx: 80;
+			ry: 40;
+			stroke: #BDBDBD;
+			fill: #29B6F6;
+		}
+
+		text {
+			text-anchor: middle;
+		}
+	}
+	g.feature.is-target ellipse {
+		fill: #E57373;
+	}
+}
