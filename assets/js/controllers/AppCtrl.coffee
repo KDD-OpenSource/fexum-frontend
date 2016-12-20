@@ -121,21 +121,22 @@ app.controller 'AppCtrl', ['$scope', ($scope) ->
     nodes = d3.select '#feature-map'
                 .selectAll 'g.feature'
                 .data $scope.features
+    # Create new elements
     newNodes = nodes.enter().append 'g'
                 .classed 'feature', true
     newLinks = newNodes.append 'a'
     newLinks.append 'ellipse'
     newLinks.append 'text'
-                .merge(nodes.selectAll 'text')
-                .text (feature) -> feature.name
-    newLinks.merge(nodes.selectAll 'a')
-                .attr 'xlink:href', getFeatureLink
-    allNodes = newNodes.merge nodes
-                .attr 'transform', getFeatureTranslationString
-                .classed 'is-target', $scope.isTarget
-                .exit().remove()
+    # Update elements
+    nodes.selectAll('text').text (feature) -> feature.name
+    nodes.selectAll('a').attr 'xlink:href', getFeatureLink
+    nodes.attr 'transform', getFeatureTranslationString
+          .classed 'is-target', $scope.isTarget
+          .exit().remove()
 
     # Enable feature map paning and zooming
+    # TODO possibly replace with d3 pan and zoom feature
+    # and add material design controls
     svgPanZoom '#feature-map',
       fit: false
       controlIconsEnabled: true

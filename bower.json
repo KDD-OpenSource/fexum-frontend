@@ -19,6 +19,6 @@
   "author": "Louis Kirsch",
   "private": true,
   "resolutions": {
-    "d3": "^4.4.0"
+    "d3": "^3.4.4"
   }
 }
