@@ -13,9 +13,15 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$filter', '$timeou
           x: (data) -> data.x
           y: (data) -> data.y
           xAxis:
+            
             axisLabel: 'Time (seconds)'
           yAxis:
             axisLabel: 'Value'
+          margin:
+            top: 20
+            right: 20
+            bottom: 45
+            left: 60
       data: [
         {
           # TODO replace this with real queries
@@ -23,6 +29,29 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$filter', '$timeou
           key: $scope.feature.name
         }
       ]
+    $scope.histogram =
+      options:
+        chart:
+          type: 'historicalBarChart'
+          x: (data) -> data.x
+          y: (data) -> data.y
+          xAxis:
+            axisLabel: 'Value'
+          yAxis:
+            axisLabel: 'Count'
+          margin:
+            top: 20
+            right: 20
+            bottom: 45
+            left: 60
+      data: [
+        {
+          # TODO replace this with real queries
+          values: ({x: idx, y: Math.floor(Math.random() * 100)} for idx in [0..10])
+          key: $scope.feature.name
+        }
+      ]
+
     return
 
   # charts should be set up when layouting is done
