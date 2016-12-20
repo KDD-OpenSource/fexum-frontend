@@ -11,6 +11,9 @@ html(ng-app='predots')
 
     base(href="/")
 
+    // Google material design icons - no bower support
+    link(href="https://fonts.googleapis.com/icon?family=Material+Icons", rel="stylesheet")
+
     //-
       Stylesheets and Preprocessors
       ==============================
@@ -102,5 +105,6 @@ html(ng-app='predots')
     script(src="/js/controllers/AppCtrl.js")
     script(src="/js/controllers/FeatureInfoCtrl.js")
     script(src="/js/controllers/FeatureListCtrl.js")
+    script(src="/js/directives/FeatureSliceVisualizer.js")
     // SCRIPTS END
 

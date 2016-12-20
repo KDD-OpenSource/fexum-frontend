@@ -1,0 +1,9 @@
+md-card#feature-slice-visualizer.overlay-window(flex)
+	md-toolbar
+		.md-toolbar-tools
+			h2
+				span Visualize in value range [{{range[0]}}, {{range[1]}}]
+			span(flex)
+			md-button.md-icon-button(aria-label='Close', ng-click='close()')
+				md-icon close
+	md-content(flex)

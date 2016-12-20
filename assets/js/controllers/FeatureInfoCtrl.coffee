@@ -5,7 +5,6 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$filter', '$timeou
   $scope.feature = $filter('filter')($scope.features, {name: $routeParams.featureName}, true)[0]
 
   $scope.setupCharts = ->
-    console.log 'Setting up charts'
     $scope.lineChart =
       options:
         chart:
@@ -33,7 +32,7 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$filter', '$timeou
       options:
         chart:
           type: 'historicalBarChart'
-          x: (data) -> data.x
+          x: (data) -> data.bucket[1]
           y: (data) -> data.y
           xAxis:
             axisLabel: 'Value'
@@ -44,14 +43,24 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$filter', '$timeou
             right: 20
             bottom: 45
             left: 60
+          bars:
+            dispatch:
+              elementClick: (event) ->
+                $scope.$apply ->
+                  $scope.selectedRange = event.data.bucket
+                return
       data: [
         {
           # TODO replace this with real queries
-          values: ({x: idx, y: Math.floor(Math.random() * 100)} for idx in [0..10])
+          values: ({bucket: [idx - 1, idx], y: Math.floor(Math.random() * 100)} for idx in [1..10])
           key: $scope.feature.name
         }
       ]
 
+    return
+
+  $scope.clearSelectedRange = ->
+    $scope.selectedRange = null
     return
 
   # charts should be set up when layouting is done
