@@ -78,6 +78,8 @@ app.directive 'featureSliceVisualizer', ['$timeout', ($timeout) ->
       scope.$watch 'range', ->
         # reset slice selection when new bucket got selected
         scope.selectedSlice = null
+        # TODO get this from an endpoint
+        scope.histogram.data[0].values = ({bucket: bucketFromId(idx, 10), y: Math.floor(Math.random() * 100)} for idx in [0...10])
         return
 
       scope.showProbabilityDistributions = (slice) ->
