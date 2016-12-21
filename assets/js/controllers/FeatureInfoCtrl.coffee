@@ -70,6 +70,15 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$filter', '$timeou
   # TODO replace this with real queries
   $scope.feature.mean = Math.random() * 100
   $scope.feature.variance = Math.random() * 100
+  $scope.feature.slices = []
+  for idx in [0...100]
+    rangeStart = Math.random() * 10
+    rangeLength = Math.random() * 2
+    $scope.feature.slices.push {
+      range: [rangeStart, rangeStart + rangeLength]
+      marginal: [0, 0.1, 0.5, 0.1, 0]
+      conditional: [0, 0.1, 0.3, 0.5, 0.8]
+    }
 
   return
 

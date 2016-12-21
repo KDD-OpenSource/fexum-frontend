@@ -6,4 +6,9 @@ md-card#feature-slice-visualizer.overlay-window(flex)
 			span(flex)
 			md-button.md-icon-button(aria-label='Close', ng-click='close()')
 				md-icon close
-	md-content(flex)
+	md-content(flex, layout='row')
+		.md-padding(flex='50', layout='column')
+			nvd3.chart.histogram(options='histogram.options', data='histogram.data')
+			slice-chart(chart-range='range', slices='feature.slices', on-slice-click='showProbabilityDistributions(slice)')
+		.md-padding(flex='50')
+			p other pane
