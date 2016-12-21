@@ -24,8 +24,10 @@ app.directive 'featureSliceVisualizer', ['$timeout', ($timeout) ->
               y: (data) -> data.y
               xAxis:
                 axisLabel: 'Value'
+                tickFormat: d3.format '.02f'
               yAxis:
                 axisLabel: 'Count'
+                tickFormat: d3.format '.02f'
               margin:
                 top: 20
                 right: 20
@@ -38,16 +40,63 @@ app.directive 'featureSliceVisualizer', ['$timeout', ($timeout) ->
               key: scope.feature.name
             }
           ]
+        scope.marginalProbDistr =
+          values: []
+          key: 'Marginal probability distribution'
+          area: true
+          color: 'blue'
+        scope.conditionalProbDistr =
+          values: []
+          key: 'Conditional probability distribution'
+          area: true
+          color: 'red'
+        scope.probabilityDistributions =
+          options:
+            chart:
+              type: 'lineChart'
+              x: (data) -> data.x
+              y: (data) -> data.y
+              xAxis:
+                axisLabel: 'Value'
+                tickFormat: d3.format '.02f'
+              yAxis:
+                axisLabel: 'Probability density'
+                tickFormat: d3.format '.02f'
+              margin:
+                top: 20
+                right: 20
+                bottom: 45
+                left: 60
+          data: [scope.marginalProbDistr, scope.conditionalProbDistr]
 
         return
 
       # charts should be set up when layouting is done
       # sadly there is no event available for that
       $timeout scope.setupCharts, 200
-      scope.$watch 'range', scope.setupCharts
 
-      scope.showProbabilityDistribution = (slice) ->
-        console.log 'Show prob distr for', slice
+      scope.$watch 'range', ->
+        # reset slice selection when new bucket got selected
+        scope.selectedSlice = null
+        return
+
+      scope.showProbabilityDistributions = (slice) ->
+        scope.selectedSlice = slice
+
+        range = slice.range
+        rangeLength = range[1] - range[0]
+
+        generateChartDataFromValues = (y, idx, arr) ->
+          x = range[0] + (idx / (arr.length - 1)) * rangeLength
+          return { x: x, y: y }
+
+        setValues = ->
+          scope.marginalProbDistr.values = slice.marginal.map generateChartDataFromValues
+          scope.conditionalProbDistr.values = slice.conditional.map generateChartDataFromValues
+
+        # layouting needs to be done first, then we can redraw the chart
+        $timeout setValues, 0
+
         return
       return
   }

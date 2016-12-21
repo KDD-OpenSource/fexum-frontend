@@ -40,6 +40,9 @@ app.directive 'sliceChart', ['$timeout', ($timeout) ->
                   .selectAll 'rect'
                   .data containedSlices
         rects.enter().append 'rect'
+              .on 'click', (slice) ->
+                scope.$apply -> scope.onSliceClick { slice: slice }
+                return
         rects.attr 'width', getSliceWidth
               .attr 'x', getSliceXPosition
               .attr 'y', getSliceYPosition
