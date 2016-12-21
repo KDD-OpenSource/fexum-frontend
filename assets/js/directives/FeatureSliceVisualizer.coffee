@@ -85,11 +85,11 @@ app.directive 'featureSliceVisualizer', ['$timeout', ($timeout) ->
       scope.showProbabilityDistributions = (slice) ->
         scope.selectedSlice = slice
 
-        range = slice.range
-        rangeLength = range[1] - range[0]
+        targetRange = [5, 100] # TODO retrieve this data from targetFeature
+        targetRangeLength = targetRange[1] - targetRange[0]
 
         generateChartDataFromValues = (y, idx, arr) ->
-          x = range[0] + (idx / (arr.length - 1)) * rangeLength
+          x = targetRange[0] + (idx / (arr.length - 1)) * targetRangeLength
           return { x: x, y: y }
 
         setValues = ->
