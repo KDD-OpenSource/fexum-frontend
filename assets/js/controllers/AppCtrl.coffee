@@ -68,6 +68,8 @@ app.controller 'AppCtrl', ['$scope', '$http', 'apiUri', 'socketUri', '$q', '$web
       $http.put apiUri + "features/target", { 'feature_name': targetFeature.name }
         .then (response) ->
           console.log "Set new target #{targetFeature.name} on server"
+          for feature in $scope.features
+            feature.relevancy = null
         .catch console.error
 
       # Create promise that waits for updated relevancies
