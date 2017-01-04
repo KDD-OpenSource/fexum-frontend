@@ -65,6 +65,9 @@ app.directive 'featureSliceVisualizer', ['$timeout', ($timeout) ->
               yAxis:
                 axisLabel: 'Probability density'
                 tickFormat: d3.format '.2e'
+              legend:
+                rightAlign: false
+                maxKeyLength: 1000
               margin:
                 top: 20
                 right: 20

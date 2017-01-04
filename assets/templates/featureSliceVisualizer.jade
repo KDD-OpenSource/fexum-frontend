@@ -10,8 +10,8 @@ md-card#feature-slice-visualizer.overlay-window(flex)
 			slice-chart(chart-range='range', slices='feature.slices', on-slice-click='showProbabilityDistributions(slice)')
 		.md-padding(flex='50')
 			div(ng-show='selectedSlice')
-				p.md-body-1
-					When {{feature.name}} is in value range
+				p.md-body-1.
+					When #[i {{feature.name}}] is in value range
 					[{{selectedSlice.range[0] | number:2}}, {{selectedSlice.range[1] | number:2}}]
-					{{targetFeature.name}} behaves significantly different:
+					#[i {{targetFeature.name}}] behaves significantly different:
 				nvd3.chart.probability-distributions(options='probabilityDistributions.options', data='probabilityDistributions.data')
