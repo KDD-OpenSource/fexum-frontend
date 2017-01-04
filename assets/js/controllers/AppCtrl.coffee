@@ -15,7 +15,9 @@ app.controller 'AppCtrl', ['$scope', '$http', 'apiUri', '$q', ($scope, $http, ap
       .then (response) ->
         # Response is in the form
         # {feature: {name, ...}}
-        $scope.setTarget response.data.feature.name
+        targetFeatureName = response.data.feature.name
+        matchPredicate = (feature) -> feature.name == targetFeatureName
+        $scope.targetFeature = $scope.features.filter(matchPredicate)[0]
       .catch (response) ->
         if response.status == 204
           console.log 'No target set'
@@ -41,15 +43,16 @@ app.controller 'AppCtrl', ['$scope', '$http', 'apiUri', '$q', ($scope, $http, ap
 
   $scope.$on 'ws/relevancy-update', (event, payload) ->
     $scope.retrieveFeatures()
+
+  $scope.$watch 'targetFeature', (newTargetFeature) ->
+    $scope.searchText = newTargetFeature.name
   
   $scope.setTarget = (targetFeature) ->
     if targetFeature
-      $scope.searchText = targetFeature.name
       $scope.targetFeature = targetFeature
 
       # Notify server of new target
-      $http.put apiUri + "features/target",
-          feature__name: targetFeature.name
+      $http.put apiUri + "features/target", { 'feature__name': targetFeature.name }
         .then (response) ->
           console.log "Set new target #{targetFeature.name} on server"
         .catch console.error
@@ -60,8 +63,7 @@ app.controller 'AppCtrl', ['$scope', '$http', 'apiUri', '$q', ($scope, $http, ap
       $scope.addLoadingQueueItem relevancyUpdate, 'Running feature selection'
     return
 
-  $scope.retrieveFeatures()
-  $scope.retrieveTarget()
+  $scope.retrieveFeatures().then $scope.retrieveTarget
 
   return
 ]
