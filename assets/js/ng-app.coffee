@@ -1,4 +1,4 @@
-app = angular.module 'predots', ['ngMaterial', 'ngRoute', 'nvd3']
+app = angular.module 'predots', ['ngMaterial', 'ngRoute', 'nvd3', 'ngWebSocket']
 app.config ['$mdThemingProvider', ($mdThemingProvider) ->
   predotsMap = $mdThemingProvider.extendPalette 'blue'
   $mdThemingProvider.definePalette 'predots', predotsMap
@@ -23,3 +23,4 @@ app.config ['$routeProvider', '$locationProvider', ($routeProvider, $locationPro
   return
 ]
 app.constant 'apiUri', 'http://172.16.18.127/api/'
+app.constant 'socketUri', 'ws://172.16.18.127/socket'

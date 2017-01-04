@@ -1,4 +1,5 @@
-app.controller 'AppCtrl', ['$scope', '$http', 'apiUri', '$q', ($scope, $http, apiUri, $q) ->
+app.controller 'AppCtrl', ['$scope', '$http', 'apiUri', 'socketUri', '$q', '$websocket', \
+                          ($scope, $http, apiUri, socketUri, $q, $websocket) ->
 
   # Retrieve features
   $scope.retrieveFeatures = ->
@@ -35,6 +36,11 @@ app.controller 'AppCtrl', ['$scope', '$http', 'apiUri', '$q', ($scope, $http, ap
       itemIndex = $scope.loadingQueue.indexOf item
       $scope.loadingQueue.splice itemIndex, 1
 
+  wsStream = $websocket socketUri
+  wsStream.onMessage (message) ->
+    jsonData = JSON.parse message.data
+    $scope.$broadcast "ws/#{jsonData.event_name}", jsonData.payload
+
   $scope.waitForWebsocketEvent = (eventName) ->
     return $q (resolve, reject) ->
       removeListener = $scope.$on 'ws/' + eventName, ->
@@ -45,7 +51,8 @@ app.controller 'AppCtrl', ['$scope', '$http', 'apiUri', '$q', ($scope, $http, ap
     $scope.retrieveFeatures()
 
   $scope.$watch 'targetFeature', (newTargetFeature) ->
-    $scope.searchText = newTargetFeature.name
+    if newTargetFeature
+      $scope.searchText = newTargetFeature.name
   
   $scope.setTarget = (targetFeature) ->
     if targetFeature
