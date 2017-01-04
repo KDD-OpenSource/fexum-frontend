@@ -1,4 +1,4 @@
-app.directive 'featureSliceVisualizer', ['$timeout', ($timeout) ->
+app.directive 'featureSliceVisualizer', ['$timeout', 'chartTemplates', ($timeout, chartTemplates) ->
   return {
     restrict: 'E'
     template: JST['assets/templates/featureSliceVisualizer']
@@ -18,62 +18,38 @@ app.directive 'featureSliceVisualizer', ['$timeout', ($timeout) ->
                   bucket.range[1] <= scope.range[1]
 
       scope.setupCharts = ->
-        scope.histogram =
-          options:
-            chart:
-              type: 'historicalBarChart'
-              x: (data) -> data.range[1]
-              y: (data) -> data.count
-              valueFormat: d3.format '.2e'
-              xAxis:
-                axisLabel: 'Value'
-                tickFormat: d3.format '.2e'
-              yAxis:
-                axisLabel: 'Count'
-                tickFormat: d3.format '.2e'
-              margin:
-                top: 20
-                right: 20
-                bottom: 45
-                left: 60
+        scope.histogram = angular.merge {}, chartTemplates.historicalBarChart,
           data: [
             {
               values: getSubBuckets()
               key: scope.feature.name
             }
           ]
-        scope.marginalProbDistr =
+        marginalProbDistr =
           values: []
           key: 'Marginal probability distribution'
           area: true
           color: 'rgb(31, 119, 180)'
-        scope.conditionalProbDistr =
+        conditionalProbDistr =
           values: []
           key: 'Conditional probability distribution'
           area: true
           color: '#F44336'
-        scope.probabilityDistributions =
+        scope.probabilityDistributions = angular.merge {}, chartTemplates.lineChart,
           options:
             chart:
-              type: 'lineChart'
-              x: (data) -> data.x
-              y: (data) -> data.y
-              valueFormat: d3.format '.2e'
               xAxis:
                 axisLabel: 'Value'
-                tickFormat: d3.format '.2e'
               yAxis:
                 axisLabel: 'Probability density'
-                tickFormat: d3.format '.2e'
               legend:
                 rightAlign: false
                 maxKeyLength: 1000
-              margin:
-                top: 20
-                right: 20
-                bottom: 45
-                left: 60
-          data: [scope.marginalProbDistr, scope.conditionalProbDistr]
+          data: [marginalProbDistr, conditionalProbDistr]
+
+        # Store distributions in scope to update later
+        scope.marginalProbDistr = scope.probabilityDistributions.data[0]
+        scope.conditionalProbDistr = scope.probabilityDistributions.data[1]
 
         return
 

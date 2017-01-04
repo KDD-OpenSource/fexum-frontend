@@ -24,3 +24,38 @@ app.config ['$routeProvider', '$locationProvider', ($routeProvider, $locationPro
 ]
 app.constant 'apiUri', 'http://172.16.18.127/api/'
 app.constant 'socketUri', 'ws://172.16.18.127/socket'
+app.constant 'chartTemplates',
+  lineChart:
+    options:
+      chart:
+        type: 'lineChart'
+        x: (data) -> data.x
+        y: (data) -> data.y
+        valueFormat: d3.format '.2e'
+        xAxis:
+          tickFormat: d3.format '.2e'
+        yAxis:
+          tickFormat: d3.format '.2e'
+        margin:
+          top: 20
+          right: 20
+          bottom: 45
+          left: 60
+  historicalBarChart:
+    options:
+      chart:
+        type: 'historicalBarChart'
+        x: (data) -> data.range[1]
+        y: (data) -> data.count
+        valueFormat: d3.format '.2e'
+        xAxis:
+          axisLabel: 'Value'
+          tickFormat: d3.format '.2e'
+        yAxis:
+          axisLabel: 'Count'
+          tickFormat: d3.format '.2e'
+        margin:
+          top: 20
+          right: 20
+          bottom: 45
+          left: 60

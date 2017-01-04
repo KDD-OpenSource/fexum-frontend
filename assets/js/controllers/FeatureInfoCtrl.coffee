@@ -1,5 +1,5 @@
-app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http', 'apiUri',\
-                                    ($scope, $routeParams, $timeout, $http, apiUri) ->
+app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http', 'apiUri', 'chartTemplates',\
+                                    ($scope, $routeParams, $timeout, $http, apiUri, chartTemplates) ->
 
   retrieveSelectedFeature = (features) ->
     featurePredicate = (feature) -> feature.name == $routeParams.featureName
@@ -69,48 +69,22 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http'
       bucketMergeCount = Math.floor(Math.sqrt(buckets.length))
       return mergeBuckets buckets, bucketMergeCount
         
-    $scope.lineChart =
+    $scope.lineChart = angular.merge {}, chartTemplates.lineChart,
       options:
         chart:
-          type: 'lineChart'
-          x: (data) -> data.x
-          y: (data) -> data.y
-          valueFormat: d3.format '.2e'
           xAxis:
             axisLabel: 'Time (seconds)'
-            tickFormat: d3.format '.2e'
           yAxis:
             axisLabel: 'Value'
-            tickFormat: d3.format '.2e'
-          margin:
-            top: 20
-            right: 20
-            bottom: 45
-            left: 60
       data: [
         {
           values: $scope.feature.samples or []
           key: $scope.feature.name
         }
       ]
-    $scope.histogram =
+    $scope.histogram = angular.merge {}, chartTemplates.historicalBarChart,
       options:
         chart:
-          type: 'historicalBarChart'
-          x: (data) -> data.range[1]
-          y: (data) -> data.count
-          valueFormat: d3.format '.2e'
-          xAxis:
-            axisLabel: 'Value'
-            tickFormat: d3.format '.2e'
-          yAxis:
-            axisLabel: 'Count'
-            tickFormat: d3.format '.2e'
-          margin:
-            top: 20
-            right: 20
-            bottom: 45
-            left: 60
           bars:
             dispatch:
               elementClick: (event) ->
