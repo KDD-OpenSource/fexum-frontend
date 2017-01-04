@@ -47,6 +47,28 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http'
       .catch console.error
 
   $scope.setupCharts = ->
+    
+    # Merges buckets in chunks of mergeCount
+    mergeBuckets = (buckets, mergeCount) ->
+      # Split buckets array into multiple arraies of size mergeCount
+      subBuckets = (buckets[index...index+mergeCount] \
+                      for index in [0...buckets.length] by mergeCount)
+      # Combine each bucketlist to a single bucket
+      subBuckets = subBuckets.map (bucketList) ->
+        countSum = bucketList.reduce ((a, bucket) -> a + bucket.count), 0
+        return {
+          range: [bucketList[0].range[0], bucketList[bucketList.length - 1].range[1]]
+          count: countSum
+        }
+      return subBuckets
+
+    mergeBucketsSqrt = (buckets) ->
+      if not buckets or buckets.length == 0
+        return []
+      bucketCount = buckets.length
+      bucketMergeCount = Math.floor(Math.sqrt(buckets.length))
+      return mergeBuckets buckets, bucketMergeCount
+        
     $scope.lineChart =
       options:
         chart:
@@ -91,7 +113,7 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http'
                 return
       data: [
         {
-          values: $scope.feature.buckets or []
+          values: mergeBucketsSqrt $scope.feature.buckets
           key: $scope.feature.name
         }
       ]
@@ -102,7 +124,7 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http'
 
     $scope.$watch 'feature.buckets', (newBuckets) ->
       if newBuckets
-        $scope.histogram.data[0].values = newBuckets
+        $scope.histogram.data[0].values = mergeBucketsSqrt newBuckets
 
     $scope.retrieveSamples()
     $scope.retrieveHistogramBuckets()
