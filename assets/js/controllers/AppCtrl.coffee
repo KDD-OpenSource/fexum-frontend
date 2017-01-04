@@ -1,6 +1,10 @@
 app.controller 'AppCtrl', ['$scope', '$http', 'apiUri', 'socketUri', '$q', '$websocket', \
                           ($scope, $http, apiUri, socketUri, $q, $websocket) ->
 
+  findTargetFeature = (targetFeatureName) ->
+    matchPredicate = (feature) -> feature.name == targetFeatureName
+    $scope.targetFeature = $scope.features.filter(matchPredicate)[0]
+
   # Retrieve features
   $scope.retrieveFeatures = ->
     $http.get apiUri + 'features'
@@ -8,6 +12,8 @@ app.controller 'AppCtrl', ['$scope', '$http', 'apiUri', 'socketUri', '$q', '$web
         # Response is in the form
         # [{name, relevancy, redundancy, rank, mean, variance, min, max}, ...]
         $scope.features = response.data
+        if $scope.targetFeature
+          findTargetFeature $scope.targetFeature.name
       .catch console.error
 
   # Retrieve target
@@ -17,8 +23,7 @@ app.controller 'AppCtrl', ['$scope', '$http', 'apiUri', 'socketUri', '$q', '$web
         # Response is in the form
         # {feature: {name, ...}}
         targetFeatureName = response.data.feature.name
-        matchPredicate = (feature) -> feature.name == targetFeatureName
-        $scope.targetFeature = $scope.features.filter(matchPredicate)[0]
+        findTargetFeature targetFeatureName
       .catch (response) ->
         if response.status == 204
           console.log 'No target set'
@@ -49,6 +54,7 @@ app.controller 'AppCtrl', ['$scope', '$http', 'apiUri', 'socketUri', '$q', '$web
 
   $scope.$on 'ws/relevancy-update', (event, payload) ->
     $scope.retrieveFeatures()
+      .then $scope.retrieveSelectedFeature
 
   $scope.$watch 'targetFeature', (newTargetFeature) ->
     if newTargetFeature
@@ -70,7 +76,8 @@ app.controller 'AppCtrl', ['$scope', '$http', 'apiUri', 'socketUri', '$q', '$web
       $scope.addLoadingQueueItem relevancyUpdate, 'Running feature selection'
     return
 
-  $scope.retrieveFeatures().then $scope.retrieveTarget
+  $scope.retrieveFeatures()
+    .then $scope.retrieveTarget
 
   return
 ]
