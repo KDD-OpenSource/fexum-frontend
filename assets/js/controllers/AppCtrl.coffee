@@ -52,7 +52,7 @@ app.controller 'AppCtrl', ['$scope', '$http', 'apiUri', '$q', ($scope, $http, ap
       $scope.targetFeature = targetFeature
 
       # Notify server of new target
-      $http.put apiUri + "features/target", { 'feature__name': targetFeature.name }
+      $http.put apiUri + "features/target", { 'feature_name': targetFeature.name }
         .then (response) ->
           console.log "Set new target #{targetFeature.name} on server"
         .catch console.error
