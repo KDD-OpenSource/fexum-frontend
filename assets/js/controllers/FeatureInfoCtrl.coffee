@@ -109,7 +109,7 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http'
             dispatch:
               elementClick: (event) ->
                 $scope.$apply ->
-                  $scope.selectedRange = event.data.bucket
+                  $scope.selectedRange = event.data.range
                 return
       data: [
         {
