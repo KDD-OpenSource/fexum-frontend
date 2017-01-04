@@ -1,8 +1,50 @@
-app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$filter', '$timeout', \
-                                    ($scope, $routeParams, $filter, $timeout) ->
+app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http', 'apiUri',\
+                                    ($scope, $routeParams, $timeout, $http, apiUri) ->
 
-  # Retrieve feature object
-  $scope.feature = $filter('filter')($scope.features, {name: $routeParams.featureName}, true)[0]
+  retrieveSelectedFeature = (features) ->
+    featurePredicate = (feature) -> feature.name == $routeParams.featureName
+    $scope.feature = features.filter(featurePredicate)[0]
+
+  # Retrieve selected feature object
+  if $scope.features
+    retrieveSelectedFeature $scope.features
+  else
+    # Setup mock feature until loaded
+    $scope.feature =
+      name: $routeParams.featureName
+
+  $scope.$watch 'features', (newFeatures) ->
+    if newFeatures
+      retrieveSelectedFeature newFeatures
+
+  $scope.retrieveSamples = ->
+    $http.get apiUri + "features/#{$scope.feature.name}/samples"
+      .then (response) ->
+        samples = response.data.map (sample, idx) ->
+          return {
+            x: idx
+            y: sample.value
+          }
+        $scope.feature.samples = samples
+      .catch console.error
+
+  $scope.retrieveHistogramBuckets = ->
+    $http.get apiUri + "features/#{$scope.feature.name}/histogram"
+      .then (response) ->
+        buckets = response.data.map (bucket) ->
+          return {
+            range: [bucket.from_value, bucket.to_value]
+            count: bucket.count
+          }
+        $scope.feature.buckets = buckets
+      .catch console.error
+
+  $scope.retrieveSlices = ->
+    $http.get apiUri + "features/#{$scope.feature.name}/slices"
+      .then (response) ->
+        slices = response.data
+        $scope.feature.slices = slices
+      .catch console.error
 
   $scope.setupCharts = ->
     $scope.lineChart =
@@ -12,7 +54,6 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$filter', '$timeou
           x: (data) -> data.x
           y: (data) -> data.y
           xAxis:
-            
             axisLabel: 'Time (seconds)'
           yAxis:
             axisLabel: 'Value'
@@ -23,8 +64,7 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$filter', '$timeou
             left: 60
       data: [
         {
-          # TODO replace this with real queries
-          values: ({x: idx, y: Math.floor(Math.random() * 100)} for idx in [0..100])
+          values: $scope.feature.samples or []
           key: $scope.feature.name
         }
       ]
@@ -32,8 +72,8 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$filter', '$timeou
       options:
         chart:
           type: 'historicalBarChart'
-          x: (data) -> data.bucket[1]
-          y: (data) -> data.y
+          x: (data) -> data.range[1]
+          y: (data) -> data.count
           xAxis:
             axisLabel: 'Value'
           yAxis:
@@ -51,12 +91,21 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$filter', '$timeou
                 return
       data: [
         {
-          # TODO replace this with real queries
-          values: ({bucket: [idx - 1, idx], y: Math.floor(Math.random() * 100)} for idx in [1..10])
+          values: $scope.feature.buckets or []
           key: $scope.feature.name
         }
       ]
 
+    $scope.$watch 'feature.samples', (newSamples) ->
+      if newSamples
+        $scope.lineChart.data[0].values = newSamples
+
+    $scope.$watch 'feature.buckets', (newBuckets) ->
+      if newBuckets
+        $scope.histogram.data[0].values = newBuckets
+
+    $scope.retrieveSamples()
+    $scope.retrieveHistogramBuckets()
     return
 
   $scope.clearSelectedRange = ->
@@ -67,18 +116,7 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$filter', '$timeou
   # sadly there is no event available for that
   $timeout $scope.setupCharts, 200
 
-  # TODO replace this with real queries
-  $scope.feature.mean = Math.random() * 100
-  $scope.feature.variance = Math.random() * 100
-  $scope.feature.slices = []
-  for idx in [0...100]
-    rangeStart = Math.random() * 10
-    rangeLength = Math.random() * 2
-    $scope.feature.slices.push {
-      range: [rangeStart, rangeStart + rangeLength]
-      marginal: [0, 0.1, 0.5, 0.1, 0]
-      conditional: [0, 0.1, 0.3, 0.5, 0.8]
-    }
+  $scope.retrieveSlices()
 
   return
 

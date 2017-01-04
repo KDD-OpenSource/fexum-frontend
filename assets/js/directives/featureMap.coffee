@@ -12,8 +12,8 @@ app.directive 'featureMap', ['$timeout', ($timeout) ->
         return scope.targetFeature == feature
 
       render = ->
-        # render nothing if no target is set
-        features = if scope.targetFeature then scope.features else []
+        # render nothing if no target is set or feature are not loaded
+        features = if scope.targetFeature and scope.features then scope.features else []
 
         featureCount = features.length
         targetFeatureIndex = features.indexOf scope.targetFeature
@@ -76,7 +76,8 @@ app.directive 'featureMap', ['$timeout', ($timeout) ->
       render()
 
       # Rerender when variables change
-      scope.$watch 'features', render, true
+      # TODO also fire when only name or relevancy are changed
+      scope.$watchCollection 'features', render
       scope.$watch 'targetFeature', render
       return
   }

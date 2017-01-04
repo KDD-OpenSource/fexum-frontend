@@ -4,24 +4,26 @@ app.directive 'featureSliceVisualizer', ['$timeout', ($timeout) ->
     template: JST['assets/templates/featureSliceVisualizer']
     scope:
       feature: '='
+      targetFeature: '='
       range: '='
       close: '&onClose'
     link: (scope, element, attrs) ->
 
-      # TODO remove this mockup stuff
-      bucketFromId = (id, max) ->
-        distance = scope.range[1] - scope.range[0]
-        stepSize = distance / max
-        
-        return [scope.range[0] + id * stepSize, scope.range[0] + (id + 1) * stepSize]
+      # Filter the feature buckets for the selected range
+      getSubBuckets = ->
+        if not scope.feature.buckets
+          return []
+        scope.feature.buckets.filter (bucket) ->
+          return bucket.range[0] >= scope.range[0] and
+                  bucket.range[1] <= scope.range[1]
 
       scope.setupCharts = ->
         scope.histogram =
           options:
             chart:
               type: 'historicalBarChart'
-              x: (data) -> data.bucket[1]
-              y: (data) -> data.y
+              x: (data) -> data.range[1]
+              y: (data) -> data.count
               xAxis:
                 axisLabel: 'Value'
                 tickFormat: d3.format '.02f'
@@ -35,8 +37,7 @@ app.directive 'featureSliceVisualizer', ['$timeout', ($timeout) ->
                 left: 60
           data: [
             {
-              # TODO replace this with real queries
-              values: ({bucket: bucketFromId(idx, 10), y: Math.floor(Math.random() * 100)} for idx in [0...10])
+              values: getSubBuckets()
               key: scope.feature.name
             }
           ]
@@ -78,15 +79,15 @@ app.directive 'featureSliceVisualizer', ['$timeout', ($timeout) ->
       scope.$watch 'range', ->
         # reset slice selection when new bucket got selected
         scope.selectedSlice = null
-        # TODO get this from an endpoint
+        # update histogram
         if scope.histogram
-          scope.histogram.data[0].values = ({bucket: bucketFromId(idx, 10), y: Math.floor(Math.random() * 100)} for idx in [0...10])
+          scope.histogram.data[0].values = getSubBuckets()
         return
 
       scope.showProbabilityDistributions = (slice) ->
         scope.selectedSlice = slice
 
-        targetRange = [5, 100] # TODO retrieve this data from targetFeature
+        targetRange = [scope.targetFeature.min, scope.targetFeature.max]
         targetRangeLength = targetRange[1] - targetRange[0]
 
         generateChartDataFromValues = (y, idx, arr) ->

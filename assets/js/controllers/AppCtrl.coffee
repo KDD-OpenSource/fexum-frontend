@@ -1,86 +1,67 @@
-app.controller 'AppCtrl', ['$scope', ($scope) ->
+app.controller 'AppCtrl', ['$scope', '$http', 'apiUri', '$q', ($scope, $http, apiUri, $q) ->
 
-  # MOCK FEATURES
-  # TODO replace from endpoint
-  $scope.features = [
-    {
-      name: 'fuel-consumption'
-      relevancy: 0.9
-    }
-    {
-      name: 'degeneration-grade'
-      relevancy: 0.1
-    }
-    {
-      name: 'engine-temperature'
-      relevancy: 0.3
-    }
-    {
-      name: 'velocity'
-      relevancy: 0.3
-    }
-    {
-      name: 'acceleration'
-      relevancy: 0.6
-    }
-    {
-      name: 'fuel-gauge'
-      relevancy: 0.9
-    }
-    {
-      name: 'mass'
-      relevancy: 0.1
-    }
-    {
-      name: 'brakes-state'
-      relevancy: 0.2
-    }
-    {
-      name: 'age'
-      relevancy: 0.4
-    }
-    {
-      name: 'elapsed-time'
-      relevancy: 0.2
-    }
-    {
-      name: 'feature #1'
-      relevancy: 0.3
-    }
-    {
-      name: 'feature #2'
-      relevancy: 0.3
-    }
-    {
-      name: 'feature #3'
-      relevancy: 0.4
-    }
-    {
-      name: 'feature #4'
-      relevancy: 0.45
-    }
-    {
-      name: 'feature #5'
-      relevancy: 0.75
-    }
-    {
-      name: 'feature #6'
-      relevancy: 0.15
-    }
-  ]
+  # Retrieve features
+  $scope.retrieveFeatures = ->
+    $http.get apiUri + 'features'
+      .then (response) ->
+        # Response is in the form
+        # [{name, relevancy, redundancy, rank, mean, variance, min, max}, ...]
+        $scope.features = response.data
+      .catch console.error
 
-  $scope.updateRelevancies = ->
-    # TODO actually update the features
-    $scope.features.forEach (feature) ->
-      randomRelevancy = Math.random()
-      feature.relevancy = randomRelevancy
+  # Retrieve target
+  $scope.retrieveTarget = ->
+    $http.get apiUri + 'features/target'
+      .then (response) ->
+        # Response is in the form
+        # {feature: {name, ...}}
+        $scope.setTarget response.data.feature.name
+      .catch (response) ->
+        if response.status == 204
+          console.log 'No target set'
+        else
+          console.error response
 
+  $scope.loadingQueue = []
+  $scope.addLoadingQueueItem = (promise, message) ->
+    item =
+      promise: promise
+      message: message
+    $scope.loadingQueue.push item
+    promise.then (result) ->
+      # Remove from loading queue when done
+      itemIndex = $scope.loadingQueue.indexOf item
+      $scope.loadingQueue.splice itemIndex, 1
+
+  $scope.waitForWebsocketEvent = (eventName) ->
+    return $q (resolve, reject) ->
+      removeListener = $scope.$on 'ws/' + eventName, ->
+        resolve.apply this, arguments
+        removeListener()
+
+  $scope.$on 'ws/relevancy-update', (event, payload) ->
+    $scope.retrieveFeatures()
+  
   $scope.setTarget = (targetFeature) ->
     if targetFeature
       $scope.searchText = targetFeature.name
       $scope.targetFeature = targetFeature
-      $scope.updateRelevancies()
+
+      # Notify server of new target
+      $http.put apiUri + "features/target",
+          feature__name: targetFeature.name
+        .then (response) ->
+          console.log "Set new target #{targetFeature.name} on server"
+        .catch console.error
+
+      # Create promise that waits for updated relevancies
+      relevancyUpdate = $scope.waitForWebsocketEvent 'relevancy-update'
+      # TODO internationalization
+      $scope.addLoadingQueueItem relevancyUpdate, 'Running feature selection'
     return
+
+  $scope.retrieveFeatures()
+  $scope.retrieveTarget()
 
   return
 ]
