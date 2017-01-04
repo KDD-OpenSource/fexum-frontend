@@ -76,8 +76,7 @@ app.directive 'featureMap', ['$timeout', ($timeout) ->
       render()
 
       # Rerender when variables change
-      # TODO also fire when only name or relevancy are changed
-      scope.$watchCollection 'features', render
+      scope.$watch 'features', render, true
       scope.$watch 'targetFeature', render
       return
   }
