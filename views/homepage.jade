@@ -17,5 +17,9 @@ block body
               span(md-highlight-text='searchText', md-highlight-flags='^i')
                 {{item.name}}
             md-not-found No feature found
-      #content(flex,layout="row",ng-view)
+      #content(flex,layout='row',ng-view)
+    #loading-state.md-padding
+      .md-whiteframe-1dp(layout='row', layout-align='center center', layout-padding, ng-show='loadingQueue.length', ng-cloak)
+        span {{loadingQueue[loadingQueue.length - 1].message}}
+        md-progress-circular(md-mode='indeterminate', md-diameter='20')
 
