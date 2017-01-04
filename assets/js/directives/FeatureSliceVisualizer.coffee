@@ -45,12 +45,12 @@ app.directive 'featureSliceVisualizer', ['$timeout', ($timeout) ->
           values: []
           key: 'Marginal probability distribution'
           area: true
-          color: 'blue'
+          color: 'rgb(31, 119, 180)'
         scope.conditionalProbDistr =
           values: []
           key: 'Conditional probability distribution'
           area: true
-          color: 'red'
+          color: '#F44336'
         scope.probabilityDistributions =
           options:
             chart:

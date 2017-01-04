@@ -41,11 +41,16 @@ app.directive 'sliceChart', ['$timeout', ($timeout) ->
                   .data containedSlices
         rects.enter().append 'rect'
               .on 'click', (slice) ->
-                scope.$apply -> scope.onSliceClick { slice: slice }
+                scope.$apply ->
+                  scope.onSliceClick { slice: slice }
+                  scope.selectedSlice = slice
+                  render()
                 return
         rects.attr 'width', getSliceWidth
               .attr 'x', getSliceXPosition
               .attr 'y', getSliceYPosition
+              .classed 'selected', (slice) ->
+                return slice == scope.selectedSlice
         rects.exit().remove()
               
         return
