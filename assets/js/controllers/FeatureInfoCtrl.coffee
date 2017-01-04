@@ -110,7 +110,14 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http'
               elementClick: (event) ->
                 $scope.$apply ->
                   $scope.selectedRange = event.data.range
+                  $scope.histogramApi.update()
                 return
+          dispatch:
+            renderEnd: ->
+              element = $scope.histogramApi.getElement()
+              d3.select(element[0]).selectAll 'rect.nv-bar'
+                .classed 'selected', (d) ->
+                  return d.range == $scope.selectedRange
       data: [
         {
           values: mergeBucketsSqrt $scope.feature.buckets
