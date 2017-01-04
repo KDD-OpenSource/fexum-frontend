@@ -73,7 +73,7 @@ app.controller 'AppCtrl', ['$scope', '$http', 'apiUri', 'socketUri', '$q', '$web
       # Create promise that waits for updated relevancies
       relevancyUpdate = $scope.waitForWebsocketEvent 'relevancy-update'
       # TODO internationalization
-      $scope.addLoadingQueueItem relevancyUpdate, 'Running feature selection'
+      $scope.addLoadingQueueItem relevancyUpdate, "Running feature selection for #{targetFeature.name}"
     return
 
   $scope.retrieveFeatures()
