@@ -3,7 +3,7 @@ extends ./layout
 
 block body
   md-content(ng-controller='AppCtrl')
-    feature-map#feature-map(features='features', target-feature='targetFeature')
+    feature-map#feature-map(features='features', target-feature='targetFeature', zoom-api='zoomApi')
     #map-overlay(layout='column', layout-fill)
       .md-padding.left-pane
         form.overlay-window(ng-submit='$event.preventDefault()',ng-cloak)
@@ -22,4 +22,10 @@ block body
       .md-whiteframe-1dp(layout='row', layout-align='center center', layout-padding, ng-show='loadingQueue.length', ng-cloak)
         span {{loadingQueue[loadingQueue.length - 1].message}}
         md-progress-circular(md-mode='indeterminate', md-diameter='20')
-
+    #zoom-controls.md-padding
+      .md-whiteframe-1dp(layout='column')
+        md-button.md-icon-button(aria-label='Zoom in', ng-click='zoomApi.zoomIn()')
+          md-icon add
+        md-divider
+        md-button.md-icon-button(aria-label='Zoom out', ng-click='zoomApi.zoomOut()')
+          md-icon remove

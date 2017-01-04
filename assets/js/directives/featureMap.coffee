@@ -4,6 +4,7 @@ app.directive 'featureMap', ['$timeout', ($timeout) ->
     scope:
       features: '='
       targetFeature: '='
+      zoomApi: '='
     link: (scope, element, attrs) ->
       svg = angular.element(document.createElementNS('http://www.w3.org/2000/svg', 'svg'))
       element.append svg
@@ -64,11 +65,9 @@ app.directive 'featureMap', ['$timeout', ($timeout) ->
 
         if features.length > 0
           # Enable feature map paning and zooming
-          # TODO possibly replace with d3 pan and zoom feature
-          # and add material design controls
-          svgPanZoom svg[0],
-            fit: false
-            controlIconsEnabled: true
+          scope.zoomApi = svgPanZoom svg[0],
+                                      fit: false
+                                      controlIconsEnabled: false
 
         return
 
