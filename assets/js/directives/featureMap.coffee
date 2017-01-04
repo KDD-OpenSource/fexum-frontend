@@ -9,12 +9,13 @@ app.directive 'featureMap', ['$timeout', ($timeout) ->
       svg = angular.element(document.createElementNS('http://www.w3.org/2000/svg', 'svg'))
       element.append svg
 
-      scope.isTarget = (feature) ->
-        return scope.targetFeature == feature
-
       render = ->
         # render nothing if no target is set or feature are not loaded
         features = if scope.targetFeature and scope.features then scope.features else []
+
+        # remove features with undefined relevancy
+        features = features.filter (feature) ->
+          return feature.relevancy? or feature == scope.targetFeature
 
         featureCount = features.length
         targetFeatureIndex = features.indexOf scope.targetFeature
@@ -24,7 +25,7 @@ app.directive 'featureMap', ['$timeout', ($timeout) ->
 
         # evenly arrange the features around the target feature
         getFeaturePosition = (feature, idx) ->
-          isTarget = scope.isTarget feature
+          isTarget = feature == scope.targetFeature
           if isTarget
             return [0, 0]
           radius = (1 - feature.relevancy) * MAX_DISTANCE + OFFSET
@@ -57,10 +58,10 @@ app.directive 'featureMap', ['$timeout', ($timeout) ->
         newLinks.append 'ellipse'
         newLinks.append 'text'
         # Update elements
-        nodes.selectAll('text').text (feature) -> feature.name
-        nodes.selectAll('a').attr 'xlink:href', getFeatureLink
+        nodes.selectAll('text').data(features).text (feature) -> feature.name
+        nodes.selectAll('a').data(features).attr 'xlink:href', getFeatureLink
         nodes.attr 'transform', getFeatureTranslationString
-              .classed 'is-target', scope.isTarget
+              .classed 'is-target', (feature) -> feature == scope.targetFeature
               .exit().remove()
 
         if features.length > 0
