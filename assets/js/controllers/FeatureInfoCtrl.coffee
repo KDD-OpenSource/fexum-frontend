@@ -75,10 +75,13 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http'
           type: 'lineChart'
           x: (data) -> data.x
           y: (data) -> data.y
+          valueFormat: d3.format '.2e'
           xAxis:
             axisLabel: 'Time (seconds)'
+            tickFormat: d3.format '.2e'
           yAxis:
             axisLabel: 'Value'
+            tickFormat: d3.format '.2e'
           margin:
             top: 20
             right: 20
@@ -96,10 +99,13 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http'
           type: 'historicalBarChart'
           x: (data) -> data.range[1]
           y: (data) -> data.count
+          valueFormat: d3.format '.2e'
           xAxis:
             axisLabel: 'Value'
+            tickFormat: d3.format '.2e'
           yAxis:
             axisLabel: 'Count'
+            tickFormat: d3.format '.2e'
           margin:
             top: 20
             right: 20
