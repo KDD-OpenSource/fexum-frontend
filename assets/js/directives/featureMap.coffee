@@ -23,6 +23,12 @@ app.directive 'featureMap', ['$timeout', ($timeout) ->
         featureCount = features.length
         targetFeatureIndex = features.indexOf scope.targetFeature
 
+        # swap target feature to be the last feature to draw it above all other elements
+        if targetFeatureIndex < features.length - 1
+          features[targetFeatureIndex] = features[features.length - 1]
+          features[features.length - 1] = scope.targetFeature
+          targetFeatureIndex = features.length - 1
+
         # evenly arrange the features around the target feature
         getFeaturePosition = (feature, idx) ->
           isTarget = feature == scope.targetFeature
