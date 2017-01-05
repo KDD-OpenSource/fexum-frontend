@@ -1,4 +1,6 @@
 app = angular.module 'predots', ['ngMaterial', 'ngRoute', 'nvd3', 'ngWebSocket']
+
+# Define theme
 app.config ['$mdThemingProvider', ($mdThemingProvider) ->
   predotsMap = $mdThemingProvider.extendPalette 'blue'
   $mdThemingProvider.definePalette 'predots', predotsMap
@@ -8,6 +10,8 @@ app.config ['$mdThemingProvider', ($mdThemingProvider) ->
 		.accentPalette 'orange'
   return
 ]
+
+# Define routes
 app.config ['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
   $routeProvider
 		.when('/',
