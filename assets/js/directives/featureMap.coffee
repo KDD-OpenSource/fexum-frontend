@@ -41,7 +41,13 @@ app.directive 'featureMap', ['$timeout', ($timeout) ->
 
         getFeatureTranslationString = (feature, idx) ->
           [x, y] = getFeaturePosition feature, idx
-          return "translate(#{x}, #{y})"
+
+          #Change size according to zoom level
+          transform = attrs.defTransform
+          if scope.zoomApi?
+            transform = transform / scope.zoomApi.getZoom()
+
+          return "translate(#{x}, #{y}) scale(#{transform})"
 
         getFeatureLink = (feature) ->
           encodedName = window.encodeURIComponent feature.name
@@ -69,7 +75,10 @@ app.directive 'featureMap', ['$timeout', ($timeout) ->
           # Enable feature map paning and zooming
           scope.zoomApi = svgPanZoom svg[0],
                                       fit: false
-                                      controlIconsEnabled: false
+                                      controlIconsEnabled: false,
+                                      onZoom: render,
+                                      minZoom: 0.1,
+                                      zoomScaleSensitivity: 0.4
 
         return
 
