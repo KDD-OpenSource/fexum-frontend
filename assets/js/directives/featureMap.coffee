@@ -51,6 +51,8 @@ app.directive 'featureMap', ['$timeout', ($timeout) ->
         nodes = d3.select svg[0]
                     .selectAll 'g.feature'
                     .data features
+        # Remove old elements
+        nodes.exit().remove()
         # Create new elements
         newNodes = nodes.enter().append 'g'
                     .classed 'feature', true
@@ -58,11 +60,10 @@ app.directive 'featureMap', ['$timeout', ($timeout) ->
         newLinks.append 'ellipse'
         newLinks.append 'text'
         # Update elements
-        nodes.selectAll('text').data(features).text (feature) -> feature.name
-        nodes.selectAll('a').data(features).attr 'xlink:href', getFeatureLink
+        nodes.selectAll('text').text (feature) -> feature.name
+        nodes.selectAll('a').attr 'xlink:href', getFeatureLink
         nodes.attr 'transform', getFeatureTranslationString
               .classed 'is-target', (feature) -> feature == scope.targetFeature
-              .exit().remove()
 
         if features.length > 0
           # Enable feature map paning and zooming
