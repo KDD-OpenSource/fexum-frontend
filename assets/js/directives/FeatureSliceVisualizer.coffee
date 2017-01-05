@@ -19,6 +19,10 @@ app.directive 'featureSliceVisualizer', ['$timeout', 'chartTemplates', ($timeout
 
       scope.setupCharts = ->
         scope.histogram = angular.merge {}, chartTemplates.historicalBarChart,
+          options:
+            chart:
+              xAxis:
+                axisLabel: scope.feature.name
           data: [
             {
               values: getSubBuckets()
@@ -35,13 +39,16 @@ app.directive 'featureSliceVisualizer', ['$timeout', 'chartTemplates', ($timeout
           key: 'Conditional probability distribution'
           area: true
           color: '#F44336'
-        scope.probabilityDistributions = angular.merge {}, chartTemplates.lineChart,
+        scope.probabilityDistributions = angular.merge {}, chartTemplates.multiBarChart,
           options:
             chart:
               xAxis:
-                axisLabel: 'Value'
+                axisLabel: scope.targetFeature.name
               yAxis:
                 axisLabel: 'Probability density'
+                tickFormat: d3.format '.0%'
+              stacked: false
+              showControls: false
               legend:
                 rightAlign: false
                 maxKeyLength: 1000

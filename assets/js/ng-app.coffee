@@ -63,3 +63,19 @@ app.constant 'chartTemplates',
           right: 20
           bottom: 45
           left: 60
+  multiBarChart:
+    options:
+      chart:
+        type: 'multiBarChart'
+        x: (data) -> data.x
+        y: (data) -> data.y
+        valueFormat: d3.format '.2e'
+        xAxis:
+          tickFormat: d3.format '.2e'
+        yAxis:
+          tickFormat: d3.format '.2e'
+        margin:
+          top: 50
+          right: 20
+          bottom: 45
+          left: 60

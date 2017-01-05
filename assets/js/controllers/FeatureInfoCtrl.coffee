@@ -43,11 +43,12 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http'
     $http.get apiUri + "features/#{$scope.feature.name}/slices"
       .then (response) ->
         slices = response.data.map (slice) ->
+          sortByValue = (a, b) -> a.value - b.value
           return {
             range: [slice.from_value, slice.to_value]
             score: slice.score
-            marginal: slice.marginal_distribution
-            conditional: slice.conditional_distribution
+            marginal: slice.marginal_distribution.sort sortByValue
+            conditional: slice.conditional_distribution.sort sortByValue
           }
         $scope.feature.slices = slices
       .catch console.error
@@ -91,6 +92,8 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http'
     $scope.histogram = angular.merge {}, chartTemplates.historicalBarChart,
       options:
         chart:
+          xAxis:
+            axisLabel: $scope.feature.name
           bars:
             dispatch:
               elementClick: (event) ->
