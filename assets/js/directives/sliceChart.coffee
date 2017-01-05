@@ -5,6 +5,7 @@ app.directive 'sliceChart', ['$timeout', ($timeout) ->
       chartRange: '='
       slices: '='
       onSliceClick: '&onSliceClick'
+      selectedSlice: '='
     link: (scope, element, attrs) ->
       svg = angular.element(document.createElementNS('http://www.w3.org/2000/svg', 'svg'))
       element.append svg
@@ -42,8 +43,8 @@ app.directive 'sliceChart', ['$timeout', ($timeout) ->
         rects.enter().append 'rect'
               .on 'click', (slice) ->
                 scope.$apply ->
-                  scope.onSliceClick { slice: slice }
                   scope.selectedSlice = slice
+                  scope.onSliceClick { slice: slice }
                   render()
                 return
         rects.attr 'width', getSliceWidth

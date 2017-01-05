@@ -75,8 +75,6 @@ app.directive 'featureSliceVisualizer', ['$timeout', 'chartTemplates', ($timeout
         return
 
       scope.showProbabilityDistributions = (slice) ->
-        scope.selectedSlice = slice
-
         generateChartDataFromValues = (item, idx, arr) ->
           return { x: item.value, y: item.frequency }
 
