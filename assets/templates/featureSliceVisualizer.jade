@@ -13,5 +13,5 @@ md-card#feature-slice-visualizer.overlay-window(flex)
 				p.md-body-1.
 					When #[i {{feature.name}}] is in value range
 					[{{selectedSlice.range[0] | number:2}}, {{selectedSlice.range[1] | number:2}}]
-					#[i {{targetFeature.name}}] behaves significantly different:
+					#[i {{targetFeature.name}}] behaves significantly (with KLD = {{selectedSlice.score * 100 | number:2}}%) different:
 				nvd3.chart.probability-distributions(options='probabilityDistributions.options', data='probabilityDistributions.data')
