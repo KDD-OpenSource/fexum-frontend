@@ -12,6 +12,8 @@ app.controller 'AppCtrl', ['$scope', '$http', 'apiUri', 'socketUri', '$q', '$web
         # Response is in the form
         # [{name, relevancy, redundancy, rank, mean, variance, min, max}, ...]
         $scope.features = response.data
+        # Order does not matter and is preferred random for rendering => shuffle
+        $scope.features.shuffle()
         if $scope.targetFeature
           findTargetFeature $scope.targetFeature.name
       .catch console.error
