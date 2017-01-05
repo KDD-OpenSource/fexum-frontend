@@ -65,8 +65,10 @@ app.directive 'featureSliceVisualizer', ['$timeout', 'chartTemplates', ($timeout
       $timeout scope.setupCharts, 200
 
       scope.$watch 'range', ->
-        # reset slice selection when new bucket got selected
-        scope.selectedSlice = null
+        # reset slice selection when new bucket got selected and it is no longer in the bucket
+        if scope.selectedSlice.range[0] > scope.range[1] or
+            scope.selectedSlice.range[1] < scope.range[0]
+          scope.selectedSlice = null
         # update histogram
         if scope.histogram
           scope.histogram.data[0].values = getSubBuckets()
