@@ -42,7 +42,13 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http'
   $scope.retrieveSlices = ->
     $http.get apiUri + "features/#{$scope.feature.name}/slices"
       .then (response) ->
-        slices = response.data
+        slices = response.data.map (slice) ->
+          return {
+            range: [slice.from_value, slice.to_value]
+            score: slice.score
+            marginal: slice.marginal_distribution
+            conditional: slice.conditional_distribution
+          }
         $scope.feature.slices = slices
       .catch console.error
 

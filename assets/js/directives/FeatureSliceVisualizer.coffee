@@ -68,12 +68,8 @@ app.directive 'featureSliceVisualizer', ['$timeout', 'chartTemplates', ($timeout
       scope.showProbabilityDistributions = (slice) ->
         scope.selectedSlice = slice
 
-        targetRange = [scope.targetFeature.min, scope.targetFeature.max]
-        targetRangeLength = targetRange[1] - targetRange[0]
-
-        generateChartDataFromValues = (y, idx, arr) ->
-          x = targetRange[0] + (idx / (arr.length - 1)) * targetRangeLength
-          return { x: x, y: y }
+        generateChartDataFromValues = (item, idx, arr) ->
+          return { x: item.value, y: item.frequency }
 
         setValues = ->
           scope.marginalProbDistr.values = slice.marginal.map generateChartDataFromValues
