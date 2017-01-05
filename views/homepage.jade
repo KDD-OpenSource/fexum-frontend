@@ -3,7 +3,8 @@ extends ./layout
 
 block body
   md-content(ng-controller='AppCtrl')
-    feature-map#feature-map(features='features', target-feature='targetFeature', zoom-api='zoomApi', max-distance='5000', offset='200')
+    feature-map#feature-map(features='features', target-feature='targetFeature', zoom-api='zoomApi', max-distance='5000', offset='200', 
+                            def-transform='1')
     #map-overlay(layout='column', layout-fill)
       .md-padding.left-pane
         form.overlay-window(ng-submit='$event.preventDefault()',ng-cloak)
