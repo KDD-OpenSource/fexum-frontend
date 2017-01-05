@@ -1,17 +1,21 @@
-md-card#feature-slice-visualizer.overlay-window(flex)
-	md-toolbar
-		.md-toolbar-tools
-			md-button.md-icon-button(aria-label='Close', ng-click='close()')
-				md-icon keyboard_arrow_left
-			span Visualize #[i {{feature.name}}] in value range [{{range[0] | number:2}}, {{range[1] | number:2}}]
-	md-content(flex, layout='row')
-		.md-padding(flex='50', layout='column')
+.md-padding(flex='50', layout)
+	md-card#feature-slice-overview.overlay-window(flex)
+		md-toolbar
+			.md-toolbar-tools
+				md-button.md-icon-button(aria-label='Close', ng-click='close()')
+					md-icon keyboard_arrow_left
+				span #[i {{feature.name}}] in range [{{range[0] | number:2}}, {{range[1] | number:2}}]
+		md-content.md-padding(layout='column')
 			nvd3.chart.histogram(options='histogram.options', data='histogram.data')
 			slice-chart(chart-range='range', slices='feature.slices', on-slice-click='showProbabilityDistributions(slice)')
-		.md-padding(flex='50')
-			div(ng-show='selectedSlice')
-				p.md-body-1.
-					When #[i {{feature.name}}] is in value range
-					[{{selectedSlice.range[0] | number:2}}, {{selectedSlice.range[1] | number:2}}]
-					#[i {{targetFeature.name}}] behaves significantly (with KLD = {{selectedSlice.score * 100 | number:2}}%) different:
-				nvd3.chart.probability-distributions(options='probabilityDistributions.options', data='probabilityDistributions.data')
+.md-padding(flex='50', layout, ng-show='selectedSlice')
+	md-card#feature-slice-distributions.overlay-window(flex)
+		md-toolbar
+			.md-toolbar-tools
+				span Slice [{{selectedSlice.range[0] | number:2}}, {{selectedSlice.range[1] | number:2}}]
+		md-content.md-padding(layout='column')
+			p.md-body-1.
+				When #[i {{feature.name}}] is in value range
+				[{{selectedSlice.range[0] | number:2}}, {{selectedSlice.range[1] | number:2}}]
+				#[i {{targetFeature.name}}] behaves significantly (with KLD = {{selectedSlice.score * 100 | number:2}}%) different:
+			nvd3.chart.probability-distributions(options='probabilityDistributions.options', data='probabilityDistributions.data')
