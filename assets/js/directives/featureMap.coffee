@@ -78,7 +78,7 @@ app.directive 'featureMap', ['$timeout', ($timeout) ->
                                       controlIconsEnabled: false,
                                       onZoom: render,
                                       minZoom: 0.1,
-                                      zoomScaleSensitivity: 0.4
+                                      zoomScaleSensitivity: 0.3
 
         return
 
