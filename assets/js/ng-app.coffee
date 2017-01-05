@@ -49,8 +49,10 @@ app.constant 'chartTemplates',
     options:
       chart:
         type: 'historicalBarChart'
-        x: (data) -> data.range[1]
-        y: (data) -> data.count
+        x: (data) ->
+          return (data.range[0] + data.range[1]) / 2
+        y: (data) ->
+          return data.count
         valueFormat: d3.format '.2e'
         xAxis:
           axisLabel: 'Value'
