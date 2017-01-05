@@ -12,6 +12,8 @@
 	md-card#feature-slice-distributions.overlay-window(flex)
 		md-toolbar
 			.md-toolbar-tools
+				md-button.md-icon-button(aria-label='Close', ng-click='selectedSlice = null')
+					md-icon keyboard_arrow_left
 				span Slice [{{selectedSlice.range[0] | number:2}}, {{selectedSlice.range[1] | number:2}}]
 		md-content.md-padding(layout='column')
 			p.md-body-1.

@@ -45,7 +45,6 @@ app.directive 'sliceChart', ['$timeout', ($timeout) ->
                 scope.$apply ->
                   scope.selectedSlice = slice
                   scope.onSliceClick { slice: slice }
-                  render()
                 return
         rects.attr 'width', getSliceWidth
               .attr 'x', getSliceXPosition
@@ -60,7 +59,7 @@ app.directive 'sliceChart', ['$timeout', ($timeout) ->
       render()
 
       # Rerender when variables change
-      scope.$watchGroup ['chartRange', 'slices'], render
+      scope.$watchGroup ['chartRange', 'slices', 'selectedSlice'], render
       return
   }
 ]
