@@ -6,6 +6,9 @@ app.directive 'featureMap', ['$timeout', ($timeout) ->
       targetFeature: '='
       zoomApi: '='
     link: (scope, element, attrs) ->
+      maxDistance = attrs.maxDistance
+      offset = attrs.offset
+
       svg = angular.element(document.createElementNS('http://www.w3.org/2000/svg', 'svg'))
       element.append svg
 
@@ -20,15 +23,12 @@ app.directive 'featureMap', ['$timeout', ($timeout) ->
         featureCount = features.length
         targetFeatureIndex = features.indexOf scope.targetFeature
 
-        MAX_DISTANCE = 500
-        OFFSET = 100
-
         # evenly arrange the features around the target feature
         getFeaturePosition = (feature, idx) ->
           isTarget = feature == scope.targetFeature
           if isTarget
             return [0, 0]
-          radius = (1 - feature.relevancy) * MAX_DISTANCE + OFFSET
+          radius = (1 - feature.relevancy) * maxDistance + offset
           # index is 1 too big if this item is behind the target in the list
           if idx > targetFeatureIndex
             idx -= 1
