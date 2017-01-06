@@ -24,6 +24,7 @@ module.exports = function(grunt) {
     'sails-linker:prodStylesJade',
     'sails-linker:devTplJade',
     'jade:views',
+    'configureProxies:server',
     'connect:server:keepalive'
   ]);
 };

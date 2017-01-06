@@ -2,6 +2,7 @@
   "dependencies": {
     "grunt": "1.0.1",
     "grunt-bower-task": "^0.3.4",
+    "grunt-connect-proxy": "^0.2.0",
     "grunt-contrib-clean": "1.0.0",
     "grunt-contrib-coffee": "1.0.0",
     "grunt-contrib-concat": "1.0.1",
