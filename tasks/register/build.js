@@ -21,6 +21,7 @@ module.exports = function(grunt) {
   grunt.registerTask('build', [
     'compileAssets',
     'linkAssetsBuild',
+    'jade:views',
     'clean:build',
     'copy:build'
   ]);

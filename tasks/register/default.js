@@ -22,5 +22,7 @@
  *
  */
 module.exports = function (grunt) {
-  grunt.registerTask('default', ['compileAssets', 'linkAssets',  'watch']);
+  taskList = ['compileAssets', 'linkAssets', 'jade:views', 'connect', 'watch'];
+  grunt.registerTask('default', taskList);
+  grunt.registerTask('serve', taskList);
 };

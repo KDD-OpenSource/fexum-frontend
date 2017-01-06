@@ -12,7 +12,7 @@
  *
  */
 module.exports = function(grunt) {
-  grunt.registerTask('prod', [
+  grunt.registerTask('serveProd', [
     'compileAssets',
     'concat',
     'uglify',
@@ -22,6 +22,8 @@ module.exports = function(grunt) {
     'sails-linker:devTpl',
     'sails-linker:prodJsJade',
     'sails-linker:prodStylesJade',
-    'sails-linker:devTplJade'
+    'sails-linker:devTplJade',
+    'jade:views',
+    'connect:server:keepalive'
   ]);
 };

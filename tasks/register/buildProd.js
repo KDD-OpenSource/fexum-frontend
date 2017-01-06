@@ -22,6 +22,7 @@ module.exports = function(grunt) {
     'uglify',
     'cssmin',
     'linkAssetsBuildProd',
+    'jade:views',
     'clean:build',
     'copy:build'
   ]);
