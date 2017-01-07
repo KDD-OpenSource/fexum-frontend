@@ -24,7 +24,13 @@ module.exports = function(grunt) {
         },
         middleware: function (connect, options, defaultMiddleware) {
           var proxy = require('grunt-connect-proxy/lib/utils').proxyRequest;
-          return [proxy].concat(defaultMiddleware);
+          rewrite = function(req, res, next) {
+            var filename = options.base[0].path + req.url;
+            if (!grunt.file.exists(filename))
+              req.url = '/homepage.html';
+            next();
+          }
+          return [proxy, rewrite].concat(defaultMiddleware);
         }
       },
       proxies: [{
