@@ -35,7 +35,7 @@ module.exports = function(grunt) {
         expand: true,
         cwd: '.tmp/public',
         src: ['**/*'],
-        dest: 'www'
+        dest: grunt.option('out') || 'www'
       }]
     }
   });
