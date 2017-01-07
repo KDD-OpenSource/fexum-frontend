@@ -1,8 +1,0 @@
-{
-  "generators": {
-    "modules": {
-      "model": "sails-generate-model-coffee",
-      "controller": "sails-generate-controller-coffee"
-    }
-  }
-}

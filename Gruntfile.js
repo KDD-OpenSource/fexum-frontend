@@ -21,18 +21,14 @@ module.exports = function(grunt) {
   try {
     includeAll = require('include-all');
   } catch (e0) {
-    try {
-      includeAll = require('sails/node_modules/include-all');
-    } catch (e1) {
-      console.error('Could not find `include-all` module.');
-      console.error('Skipping grunt tasks...');
-      console.error('To fix this, please run:');
-      console.error('npm install include-all --save`');
-      console.error();
+    console.error('Could not find `include-all` module.');
+    console.error('Skipping grunt tasks...');
+    console.error('To fix this, please run:');
+    console.error('npm install include-all --save`');
+    console.error();
 
-      grunt.registerTask('default', []);
-      return;
-    }
+    grunt.registerTask('default', []);
+    return;
   }
 
 

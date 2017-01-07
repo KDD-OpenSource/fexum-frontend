@@ -26,8 +26,8 @@ app.config ['$routeProvider', '$locationProvider', ($routeProvider, $locationPro
   $locationProvider.html5Mode true
   return
 ]
-app.constant 'apiUri', 'http://172.16.18.127/api/'
-app.constant 'socketUri', 'ws://172.16.18.127/socket'
+app.constant 'apiUri', '/api/'
+app.constant 'socketUri', "ws://#{window.location.host}/socket"
 app.constant 'chartTemplates',
   lineChart:
     options:

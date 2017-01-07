@@ -12,16 +12,14 @@
  *
  */
 module.exports = function(grunt) {
-  grunt.registerTask('prod', [
+  grunt.registerTask('serveProd', [
     'compileAssets',
     'concat',
     'uglify',
     'cssmin',
-    'sails-linker:prodJs',
-    'sails-linker:prodStyles',
-    'sails-linker:devTpl',
-    'sails-linker:prodJsJade',
-    'sails-linker:prodStylesJade',
-    'sails-linker:devTplJade'
+    'linkAssetsProd',
+    'jade:views',
+    'configureProxies:server',
+    'connect:server:keepalive'
   ]);
 };
