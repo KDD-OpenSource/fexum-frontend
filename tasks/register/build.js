@@ -20,7 +20,7 @@
 module.exports = function(grunt) {
   grunt.registerTask('build', [
     'compileAssets',
-    'linkAssetsBuild',
+    'linkAssets',
     'jade:views',
     'clean:build',
     'copy:build'

@@ -12,7 +12,7 @@ module.exports = function(grunt) {
     'concat',
     'uglify',
     'cssmin',
-    'linkAssetsBuildProd',
+    'linkAssetsProd',
     'jade:views',
     'rsync:prod'
   ]);
