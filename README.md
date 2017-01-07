@@ -10,7 +10,7 @@ npm install
 bower install
 ```
 
-## Grunt tasks
+## Build frontend
 
 Compile and link assets
 
@@ -24,16 +24,16 @@ Also minify for production use
 grunt buildProd
 ```
 
-## Serve locally
+## Build & serve locally
 
-To serve locally without minification (and watch for changes)
+To build and serve locally without minification (and watch for changes)
 
 ```
 grunt
 grunt serve		# alternatively
 ```
 
-To serve in production mode with minification (not watching for changes)
+To build and serve in production mode with minification (not watching for changes)
 
 ```
 grunt serveProd
