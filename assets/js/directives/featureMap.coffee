@@ -49,9 +49,10 @@ app.directive 'featureMap', ['$timeout', ($timeout) ->
           [x, y] = getFeaturePosition feature, idx
 
           #Change size according to zoom level
-          transform = attrs.defTransform
+          zoom = attrs.defTransform
           if scope.zoomApi?
-            transform = transform / scope.zoomApi.getZoom()
+            zoom = scope.zoomApi.getZoom()
+          transform = (Math.tanh(3 * zoom - 1) + 1) / 2 / zoom
 
           return "translate(#{x}, #{y}) scale(#{transform})"
 
