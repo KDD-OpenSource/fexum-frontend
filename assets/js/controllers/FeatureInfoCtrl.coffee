@@ -83,6 +83,22 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http'
             axisLabel: 'Time (seconds)'
           yAxis:
             axisLabel: 'Value'
+          dispatch:
+            renderEnd: ->
+              element = $scope.lineChartApi.getElement()
+              if $scope.selectedRange?
+                console.log d3.select(element[0]).select('g.nv-focus')
+                rect2 = d3.select(element[0]).select('g.nv-focus').datum $scope.selectedRange
+                rect2.append('rect').attr 'class', 'highlight'
+
+                chart = $scope.lineChartApi.getScope().chart
+
+                rect2.select('rect.highlight')
+                  .attr 'class', 'highlight'
+                  .attr 'x', chart.xAxis.scale()(chart.xAxis.domain()[0])
+                  .attr 'y', (d) -> chart.yAxis.scale()(d[1])
+                  .attr 'width', chart.xAxis.scale()(chart.xAxis.domain()[1])-chart.xAxis.scale()(chart.xAxis.domain()[0])
+                  .attr 'height', (d) -> chart.yAxis.scale()(d[0]) - chart.yAxis.scale()(d[1])             
       data: [
         {
           values: $scope.feature.samples or []
@@ -99,7 +115,9 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http'
               elementClick: (event) ->
                 $scope.$apply ->
                   $scope.selectedRange = event.data.range
+                  console.log("range " + event.data.range)
                   $scope.histogramApi.update()
+                  $scope.lineChartApi.update()
                 return
           dispatch:
             renderEnd: ->
