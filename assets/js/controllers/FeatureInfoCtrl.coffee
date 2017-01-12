@@ -1,5 +1,5 @@
-app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http', 'apiUri', 'chartTemplates',\
-                                    ($scope, $routeParams, $timeout, $http, apiUri, chartTemplates) ->
+app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http', 'apiUri', 'chartTemplates', 'chartColors',\
+                                    ($scope, $routeParams, $timeout, $http, apiUri, chartTemplates, chartColors) ->
 
   retrieveSelectedFeature = (features) ->
     featurePredicate = (feature) -> feature.name == $routeParams.featureName
@@ -119,6 +119,7 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http'
         {
           values: $scope.feature.samples or []
           key: $scope.feature.name
+          color: chartColors.defaultColor
         }
       ]
     $scope.histogram = angular.merge {}, chartTemplates.historicalBarChart,
@@ -138,18 +139,42 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http'
             renderEnd: ->
               element = $scope.histogramApi.getElement()
               svg = d3.select element[0]
+
+              slicesContained = (d) ->
+                return $scope.feature.slices.filter (slice) ->
+                  return slice.range[0] < d.range[1] and
+                          slice.range[1] > d.range[0]
+
+              buckets = $scope.histogram.data[0].values
+              bucketSignificances = buckets.map (bucket) ->
+                slices = slicesContained bucket
+                if slices.length == 0
+                  return null
+                sliceSignificances = slices.map (slice) -> slice.significance
+                return sliceSignificances.mean()
+
+              filteredSignificances = bucketSignificances.filter (b) -> b?
+              minSignificance = Math.min.apply null, filteredSignificances
+              maxSignificance = Math.max.apply null, filteredSignificances
+
               svg.selectAll 'rect.nv-bar'
                 .classed 'selected', (d) ->
                   return d.range == $scope.selectedRange
                 .classed 'significant', (d) ->
-                  containedSlices = $scope.feature.slices.filter (slice) ->
-                    return slice.range[0] < d.range[1] and
-                            slice.range[1] > d.range[0]
-                  return containedSlices.length > 0
+                  return slicesContained(d).length > 0
+                .attr 'significance', (d, i) ->
+                  significance = bucketSignificances[i]
+                  if not significance?
+                    return 0
+                  scaledSignificance = (significance - minSignificance) /
+                                        (maxSignificance - minSignificance)
+                  significanceLevel = Math.ceil(scaledSignificance * 10) * 10
+                  return significanceLevel
       data: [
         {
           values: mergeBucketsSqrt $scope.feature.buckets
           key: $scope.feature.name
+          color: chartColors.defaultColor
         }
       ]
 

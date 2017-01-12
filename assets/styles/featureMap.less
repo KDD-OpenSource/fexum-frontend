@@ -17,7 +17,7 @@
 			rx: 80;
 			ry: 40;
 			stroke: #BDBDBD;
-			fill: #29B6F6;
+			fill: lighten(@featureColor, 20%);
 		}
 
 		text {
@@ -25,7 +25,7 @@
 		}
 
 		&.is-target ellipse {
-			fill: #E57373;
+			fill: @targetColor;
 		}
 	}
 }
