@@ -104,9 +104,15 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http'
           dispatch:
             renderEnd: ->
               element = $scope.histogramApi.getElement()
-              d3.select(element[0]).selectAll 'rect.nv-bar'
+              svg = d3.select element[0]
+              svg.selectAll 'rect.nv-bar'
                 .classed 'selected', (d) ->
                   return d.range == $scope.selectedRange
+                .classed 'significant', (d) ->
+                  containedSlices = $scope.feature.slices.filter (slice) ->
+                    return slice.range[0] < d.range[1] and
+                            slice.range[1] > d.range[0]
+                  return containedSlices.length > 0
       data: [
         {
           values: mergeBucketsSqrt $scope.feature.buckets
