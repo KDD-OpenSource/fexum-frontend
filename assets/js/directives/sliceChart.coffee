@@ -28,7 +28,12 @@ app.directive 'sliceChart', ['$timeout', ($timeout) ->
 
         getSliceWidth = (slice, idx) ->
           sliceLength = slice.range[1] - slice.range[0]
-          return sliceLength / chartLength * 100
+          inPercent = sliceLength / chartLength * 100
+
+          # Set slice length to a minimum of 10% in order to still be clickable
+          inPercent = Math.max 10, inPercent
+
+          return inPercent
 
         getSliceXPosition = (slice, idx) ->
           sliceOffset = slice.range[0] - scope.chartRange[0]
