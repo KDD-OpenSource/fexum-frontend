@@ -85,6 +85,10 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http'
             axisLabel: 'Value'
           dispatch:
             renderEnd: ->
+              # somehow nvd3 only defines after the first rendering
+              if not $scope.lineChartApi?
+                return
+
               element = $scope.lineChartApi.getElement()
               chart = $scope.lineChartApi.getScope().chart
               svgElement = element[0]
