@@ -156,6 +156,8 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http'
       if newBuckets
         $scope.histogram.data[0].values = mergeBucketsSqrt newBuckets
 
+    $scope.$watch 'feature.slices', $scope.histogramApi.update
+
     $scope.retrieveSamples()
     $scope.retrieveHistogramBuckets()
     return
