@@ -92,8 +92,11 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http'
                 return
 
               element = $scope.lineChartApi.getElement()
-              chart = $scope.lineChartApi.getScope().chart
               svgElement = element[0]
+
+              chart = $scope.lineChartApi.getScope().chart
+              if not chart?
+                return
 
               highlightedRange = if $scope.selectedRange? then [$scope.selectedRange] else []
 
