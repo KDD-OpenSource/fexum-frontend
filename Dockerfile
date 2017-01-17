@@ -1,6 +1,6 @@
 FROM node
 
-ENV HOST=http://web_asgi:8000
+ARG HOST
 
 # Install NGINX
 ENV NGINX_VERSION 1.11.8-1~jessie
