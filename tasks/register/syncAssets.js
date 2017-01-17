@@ -12,6 +12,7 @@
  */
 module.exports = function(grunt) {
   grunt.registerTask('syncAssets', [
+    'quality:warn',
     'jade:jst',
     'jade:views',
     'less:dev',
