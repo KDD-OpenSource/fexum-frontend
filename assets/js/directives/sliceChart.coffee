@@ -17,11 +17,11 @@ app.directive 'sliceChart', ['$timeout', ($timeout) ->
 
       # Scores
       scoreTitle = angular.element(document.createElementNS('http://www.w3.org/2000/svg', 'text'))
-         .attr 'x', -25
-         .attr 'y', -8
-         .css 'font-size', 14
-         .attr 'text-anchor', 'middle'
-         .text 'Scores'
+          .attr 'x', -25
+          .attr 'y', -8
+          .css 'font-size', 14
+          .attr 'text-anchor', 'middle'
+          .text 'Scores'
       svg.append scoreTitle
 
       scoreList = angular.element(document.createElementNS('http://www.w3.org/2000/svg', 'svg'))
@@ -30,7 +30,7 @@ app.directive 'sliceChart', ['$timeout', ($timeout) ->
       render = ->
 
         # Offset from one slice to the other
-        Y_OFFSET = 15        
+        Y_OFFSET = 15
 
         chartLength = scope.chartRange[1] - scope.chartRange[0]
 
@@ -86,16 +86,16 @@ app.directive 'sliceChart', ['$timeout', ($timeout) ->
 
 
         getScoreYPosition = (slice, idx) ->
-          return idx * (1.0*containerHeight/containedSlices.length)
+          return idx * (1.0 * containerHeight / containedSlices.length)
 
         scores = d3.select scoreList[0]
-                   .selectAll 'text'
-                   .data containedSlices
+          .selectAll 'text'
+          .data containedSlices
         scores.enter().append 'text'
         scores.attr 'y', getScoreYPosition
               .attr 'text-anchor', 'end'
               .attr 'fill', '#FFB74D'
-              .text (slice) -> return ""+slice.score
+              .text (slice) -> return '' + slice.score
               .classed 'selected', (slice) ->
                 return slice == scope.selectedSlice
         scores.exit().remove()
