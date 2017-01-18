@@ -10,11 +10,11 @@ app.constant 'chartTemplates',
         type: 'lineChart'
         x: (data) -> data.x
         y: (data) -> data.y
-        valueFormat: d3.format '.2e'
+        valueFormat: d3.format '.3g'
         xAxis:
-          tickFormat: d3.format '.2e'
+          tickFormat: d3.format '.3g'
         yAxis:
-          tickFormat: d3.format '.2e'
+          tickFormat: d3.format '.3g'
         margin:
           top: 20
           right: 20
@@ -28,13 +28,13 @@ app.constant 'chartTemplates',
           return (data.range[0] + data.range[1]) / 2
         y: (data) ->
           return data.count
-        valueFormat: d3.format '.2e'
+        valueFormat: d3.format '.3g'
         xAxis:
           axisLabel: 'Value'
-          tickFormat: d3.format '.2e'
+          tickFormat: d3.format '.3g'
         yAxis:
           axisLabel: 'Count'
-          tickFormat: d3.format '.2e'
+          tickFormat: d3.format '.3g'
         margin:
           top: 20
           right: 20
@@ -46,11 +46,11 @@ app.constant 'chartTemplates',
         type: 'multiBarChart'
         x: (data) -> data.x
         y: (data) -> data.y
-        valueFormat: d3.format '.2e'
+        valueFormat: d3.format '.3g'
         xAxis:
-          tickFormat: d3.format '.2e'
+          tickFormat: d3.format '.3g'
         yAxis:
-          tickFormat: d3.format '.2e'
+          tickFormat: d3.format '.3g'
         margin:
           top: 50
           right: 20
