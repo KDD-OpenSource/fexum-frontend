@@ -37,6 +37,7 @@ app.directive 'sliceChart', ['$timeout', ($timeout) ->
         containedSlices = scope.slices.filter (slice) ->
           return slice.range[0] < scope.chartRange[1] and
                   slice.range[1] > scope.chartRange[0]
+        containedSlices.sort (a, b) -> b.significance - a.significance
 
         # set height of container
         containerHeight = Y_OFFSET * containedSlices.length
@@ -95,11 +96,11 @@ app.directive 'sliceChart', ['$timeout', ($timeout) ->
         scores.attr 'y', getScoreYPosition
               .attr 'text-anchor', 'end'
               .attr 'fill', '#FFB74D'
-              .text (slice) -> return '' + slice.score
+              .text (slice) -> return d3.format('.2e')(slice.significance)
               .classed 'selected', (slice) ->
                 return slice == scope.selectedSlice
         scores.exit().remove()
-        
+
         return
 
       # Initial d3 rendering
