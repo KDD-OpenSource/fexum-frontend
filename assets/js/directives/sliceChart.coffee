@@ -17,9 +17,9 @@ app.directive 'sliceChart', ['$timeout', ($timeout) ->
 
       # Scores
       scoreTitle = angular.element(document.createElementNS('http://www.w3.org/2000/svg', 'text'))
-         .attr 'x', -30
-         .attr 'y', -10
-         .attr 'font-size', 14
+         .attr 'x', -25
+         .attr 'y', -8
+         .css 'font-size', 14
          .attr 'text-anchor', 'middle'
          .text 'Scores'
       svg.append scoreTitle
@@ -43,7 +43,8 @@ app.directive 'sliceChart', ['$timeout', ($timeout) ->
         chart.attr 'x', 0
             .attr 'viewBox', "0 0 100 #{containerHeight}"
             .attr 'preserveAspectRatio', 'none'
-            .css 'height', "#{containerHeight}px"
+            #.css 'height', "#{containerHeight}px"
+        svg.attr 'height', "#{containerHeight}px"
 
         getSliceWidth = (slice, idx) ->
           sliceLength = slice.range[1] - slice.range[0]
@@ -78,14 +79,14 @@ app.directive 'sliceChart', ['$timeout', ($timeout) ->
         rects.exit().remove()
 
         # Initialize score list
-        scoreList.attr 'x', -20
-            .attr 'y', 14
+        scoreList.attr 'x', -4
+            .attr 'y', 10
             .attr 'overflow', 'visible'
             .css 'height', '100%'
 
 
         getScoreYPosition = (slice, idx) ->
-          return idx * (containerHeight/containedSlices.length)
+          return idx * (1.0*containerHeight/containedSlices.length)
 
         scores = d3.select scoreList[0]
                    .selectAll 'text'
@@ -97,6 +98,7 @@ app.directive 'sliceChart', ['$timeout', ($timeout) ->
               .text (slice) -> return ""+slice.score
               .classed 'selected', (slice) ->
                 return slice == scope.selectedSlice
+        scores.exit().remove()
 
         console.log scope.slices
 
