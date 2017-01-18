@@ -1,5 +1,6 @@
-app.directive 'featureSliceVisualizer', ['$timeout', 'chartTemplates', 'chartColors', \
-                                          ($timeout, chartTemplates, chartColors) ->
+app.directive 'featureSliceVisualizer', ['$timeout', 'chartTemplates', 'chartColors', '$http', \
+                                          'apiUri', \
+                                          ($timeout, chartTemplates, chartColors, $http, apiUri) ->
   return {
     restrict: 'E'
     template: JST['assets/templates/featureSliceVisualizer']
@@ -17,6 +18,26 @@ app.directive 'featureSliceVisualizer', ['$timeout', 'chartTemplates', 'chartCol
         scope.feature.buckets.filter (bucket) ->
           return bucket.range[0] >= scope.range[0] and
                   bucket.range[1] <= scope.range[1]
+
+      retrieveTargetSamples = ->
+        $http.get apiUri + "features/#{scope.targetFeature.name}/samples"
+          .then (response) ->
+            samples = response.data.map (sample, idx) ->
+              return {
+                x: idx
+                y: sample.value
+              }
+            scope.targetFeature.samples = samples
+          .catch console.error
+
+      getScatterData = (selected) ->
+        if scope.targetFeature.samples? and scope.selectedSlice?
+          return [0...scope.targetFeature.samples.length].map((idx) ->
+            {
+              x: scope.targetFeature.samples[idx].y, y: scope.feature.samples[idx].y
+            }
+          ).filter((e) -> (scope.selectedSlice.range[0] <= e.y <= scope.selectedSlice.range[1]) == selected)
+        else return []
 
       scope.setupCharts = ->
         scope.histogram = angular.merge {}, chartTemplates.historicalBarChart,
@@ -59,6 +80,33 @@ app.directive 'featureSliceVisualizer', ['$timeout', 'chartTemplates', 'chartCol
         scope.marginalProbDistr = scope.probabilityDistributions.data[0]
         scope.conditionalProbDistr = scope.probabilityDistributions.data[1]
 
+        scope.scatterChart = angular.merge {}, chartTemplates.scatterChart,
+          options:
+            chart:
+              xAxis:
+                axisLabel: scope.targetFeature.name
+              yAxis:
+                axisLabel: scope.feature.name
+              color: (d, i) -> 
+                if i == 1
+                  chartColors.selectionColor2
+                else
+                  chartColors.targetColor
+          data: [
+            {
+              values: getScatterData(false)
+              key: 'Unselected'
+            }, 
+            {
+              values: getScatterData(true)
+              key: 'Selected'
+            }
+          ]
+
+        retrieveTargetSamples()
+          .then -> 
+            scope.scatterChart.data[0].values = getScatterData(false)
+            scope.scatterChart.data[1].values = getScatterData(true)
         return
 
       # charts should be set up when layouting is done
@@ -83,6 +131,10 @@ app.directive 'featureSliceVisualizer', ['$timeout', 'chartTemplates', 'chartCol
         setValues = ->
           scope.marginalProbDistr.values = slice.marginal.map generateChartDataFromValues
           scope.conditionalProbDistr.values = slice.conditional.map generateChartDataFromValues
+
+          if scope.scatterChart
+            scope.scatterChart.data[0].values = getScatterData(false)
+            scope.scatterChart.data[1].values = getScatterData(true)
 
         # layouting needs to be done first, then we can redraw the chart
         $timeout setValues, 0
