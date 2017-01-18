@@ -51,7 +51,7 @@ app.controller 'AppCtrl', ['$scope', '$http', 'apiUri', 'socketUri', '$q', '$web
   $scope.waitForWebsocketEvent = (eventName) ->
     return $q (resolve, reject) ->
       removeListener = $scope.$on 'ws/' + eventName, ->
-        resolve.apply this, arguments
+        resolve.apply @, arguments
         removeListener()
 
   $scope.$on 'ws/relevancy-update', (event, payload) ->
@@ -67,7 +67,7 @@ app.controller 'AppCtrl', ['$scope', '$http', 'apiUri', 'socketUri', '$q', '$web
       $scope.targetFeature = targetFeature
 
       # Notify server of new target
-      $http.put(apiUri + "features/target", {
+      $http.put(apiUri + 'features/target', {
           feature:
             name: targetFeature.name
         })
@@ -80,7 +80,8 @@ app.controller 'AppCtrl', ['$scope', '$http', 'apiUri', 'socketUri', '$q', '$web
       # Create promise that waits for updated relevancies
       relevancyUpdate = $scope.waitForWebsocketEvent 'relevancy-update'
       # TODO internationalization
-      $scope.addLoadingQueueItem relevancyUpdate, "Running feature selection for #{targetFeature.name}"
+      $scope.addLoadingQueueItem relevancyUpdate,
+                                 "Running feature selection for #{targetFeature.name}"
     return
 
   $scope.retrieveFeatures()

@@ -1,4 +1,5 @@
-app.directive 'featureSliceVisualizer', ['$timeout', 'chartTemplates', ($timeout, chartTemplates) ->
+app.directive 'featureSliceVisualizer', ['$timeout', 'chartTemplates', 'chartColors', \
+                                          ($timeout, chartTemplates, chartColors) ->
   return {
     restrict: 'E'
     template: JST['assets/templates/featureSliceVisualizer']
@@ -33,12 +34,12 @@ app.directive 'featureSliceVisualizer', ['$timeout', 'chartTemplates', ($timeout
           values: []
           key: 'Marginal probability distribution'
           area: true
-          color: 'rgb(31, 119, 180)'
+          color: chartColors.targetColor
         conditionalProbDistr =
           values: []
           key: 'Conditional probability distribution'
           area: true
-          color: '#F44336'
+          color: chartColors.selectionColor2
         scope.probabilityDistributions = angular.merge {}, chartTemplates.multiBarChart,
           options:
             chart:

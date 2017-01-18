@@ -8,15 +8,28 @@
 			width: 100%;
 
 			rect.nv-bar {
-				&.significant {
-					fill: #EF5350;
+				.significant-loop (@i) when (@i > 0) {
+					&.significant[significance='@{i}'] {
+						fill: mix(@chartHighlightColor, @chartDefaultColor, min(@i + 20, 100));
+					}
+					.significant-loop(@i - 10);
 				}
+				.significant-loop (100);
 				&.selected {
-					fill: #FFB74D;
+					fill: @chartSelectionColor !important;
 				}
 				&:hover {
 					cursor: pointer;
 				}
+			}
+
+			rect.highlight{
+				pointer-events: none;
+				fill-opacity: 0.5;
+				fill: @chartSelectionColor;
+				stroke: black;
+				stroke-width: 0.5;
+				stroke-dasharray: 3;
 			}
 		}
 	}

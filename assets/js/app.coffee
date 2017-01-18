@@ -5,79 +5,26 @@ app.config ['$mdThemingProvider', ($mdThemingProvider) ->
   predotsMap = $mdThemingProvider.extendPalette 'blue'
   $mdThemingProvider.definePalette 'predots', predotsMap
   $mdThemingProvider
-		.theme 'default'
-		.primaryPalette 'predots'
-		.accentPalette 'orange'
+    .theme 'default'
+    .primaryPalette 'predots'
+    .accentPalette 'orange'
   return
 ]
 
 # Define routes
 app.config ['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
   $routeProvider
-		.when('/',
-			template: JST['assets/templates/featureList']
-			controller: 'FeatureListCtrl')
-		.when('/feature-list',
-			template: JST['assets/templates/featureList']
-			controller: 'FeatureListCtrl')
-		.when('/feature/:featureName',
-			template: JST['assets/templates/featureInfo']
-			controller: 'FeatureInfoCtrl')
+    .when('/',
+      template: JST['assets/templates/featureList']
+      controller: 'FeatureListCtrl')
+    .when('/feature-list',
+      template: JST['assets/templates/featureList']
+      controller: 'FeatureListCtrl')
+    .when('/feature/:featureName',
+      template: JST['assets/templates/featureInfo']
+      controller: 'FeatureInfoCtrl')
   $locationProvider.html5Mode true
   return
 ]
 app.constant 'apiUri', '/api/'
 app.constant 'socketUri', "ws://#{window.location.host}/socket"
-app.constant 'chartTemplates',
-  lineChart:
-    options:
-      chart:
-        type: 'lineChart'
-        x: (data) -> data.x
-        y: (data) -> data.y
-        valueFormat: d3.format '.3g'
-        xAxis:
-          tickFormat: d3.format '.3g'
-        yAxis:
-          tickFormat: d3.format '.3g'
-        margin:
-          top: 20
-          right: 20
-          bottom: 45
-          left: 60
-  historicalBarChart:
-    options:
-      chart:
-        type: 'historicalBarChart'
-        x: (data) ->
-          return (data.range[0] + data.range[1]) / 2
-        y: (data) ->
-          return data.count
-        valueFormat: d3.format '.3g'
-        xAxis:
-          axisLabel: 'Value'
-          tickFormat: d3.format '.3g'
-        yAxis:
-          axisLabel: 'Count'
-          tickFormat: d3.format '.3g'
-        margin:
-          top: 20
-          right: 20
-          bottom: 45
-          left: 60
-  multiBarChart:
-    options:
-      chart:
-        type: 'multiBarChart'
-        x: (data) -> data.x
-        y: (data) -> data.y
-        valueFormat: d3.format '.3g'
-        xAxis:
-          tickFormat: d3.format '.3g'
-        yAxis:
-          tickFormat: d3.format '.3g'
-        margin:
-          top: 50
-          right: 20
-          bottom: 45
-          left: 0
