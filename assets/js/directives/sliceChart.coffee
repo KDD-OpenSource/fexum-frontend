@@ -8,19 +8,23 @@ app.directive 'sliceChart', ['$timeout', ($timeout) ->
       selectedSlice: '='
     link: (scope, element, attrs) ->
       svg = angular.element(document.createElementNS('http://www.w3.org/2000/svg', 'svg'))
+        .attr 'overflow', 'visible'
       element.append svg
 
       # Slice chart
-      chart = angular.element(document.createElementNS('http://www.w3.org/2000/svg', 'g'))
+      chart = angular.element(document.createElementNS('http://www.w3.org/2000/svg', 'svg'))
       svg.append chart
 
       # Scores
-      svg.append 'text'
-         .attr 'x', 30
-         .attr 'y', -15
+      scoreTitle = angular.element(document.createElementNS('http://www.w3.org/2000/svg', 'text'))
+         .attr 'x', -30
+         .attr 'y', -10
+         .attr 'font-size', 14
          .attr 'text-anchor', 'middle'
          .text 'Scores'
-      scoreList = angular.element(document.createElementNS('http://www.w3.org/2000/svg', 'g'))
+      svg.append scoreTitle
+
+      scoreList = angular.element(document.createElementNS('http://www.w3.org/2000/svg', 'svg'))
       svg.append scoreList
 
       render = ->
@@ -36,7 +40,7 @@ app.directive 'sliceChart', ['$timeout', ($timeout) ->
 
         # set height of container
         containerHeight = Y_OFFSET * containedSlices.length
-        chart.attr 'x', 60
+        chart.attr 'x', 0
             .attr 'viewBox', "0 0 100 #{containerHeight}"
             .attr 'preserveAspectRatio', 'none'
             .css 'height', "#{containerHeight}px"
@@ -74,16 +78,27 @@ app.directive 'sliceChart', ['$timeout', ($timeout) ->
         rects.exit().remove()
 
         # Initialize score list
-        scoreList.attr 'width', 60
+        scoreList.attr 'x', -20
+            .attr 'y', 14
+            .attr 'overflow', 'visible'
+            .css 'height', '100%'
 
-        scores = d3.select scroreList[0]
+
+        getScoreYPosition = (slice, idx) ->
+          return idx * (containerHeight/containedSlices.length)
+
+        scores = d3.select scoreList[0]
                    .selectAll 'text'
                    .data containedSlices
-        scores.enter().append 'rect'
-              .text (slice) -> slice.score
-        scores.attr 'y', getSliceYPosition
+        scores.enter().append 'text'
+        scores.attr 'y', getScoreYPosition
+              .attr 'text-anchor', 'end'
+              .attr 'fill', '#FFB74D'
+              .text (slice) -> return ""+slice.score
               .classed 'selected', (slice) ->
                 return slice == scope.selectedSlice
+
+        console.log scope.slices
 
         return
 
