@@ -68,7 +68,7 @@ app.constant 'chartTemplates',
         yAxis:
           tickFormat: d3.format '.3g'
         margin:
-          top: 0
+          top: 20
           right: 20
-          bottom: 20
+          bottom: 40
           left: 60

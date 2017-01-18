@@ -36,7 +36,9 @@ app.directive 'featureSliceVisualizer', ['$timeout', 'chartTemplates', 'chartCol
             {
               x: scope.targetFeature.samples[idx].y, y: scope.feature.samples[idx].y
             }
-          ).filter((e) -> (scope.selectedSlice.range[0] <= e.y <= scope.selectedSlice.range[1]) == selected)
+          ).filter((e) ->
+              (scope.selectedSlice.range[0] <= e.y <= scope.selectedSlice.range[1]) == selected
+            )
         else return []
 
       scope.setupCharts = ->
@@ -88,12 +90,14 @@ app.directive 'featureSliceVisualizer', ['$timeout', 'chartTemplates', 'chartCol
               yAxis:
                 axisLabel: scope.feature.name
               height: 320
+              legend:
+                updateState: false
           data: [
             {
               values: getScatterData(false)
               key: 'Unselected',
               color: chartColors.targetColor
-            }, 
+            },
             {
               values: getScatterData(true)
               key: 'Selected',
@@ -102,7 +106,7 @@ app.directive 'featureSliceVisualizer', ['$timeout', 'chartTemplates', 'chartCol
           ]
 
         retrieveTargetSamples()
-          .then -> 
+          .then ->
             scope.scatterChart.data[0].values = getScatterData(false)
             scope.scatterChart.data[1].values = getScatterData(true)
         return
