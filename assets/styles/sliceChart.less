@@ -7,6 +7,9 @@ slice-chart {
     border-left: 1px solid black;
     border-right: 1px solid black;
 
+    // Allow chart description to be seen
+    overflow: visible;
+
     rect {
       height: 10px;
       fill: @chartSelectionColor;
@@ -18,6 +21,26 @@ slice-chart {
       &.selected {
         fill: @chartSelection2Color;
       }
+    }
+
+    text {
+      font-size: 10px;
+      &.selected {
+        fill: #F44336;
+      }
+
+      &.scoreTitle {
+        font-size: 14px;
+        text-anchor: middle;
+      }
+
+      &.score {
+        text-anchor: end;
+      }
+    }
+
+    .scoreList{
+      height: 100%;
     }
   }
 }
