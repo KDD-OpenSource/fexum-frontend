@@ -1,4 +1,4 @@
-app.directive 'featureSliceVisualizer', ['$timeout', 'chartTemplates', 'chartColors',\
+app.directive 'featureSliceVisualizer', ['$timeout', 'chartTemplates', 'chartColors', \
                                           ($timeout, chartTemplates, chartColors) ->
   return {
     restrict: 'E'

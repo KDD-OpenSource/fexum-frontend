@@ -1,5 +1,7 @@
-app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http', 'apiUri', 'chartTemplates', 'chartColors',\
-                                    ($scope, $routeParams, $timeout, $http, apiUri, chartTemplates, chartColors) ->
+app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http', 'apiUri', \
+                                    'chartTemplates', 'chartColors', \
+                                    ($scope, $routeParams, $timeout, $http, apiUri, \
+                                    chartTemplates, chartColors) ->
 
   retrieveSelectedFeature = (features) ->
     featurePredicate = (feature) -> feature.name == $routeParams.featureName
@@ -60,7 +62,7 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http'
     # Merges buckets in chunks of mergeCount
     mergeBuckets = (buckets, mergeCount) ->
       # Split buckets array into multiple arraies of size mergeCount
-      subBuckets = (buckets[index...index+mergeCount] \
+      subBuckets = (buckets[index...index + mergeCount] \
                       for index in [0...buckets.length] by mergeCount)
       # Combine each bucketlist to a single bucket
       subBuckets = subBuckets.map (bucketList) ->
