@@ -87,19 +87,17 @@ app.directive 'featureSliceVisualizer', ['$timeout', 'chartTemplates', 'chartCol
                 axisLabel: scope.targetFeature.name
               yAxis:
                 axisLabel: scope.feature.name
-              color: (d, i) -> 
-                if i == 1
-                  chartColors.selectionColor2
-                else
-                  chartColors.targetColor
+              height: 320
           data: [
             {
               values: getScatterData(false)
-              key: 'Unselected'
+              key: 'Unselected',
+              color: chartColors.targetColor
             }, 
             {
               values: getScatterData(true)
-              key: 'Selected'
+              key: 'Selected',
+              color: chartColors.selectionColor2
             }
           ]
 
