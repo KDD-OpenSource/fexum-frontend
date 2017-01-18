@@ -99,9 +99,7 @@ app.directive 'sliceChart', ['$timeout', ($timeout) ->
               .classed 'selected', (slice) ->
                 return slice == scope.selectedSlice
         scores.exit().remove()
-
-        console.log scope.slices
-
+        
         return
 
       # Initial d3 rendering
