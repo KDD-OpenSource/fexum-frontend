@@ -95,7 +95,6 @@ app.directive 'sliceChart', ['$timeout', ($timeout) ->
         scores.enter().append 'text'
         scores.attr 'y', getScoreYPosition
               .attr 'text-anchor', 'end'
-              .attr 'fill', '#FFB74D'
               .text (slice) -> return d3.format('.2e')(slice.significance)
               .classed 'selected', (slice) ->
                 return slice == scope.selectedSlice
