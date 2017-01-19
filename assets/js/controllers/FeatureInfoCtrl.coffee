@@ -1,7 +1,7 @@
 app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http', 'apiUri', \
-                                    'chartTemplates', 'chartColors', \
+                                    'chartTemplates', 'chartColors', 'backendService', \
                                     ($scope, $routeParams, $timeout, $http, apiUri, \
-                                    chartTemplates, chartColors) ->
+                                    chartTemplates, chartColors, backendService) ->
 
   retrieveSelectedFeature = (features) ->
     featurePredicate = (feature) -> feature.name == $routeParams.featureName
@@ -18,44 +18,6 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http'
   $scope.$watch 'features', (newFeatures) ->
     if newFeatures
       retrieveSelectedFeature newFeatures
-
-  $scope.retrieveSamples = ->
-    $http.get apiUri + "features/#{$scope.feature.name}/samples"
-      .then (response) ->
-        samples = response.data.map (sample, idx) ->
-          return {
-            x: idx
-            y: sample.value
-          }
-        $scope.feature.samples = samples
-      .catch console.error
-
-  $scope.retrieveHistogramBuckets = ->
-    $http.get apiUri + "features/#{$scope.feature.name}/histogram"
-      .then (response) ->
-        buckets = response.data.map (bucket) ->
-          return {
-            range: [bucket.from_value, bucket.to_value]
-            count: bucket.count
-          }
-        $scope.feature.buckets = buckets
-      .catch console.error
-
-  $scope.retrieveSlices = ->
-    $http.get apiUri + "features/#{$scope.feature.name}/slices"
-      .then (response) ->
-        sortByValue = (a, b) -> a.value - b.value
-        slices = response.data.map (slice) ->
-          return {
-            range: [slice.from_value, slice.to_value]
-            frequency: slice.frequency
-            significance: slice.significance
-            deviation: slice.deviation
-            marginal: slice.marginal_distribution.sort sortByValue
-            conditional: slice.conditional_distribution.sort sortByValue
-          }
-        $scope.feature.slices = slices
-      .catch console.error
 
   $scope.setupCharts = ->
     
@@ -190,8 +152,9 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http'
 
     $scope.$watch 'feature.slices', $scope.histogramApi.update
 
-    $scope.retrieveSamples()
-    $scope.retrieveHistogramBuckets()
+    backendService.retrieveSamples $scope.feature, (samples) -> $scope.feature.samples = samples
+    backendService.retrieveHistogramBuckets $scope.feature, (buckets) ->
+      $scope.feature.buckets = buckets
     return
 
   $scope.clearSelectedRange = ->
@@ -202,7 +165,7 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http'
   # sadly there is no event available for that
   $timeout $scope.setupCharts, 200
 
-  $scope.retrieveSlices()
+  backendService.retrieveSlices $scope.feature, (slices) -> $scope.feature.slices = slices
 
   return
 
