@@ -16,7 +16,7 @@ module.exports = function(grunt) {
       options: {
         src: '.tmp/public/',
         dest: '/var/www/predots/public/',
-        host: grunt.config('host') || 'BP7',
+        host: grunt.option('host') || 'BP7',
         delete: true,
         recursive: true
       }
