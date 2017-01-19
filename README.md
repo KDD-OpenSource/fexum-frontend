@@ -5,8 +5,7 @@ The frontend for predots
 ## Installation
 
 ```
-npm install -g grunt-cli bower
-npm install -g coffeelint
+npm install -g grunt-cli bower coffeelint
 npm install
 bower install
 ```
