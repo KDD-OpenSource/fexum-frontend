@@ -21,3 +21,5 @@
 				[{{selectedSlice.range[0] | number:2}}, {{selectedSlice.range[1] | number:2}}]
 				#[i {{targetFeature.name}}] behaves significantly (with KLD = {{selectedSlice.deviation * 100 | number:2}}%) different:
 			nvd3.chart.probability-distributions(options='probabilityDistributions.options', data='probabilityDistributions.data')
+			md-subheader.md-primary Scatter plot
+			nvd3.chart.scatterChart(options='scatterChart.options', data='scatterChart.data', api='scatterChartApi')

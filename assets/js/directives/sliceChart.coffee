@@ -12,6 +12,7 @@ app.directive 'sliceChart', ['$timeout', ($timeout) ->
 
       # Slice chart
       chart = angular.element(document.createElementNS('http://www.w3.org/2000/svg', 'svg'))
+                .addClass 'sliceChart'
       svg.append chart
 
       # Scores
