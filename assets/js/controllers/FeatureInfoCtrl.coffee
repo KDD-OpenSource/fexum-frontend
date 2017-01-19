@@ -143,9 +143,9 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http'
               svg = d3.select element[0]
 
               slicesContained = (d) ->
-                  return $scope.feature.slices.filter (slice) ->
-                    return slice.range[0] < d.range[1] and
-                            slice.range[1] > d.range[0]
+                return $scope.feature.slices.filter (slice) ->
+                  return slice.range[0] < d.range[1] and
+                          slice.range[1] > d.range[0]
 
               buckets = $scope.histogram.data[0].values
               bucketSignificances = buckets.map (bucket) ->
