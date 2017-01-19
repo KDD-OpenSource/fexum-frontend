@@ -32,13 +32,10 @@ app.directive 'featureSliceVisualizer', ['$timeout', 'chartTemplates', 'chartCol
 
       getScatterData = (selected) ->
         if scope.targetFeature.samples? and scope.selectedSlice?
-          return [0...scope.targetFeature.samples.length].map((idx) ->
-            {
+          return [0...scope.targetFeature.samples.length].map (idx) ->
               x: scope.targetFeature.samples[idx].y, y: scope.feature.samples[idx].y
-            }
-          ).filter((e) ->
+          .filter (e) ->
               (scope.selectedSlice.range[0] <= e.y <= scope.selectedSlice.range[1]) == selected
-            )
         else return []
 
       scope.setupCharts = ->
@@ -89,7 +86,6 @@ app.directive 'featureSliceVisualizer', ['$timeout', 'chartTemplates', 'chartCol
                 axisLabel: scope.targetFeature.name
               yAxis:
                 axisLabel: scope.feature.name
-              height: 320
               legend:
                 updateState: false
           data: [
@@ -134,9 +130,8 @@ app.directive 'featureSliceVisualizer', ['$timeout', 'chartTemplates', 'chartCol
           scope.marginalProbDistr.values = slice.marginal.map generateChartDataFromValues
           scope.conditionalProbDistr.values = slice.conditional.map generateChartDataFromValues
 
-          if scope.scatterChart
-            scope.scatterChart.data[0].values = getScatterData(false)
-            scope.scatterChart.data[1].values = getScatterData(true)
+          scope.scatterChart.data[0].values = getScatterData(false)
+          scope.scatterChart.data[1].values = getScatterData(true)
 
         # layouting needs to be done first, then we can redraw the chart
         $timeout setValues, 0
