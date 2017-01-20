@@ -60,6 +60,7 @@ app.directive 'featureMap', ['$timeout', ($timeout) ->
           encodedName = window.encodeURIComponent feature.name
           return "/feature/#{encodedName}"
 
+        console.log features
         # Update feature map using d3
         nodes = d3.select svg[0]
                     .selectAll 'g.feature'
@@ -84,7 +85,7 @@ app.directive 'featureMap', ['$timeout', ($timeout) ->
                                       fit: false
                                       controlIconsEnabled: false,
                                       onZoom: render,
-                                      minZoom: 0.1,
+                                      minZoom: 0.00001,
                                       zoomScaleSensitivity: 0.3
 
         return

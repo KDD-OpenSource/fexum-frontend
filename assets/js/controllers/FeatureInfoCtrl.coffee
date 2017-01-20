@@ -152,8 +152,9 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http'
 
     $scope.$watch 'feature.slices', $scope.histogramApi.update
 
-    backendService.retrieveSamples $scope.feature, (samples) -> $scope.feature.samples = samples
-    backendService.retrieveHistogramBuckets $scope.feature, (buckets) ->
+    backendService.retrieveSamples $scope.feature.id, (samples) ->
+      $scope.feature.samples = samples
+    backendService.retrieveHistogramBuckets $scope.feature.id, (buckets) ->
       $scope.feature.buckets = buckets
     return
 
@@ -165,7 +166,9 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http'
   # sadly there is no event available for that
   $timeout $scope.setupCharts, 200
 
-  backendService.retrieveSlices $scope.feature, (slices) -> $scope.feature.slices = slices
+  backendService.currentSession().then (session) ->
+    session.retrieveSlices $scope.feature.id, (slices) ->
+      $scope.feature.slices = slices
 
   return
 
