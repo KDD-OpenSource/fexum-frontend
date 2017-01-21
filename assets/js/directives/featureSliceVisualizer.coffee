@@ -1,6 +1,7 @@
 app.directive 'featureSliceVisualizer', ['$timeout', 'chartTemplates', 'chartColors', '$http', \
-                                          'apiUri', \
-                                          ($timeout, chartTemplates, chartColors, $http, apiUri) ->
+                                          'apiUri', 'backendService', \
+                                          ($timeout, chartTemplates, chartColors, $http, apiUri, \
+                                            backendService) ->
   return {
     restrict: 'E'
     template: JST['assets/templates/featureSliceVisualizer']
@@ -18,17 +19,6 @@ app.directive 'featureSliceVisualizer', ['$timeout', 'chartTemplates', 'chartCol
         scope.feature.buckets.filter (bucket) ->
           return bucket.range[0] >= scope.range[0] and
                   bucket.range[1] <= scope.range[1]
-
-      retrieveTargetSamples = ->
-        $http.get apiUri + "features/#{scope.targetFeature.name}/samples"
-          .then (response) ->
-            samples = response.data.map (sample, idx) ->
-              return {
-                x: idx
-                y: sample.value
-              }
-            scope.targetFeature.samples = samples
-          .catch console.error
 
       getScatterData = (selected) ->
         if scope.targetFeature.samples? and scope.selectedSlice?
@@ -101,8 +91,8 @@ app.directive 'featureSliceVisualizer', ['$timeout', 'chartTemplates', 'chartCol
             }
           ]
 
-        retrieveTargetSamples()
-          .then ->
+        backendService.retrieveSamples scope.targetFeature.id, (samples) ->
+            scope.targetFeature.samples = samples
             scope.scatterChart.data[0].values = getScatterData(false)
             scope.scatterChart.data[1].values = getScatterData(true)
         return

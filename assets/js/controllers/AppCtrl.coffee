@@ -32,6 +32,14 @@ app.controller 'AppCtrl', ['$scope', '$http', 'apiUri', 'socketUri', '$q', '$web
       if $scope.targetFeature?
         findTargetFeature $scope.targetFeature.id
       findTargetFeature session.target
+      if session.target?
+        backendService.retrieveRarResults (rar_results) ->
+          for result in rar_results
+            feature = $scope.features.filter((f) -> f.id == result.feature)[0]
+            feature.relevancy = result.relevancy
+            feature.redundancy = result.redundancy
+            feature.rank = result.rank
+
 
   return
 ]

@@ -1,6 +1,6 @@
 
-app.factory 'backendService', ['$http', '$websocket', '$q', 'apiUri', 'socketUri', \
-                                ($http, $websocket, $q, apiUri, socketUri) ->
+app.factory 'backendService', ['$rootScope', '$http', '$websocket', '$q', 'apiUri', 'socketUri', \
+                                ($rootScope, $http, $websocket, $q, apiUri, socketUri) ->
   service =
     currentSession: ->
       deferred = $q.defer()
@@ -45,7 +45,10 @@ app.factory 'backendService', ['$http', '$websocket', '$q', 'apiUri', 'socketUri
           completion(features)
         .catch console.error
     openSession: (datasetId, sessionCompletion) ->
-      if session? and not datasetId?
+      if localStorage.backendService?
+        @.session = angular.fromJson localStorage.backendService
+
+      if @.session? and not datasetId?
         sessionCompletion()
         return
 
@@ -59,6 +62,7 @@ app.factory 'backendService', ['$http', '$websocket', '$q', 'apiUri', 'socketUri
           dataset: dataset.id
         }
         .then (response) ->
+          console.log response.data
           newSession = response.data
           session = {
             id: newSession.id
@@ -117,5 +121,14 @@ app.factory 'backendService', ['$http', '$websocket', '$q', 'apiUri', 'socketUri
             session.loadingDict["ws/#{jsonData.event_name}"] = null
           @.session = session
           sessionCompletion()
+      .catch console.error
+    saveState: ->
+      localStorage.backendService = angular.toJson(service.session)
+    restoreState: ->
+      service.session = angular.fromJson localStorage.backendService
+
+  $rootScope.$on 'savestate', service.saveState
+  $rootScope.$on 'restorestate', service.restoreState
+
   return service
 ]
