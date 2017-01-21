@@ -61,6 +61,7 @@ app.directive 'featureMap', ['$timeout', ($timeout) ->
           return "/feature/#{encodedName}"
 
         console.log features
+        console.log scope.targetFeature
         # Update feature map using d3
         nodes = d3.select svg[0]
                     .selectAll 'g.feature'

@@ -137,7 +137,7 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http'
       data: [
         {
           values: mergeBucketsSqrt $scope.feature.buckets
-          key: $scope.feature.name
+          key: $scope.feature.id
           color: chartColors.defaultColor
         }
       ]
@@ -162,13 +162,13 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http'
     $scope.selectedRange = null
     return
 
+  backendService.currentSession().then (session) ->
+  session.retrieveSlices $scope.feature.id, (slices) ->
+    $scope.feature.slices = slices
+
   # charts should be set up when layouting is done
   # sadly there is no event available for that
   $timeout $scope.setupCharts, 200
-
-  backendService.currentSession().then (session) ->
-    session.retrieveSlices $scope.feature.id, (slices) ->
-      $scope.feature.slices = slices
 
   return
 

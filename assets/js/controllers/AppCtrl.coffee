@@ -29,7 +29,6 @@ app.controller 'AppCtrl', ['$scope', '$http', 'apiUri', 'socketUri', '$q', '$web
     console.log session
     session.retrieveFeatures (features) ->
       $scope.features = features
-      console.log features
       if $scope.targetFeature?
         findTargetFeature $scope.targetFeature.id
       findTargetFeature session.target

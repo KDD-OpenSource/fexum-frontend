@@ -27,9 +27,8 @@ app.factory 'backendService', ['$http', '$websocket', '$q', 'apiUri', 'socketUri
       $http.get apiUri + "features/#{featureId}/samples"
         .then (response) ->
           console.log 'samples'
-          samples = []
-          samples.map (sample, idx) ->
-            samples = {
+          samples = response.data.map (sample, idx) ->
+            {
               x: idx
               y: sample.value
             }
@@ -94,7 +93,7 @@ app.factory 'backendService', ['$http', '$websocket', '$q', 'apiUri', 'socketUri
                       marginal: slice.marginal_distribution.sort sortByValue
                       conditional: slice.conditional_distribution.sort sortByValue
                     }
-                  completion()
+                  completion(slices)
                 .catch console.error
             retrieveRarResults: (completion) ->
               $http.get apiUri + "sessions/#{@.id}/rar_results"
