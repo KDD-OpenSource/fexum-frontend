@@ -12,7 +12,7 @@ app.controller 'AppCtrl', ['$scope', 'backendService', ($scope, backendService) 
         features.forEach (feature) ->
           $scope.featureIdMap[feature.id] = feature
         $scope.targetFeature = $scope.featureIdMap[$scope.targetFeatureId]
-      .catch console.error
+      .fail console.error
 
   $scope.retrieveRarResults = ->
     backendService.getSession()

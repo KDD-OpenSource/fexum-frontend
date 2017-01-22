@@ -8,12 +8,15 @@ app.factory 'backendService', [
     API_URI = '/api/'
     SOCKET_URI = "ws://#{window.location.host}/socket"
 
+    # coffeescript doesn't like functions called catch...
+    $q.prototype.fail = $q.prototype.catch
+
     retrieveDatasets = ->
       $http.get API_URI + 'datasets'
         .then (response) ->
           datasets = response.data
           return datasets
-        .catch console.error
+        .fail console.error
 
     retrieveHistogramBuckets = (featureId) ->
       $http.get API_URI + "features/#{featureId}/histogram"
@@ -24,7 +27,7 @@ app.factory 'backendService', [
               count: bucket.count
             }
           return buckets
-        .catch console.error
+        .fail console.error
 
     retrieveSamples = (featureId) ->
       $http.get API_URI + "features/#{featureId}/samples"
@@ -35,7 +38,7 @@ app.factory 'backendService', [
               y: sample.value
             }
           return samples
-      .catch console.error
+      .fail console.error
 
     wsStream = $websocket SOCKET_URI
     wsStream.onMessage (message) ->
@@ -73,14 +76,14 @@ app.factory 'backendService', [
             lastSession.target
           )
 
-      store: ->
+      store: =>
         lastSession =
           id: @id
           dataset: @dataset
           target: @target
         localStorage.setItem Session.LAST_SESSION_KEY, angular.toJson(lastSession)
 
-      retrieveFeatures: ->
+      retrieveFeatures: =>
         $http.get API_URI + "datasets/#{@dataset}/features"
           .then (response) ->
             # Response is in the form
@@ -89,17 +92,19 @@ app.factory 'backendService', [
             # Order does not matter and is preferred random for rendering => shuffle
             features.shuffle()
             return features
-          .catch console.error
+          .fail console.error
 
-      setTarget: (targetFeatureId) ->
+      setTarget: (targetFeatureId) =>
         @target = targetFeatureId
         # Notify server of new target
         $http.put API_URI + "sessions/#{@id}/target", target: targetFeatureId
-          .then (response) ->
+          .then (response) =>
+            @target = targetFeatureId
+            @store()
             console.log "Set new target #{targetFeatureId} on server"
-          .catch console.error
+          .fail console.error
 
-      retrieveSlices: (featureId) ->
+      retrieveSlices: (featureId) =>
         $http.get API_URI + "sessions/#{@id}/features/#{featureId}/slices"
           .then (response) ->
             sortByValue = (a, b) -> a.value - b.value
@@ -113,9 +118,9 @@ app.factory 'backendService', [
                 conditional: slice.conditional_distribution.sort sortByValue
               }
             return slices
-          .catch console.error
+          .fail console.error
 
-      retrieveRarResults: ->
+      retrieveRarResults: =>
         $http.get API_URI + "sessions/#{@id}/rar_results"
           .then (response) ->
             rar_results = response.data
@@ -148,7 +153,7 @@ app.factory 'backendService', [
                 return $q.reject 'No datasets available'
             .then Session.create
             .then saveAndPersist
-            .catch console.error
+            .fail console.error
 
         return Session.create dataSetId
           .then saveAndPersist
