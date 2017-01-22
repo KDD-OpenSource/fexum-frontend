@@ -136,9 +136,14 @@ app.factory 'backendService', [
 
         if not datasetId?
           return retrieveDatasets()
-            .then (datasets) -> datasets[0]
+            .then (datasets) ->
+              if datasets.length > 0
+                return datasets[0]
+              else
+                return $q.reject 'No datasets available'
             .then Session.create
             .then (session) -> @session = session
+            .catch console.error
 
         return Session.create dataSetId
           .then (session) -> @session = session
