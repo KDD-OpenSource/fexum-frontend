@@ -36,7 +36,7 @@ app.controller 'AppCtrl', ['$scope', 'backendService', ($scope, backendService) 
       itemIndex = $scope.loadingQueue.indexOf item
       $scope.loadingQueue.splice itemIndex, 1
 
-  $scope.$on 'ws/rar_result', (payload) ->
+  $scope.$on 'ws/rar_result', (event, payload) ->
     updateFeatureFromFeatureSelection(payload.data)
 
   $scope.$watch 'targetFeature', (newTargetFeature) ->
