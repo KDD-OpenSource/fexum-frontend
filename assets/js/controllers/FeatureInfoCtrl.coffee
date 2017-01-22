@@ -8,13 +8,15 @@ app.controller 'FeatureInfoCtrl', [
   ($scope, $routeParams, $timeout, chartTemplates, chartColors, backendService) ->
 
     retrieveSelectedFeature = (features) ->
-      if features and not $scope.feature.id?
+      if $scope.feature? and $scope.feature.id
+        return
+      if features
         featurePredicate = (feature) -> feature.name == $routeParams.featureName
         $scope.feature = features.filter(featurePredicate)[0]
         backendService.getSession()
           .then (session) -> session.retrieveSlices $scope.feature.id
           .then (slices) -> $scope.feature.slices = slices
-      else if not $scope.feature
+      else
         # Setup mock feature until loaded
         $scope.feature =
           name: $routeParams.featureName
