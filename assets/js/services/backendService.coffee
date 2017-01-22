@@ -134,19 +134,24 @@ app.factory 'backendService', [
           @session = session
           return $q.resolve session
 
+        saveAndPersist = (session) =>
+          @session = session
+          session.store()
+          return session
+
         if not datasetId?
           return retrieveDatasets()
             .then (datasets) ->
               if datasets.length > 0
-                return datasets[0]
+                return datasets[0].id
               else
                 return $q.reject 'No datasets available'
             .then Session.create
-            .then (session) -> @session = session
+            .then saveAndPersist
             .catch console.error
 
         return Session.create dataSetId
-          .then (session) -> @session = session
+          .then saveAndPersist
 
     return service
 ]
