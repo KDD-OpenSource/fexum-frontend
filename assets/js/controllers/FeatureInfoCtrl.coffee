@@ -1,6 +1,6 @@
-app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http', 'apiUri', \
+app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', \
                                     'chartTemplates', 'chartColors', 'backendService', \
-                                    ($scope, $routeParams, $timeout, $http, apiUri, \
+                                    ($scope, $routeParams, $timeout, \
                                     chartTemplates, chartColors, backendService) ->
 
   retrieveSelectedFeature = (features) ->
@@ -20,7 +20,7 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http'
       retrieveSelectedFeature newFeatures
 
   $scope.setupCharts = ->
-    
+
     # Merges buckets in chunks of mergeCount
     mergeBuckets = (buckets, mergeCount) ->
       # Split buckets array into multiple arraies of size mergeCount
@@ -41,7 +41,7 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http'
       bucketCount = buckets.length
       bucketMergeCount = Math.floor(Math.sqrt(buckets.length))
       return mergeBuckets buckets, bucketMergeCount
-        
+
     $scope.lineChart = angular.merge {}, chartTemplates.lineChart,
       options:
         chart:
@@ -130,14 +130,15 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http'
                   significance = bucketSignificances[i]
                   if not significance?
                     return 0
-                  scaledSignificance = (significance - minSignificance) /
-                                        (maxSignificance - minSignificance)
+                  significanceValueRange = maxSignificance - minSignificance
+                  scaledSignificance = (significance - minSignificance) / significanceValueRange
+
                   significanceLevel = Math.ceil(scaledSignificance * 10) * 10
                   return significanceLevel
       data: [
         {
           values: mergeBucketsSqrt $scope.feature.buckets
-          key: $scope.feature.id
+          key: $scope.feature.name
           color: chartColors.defaultColor
         }
       ]
@@ -152,19 +153,19 @@ app.controller 'FeatureInfoCtrl', ['$scope', '$routeParams', '$timeout', '$http'
 
     $scope.$watch 'feature.slices', $scope.histogramApi.update
 
-    backendService.retrieveSamples $scope.feature.id, (samples) ->
-      $scope.feature.samples = samples
-    backendService.retrieveHistogramBuckets $scope.feature.id, (buckets) ->
-      $scope.feature.buckets = buckets
+    backendService.retrieveSamples $scope.feature.id
+      .then (samples) -> $scope.feature.samples = samples
+    backendService.retrieveHistogramBuckets $scope.feature.id
+      .then (buckets) -> $scope.feature.buckets = buckets
     return
 
   $scope.clearSelectedRange = ->
     $scope.selectedRange = null
     return
 
-  backendService.currentSession().then (session) ->
-  session.retrieveSlices $scope.feature.id, (slices) ->
-    $scope.feature.slices = slices
+  backendService.getSession()
+    .then (session) -> session.retrieveSlices $scope.feature.id
+    .then (slices) -> $scope.feature.slices = slices
 
   # charts should be set up when layouting is done
   # sadly there is no event available for that

@@ -1,7 +1,6 @@
-app.directive 'featureSliceVisualizer', ['$timeout', 'chartTemplates', 'chartColors', '$http', \
-                                          'apiUri', 'backendService', \
-                                          ($timeout, chartTemplates, chartColors, $http, apiUri, \
-                                            backendService) ->
+app.directive 'featureSliceVisualizer', ['$timeout', 'chartTemplates', 'chartColors', \
+                                        'backendService', \
+                                        ($timeout, chartTemplates, chartColors, backendService) ->
   return {
     restrict: 'E'
     template: JST['assets/templates/featureSliceVisualizer']
@@ -91,7 +90,8 @@ app.directive 'featureSliceVisualizer', ['$timeout', 'chartTemplates', 'chartCol
             }
           ]
 
-        backendService.retrieveSamples scope.targetFeature.id, (samples) ->
+        backendService.retrieveSamples scope.targetFeature.id
+          .then (samples) ->
             scope.targetFeature.samples = samples
             scope.scatterChart.data[0].values = getScatterData(false)
             scope.scatterChart.data[1].values = getScatterData(true)
