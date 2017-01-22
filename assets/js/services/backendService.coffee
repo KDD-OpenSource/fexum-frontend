@@ -78,7 +78,7 @@ app.factory 'backendService', [
           id: @id
           dataset: @dataset
           target: @target
-        localStorage.setItem @LAST_SESSION_KEY, angular.toJson(lastSession)
+        localStorage.setItem Session.LAST_SESSION_KEY, angular.toJson(lastSession)
 
       retrieveFeatures: ->
         $http.get API_URI + "datasets/#{@dataset}/features"
