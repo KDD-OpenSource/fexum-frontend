@@ -6,7 +6,7 @@ app.factory 'backendService', [
   ($rootScope, $http, $websocket, $q) ->
 
     API_URI = '/api/'
-    SOCKET_URI = "ws://#{window.location.host}/socket"
+    SOCKET_URI = "ws://#{window.location.host}/bindings"
 
     # coffeescript doesn't like functions called catch...
     $q.prototype.fail = $q.prototype.catch
@@ -43,7 +43,7 @@ app.factory 'backendService', [
     wsStream = $websocket SOCKET_URI
     wsStream.onMessage (message) ->
       jsonData = JSON.parse message.data
-      $rootScope.$broadcast "ws/#{jsonData.event_name}", jsonData.payload
+      $rootScope.$broadcast "ws/#{jsonData.stream}", jsonData.payload
 
     waitForWebsocketEvent = (eventName) ->
       return $q (resolve, reject) ->

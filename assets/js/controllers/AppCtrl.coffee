@@ -14,15 +14,16 @@ app.controller 'AppCtrl', ['$scope', 'backendService', ($scope, backendService) 
         $scope.targetFeature = $scope.featureIdMap[$scope.targetFeatureId]
       .fail console.error
 
+  updateFeatureFromFeatureSelection = (featureData) ->
+    feature = $scope.featureIdMap[featureData.feature]
+    feature.relevancy = featureData.relevancy
+    feature.redundancy = featureData.redundancy
+    feature.rank = featureData.rank
+
   $scope.retrieveRarResults = ->
     backendService.getSession()
       .then (session) -> session.retrieveRarResults()
-      .then (rarResults) ->
-        for result in rarResults
-          feature = $scope.featureIdMap[result.feature]
-          feature.relevancy = result.relevancy
-          feature.redundancy = result.redundancy
-          feature.rank = result.rank
+      .then (rarResults) -> rarResults.forEach updateFeatureFromFeatureSelection
 
   $scope.loadingQueue = []
   $scope.addLoadingQueueItem = (promise, message) ->
@@ -35,7 +36,8 @@ app.controller 'AppCtrl', ['$scope', 'backendService', ($scope, backendService) 
       itemIndex = $scope.loadingQueue.indexOf item
       $scope.loadingQueue.splice itemIndex, 1
 
-  $scope.$on 'ws/relevancy-update', $scope.retrieveRarResults
+  $scope.$on 'ws/rar_result', (payload) ->
+    updateFeatureFromFeatureSelection(payload.data)
 
   $scope.$watch 'targetFeature', (newTargetFeature) ->
     if newTargetFeature
@@ -52,7 +54,7 @@ app.controller 'AppCtrl', ['$scope', 'backendService', ($scope, backendService) 
             feature.relevancy = null
 
       # Create promise that waits for updated relevancies
-      relevancyUpdate = backendService.waitForWebsocketEvent 'relevancy-update'
+      relevancyUpdate = backendService.waitForWebsocketEvent 'rar_result'
       # TODO internationalization
       $scope.addLoadingQueueItem relevancyUpdate,
                                  "Running feature selection for #{targetFeature.name}"
