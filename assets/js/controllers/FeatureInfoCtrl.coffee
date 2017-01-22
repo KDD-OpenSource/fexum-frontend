@@ -8,9 +8,12 @@ app.controller 'FeatureInfoCtrl', [
   ($scope, $routeParams, $timeout, chartTemplates, chartColors, backendService) ->
 
     retrieveSelectedFeature = (features) ->
-      if features
+      if features and not $scope.feature.id?
         featurePredicate = (feature) -> feature.name == $routeParams.featureName
         $scope.feature = features.filter(featurePredicate)[0]
+        backendService.getSession()
+          .then (session) -> session.retrieveSlices $scope.feature.id
+          .then (slices) -> $scope.feature.slices = slices
       else if not $scope.feature
         # Setup mock feature until loaded
         $scope.feature =
@@ -162,10 +165,6 @@ app.controller 'FeatureInfoCtrl', [
     $scope.clearSelectedRange = ->
       $scope.selectedRange = null
       return
-
-    backendService.getSession()
-      .then (session) -> session.retrieveSlices $scope.feature.id
-      .then (slices) -> $scope.feature.slices = slices
 
     # charts should be set up when layouting is done
     # sadly there is no event available for that
