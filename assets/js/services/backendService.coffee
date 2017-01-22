@@ -53,11 +53,6 @@ app.factory 'backendService', [
       @LAST_SESSION_KEY = 'lastSession'
 
       constructor: (@id, @dataset, @target) ->
-        @deregisterListeners =
-          $rootScope.$on 'ws/relevancy-update', @retrieveRarResults
-
-      destroy: ->
-        @deregisterListeners()
 
       @create: (datasetId) ->
         return $http.post API_URI + 'sessions', dataset: datasetId
