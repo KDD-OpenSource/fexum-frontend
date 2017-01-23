@@ -34,7 +34,7 @@ module.exports = function(grunt) {
         }
       },
       proxies: [{
-        context: ['/socket', '/api'],
+        context: ['/bindings', '/api'],
         host: grunt.option('api-host') || '172.16.18.127',
         port: grunt.option('api-port') || 80,
         ws: true,

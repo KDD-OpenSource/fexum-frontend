@@ -1,36 +1,29 @@
-app.controller 'AppCtrl', ['$scope', '$http', 'apiUri', 'socketUri', '$q', '$websocket', \
-                          ($scope, $http, apiUri, socketUri, $q, $websocket) ->
-
-  findTargetFeature = (targetFeatureName) ->
-    matchPredicate = (feature) -> feature.name == targetFeatureName
-    $scope.targetFeature = $scope.features.filter(matchPredicate)[0]
+app.controller 'AppCtrl', ['$scope', 'backendService', ($scope, backendService) ->
 
   # Retrieve features
   $scope.retrieveFeatures = ->
-    $http.get apiUri + 'features'
-      .then (response) ->
-        # Response is in the form
-        # [{name, relevancy, redundancy, rank, mean, variance, min, max}, ...]
-        $scope.features = response.data
-        # Order does not matter and is preferred random for rendering => shuffle
-        $scope.features.shuffle()
-        if $scope.targetFeature
-          findTargetFeature $scope.targetFeature.name
-      .catch console.error
+    backendService.getSession()
+      .then (session) ->
+        $scope.targetFeatureId = session.target
+        return session.retrieveFeatures()
+      .then (features) ->
+        $scope.features = features
+        $scope.featureIdMap = {}
+        features.forEach (feature) ->
+          $scope.featureIdMap[feature.id] = feature
+        $scope.targetFeature = $scope.featureIdMap[$scope.targetFeatureId]
+      .fail console.error
 
-  # Retrieve target
-  $scope.retrieveTarget = ->
-    $http.get apiUri + 'features/target'
-      .then (response) ->
-        # Response is in the form
-        # {feature: {name, ...}}
-        targetFeatureName = response.data.feature.name
-        findTargetFeature targetFeatureName
-      .catch (response) ->
-        if response.status == 204
-          console.log 'No target set'
-        else
-          console.error response
+  updateFeatureFromFeatureSelection = (featureData) ->
+    feature = $scope.featureIdMap[featureData.feature]
+    feature.relevancy = featureData.relevancy
+    feature.redundancy = featureData.redundancy
+    feature.rank = featureData.rank
+
+  $scope.retrieveRarResults = ->
+    backendService.getSession()
+      .then (session) -> session.retrieveRarResults()
+      .then (rarResults) -> rarResults.forEach updateFeatureFromFeatureSelection
 
   $scope.loadingQueue = []
   $scope.addLoadingQueueItem = (promise, message) ->
@@ -43,49 +36,32 @@ app.controller 'AppCtrl', ['$scope', '$http', 'apiUri', 'socketUri', '$q', '$web
       itemIndex = $scope.loadingQueue.indexOf item
       $scope.loadingQueue.splice itemIndex, 1
 
-  wsStream = $websocket socketUri
-  wsStream.onMessage (message) ->
-    jsonData = JSON.parse message.data
-    $scope.$broadcast "ws/#{jsonData.event_name}", jsonData.payload
-
-  $scope.waitForWebsocketEvent = (eventName) ->
-    return $q (resolve, reject) ->
-      removeListener = $scope.$on 'ws/' + eventName, ->
-        resolve.apply @, arguments
-        removeListener()
-
-  $scope.$on 'ws/relevancy-update', (event, payload) ->
-    $scope.retrieveFeatures()
-      .then $scope.retrieveSelectedFeature
+  $scope.$on 'ws/rar_result', (event, payload) ->
+    updateFeatureFromFeatureSelection(payload.data)
 
   $scope.$watch 'targetFeature', (newTargetFeature) ->
     if newTargetFeature
       $scope.searchText = newTargetFeature.name
-  
+
   $scope.setTarget = (targetFeature) ->
-    if targetFeature
+    if targetFeature?
       $scope.targetFeature = targetFeature
 
-      # Notify server of new target
-      $http.put(apiUri + 'features/target', {
-          feature:
-            name: targetFeature.name
-        })
-        .then (response) ->
-          console.log "Set new target #{targetFeature.name} on server"
+      backendService.getSession()
+        .then (session) -> session.setTarget targetFeature.id
+        .then ->
           for feature in $scope.features
             feature.relevancy = null
-        .catch console.error
 
       # Create promise that waits for updated relevancies
-      relevancyUpdate = $scope.waitForWebsocketEvent 'relevancy-update'
+      relevancyUpdate = backendService.waitForWebsocketEvent 'rar_result'
       # TODO internationalization
       $scope.addLoadingQueueItem relevancyUpdate,
                                  "Running feature selection for #{targetFeature.name}"
     return
 
   $scope.retrieveFeatures()
-    .then $scope.retrieveTarget
+    .then $scope.retrieveRarResults
 
   return
 ]

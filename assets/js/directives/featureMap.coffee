@@ -14,7 +14,10 @@ app.directive 'featureMap', ['$timeout', ($timeout) ->
 
       render = ->
         # render nothing if no target is set or feature are not loaded
-        features = if scope.targetFeature and scope.features then scope.features else []
+        if not scope.targetFeature? or not scope.features
+          return
+
+        features = scope.features
 
         # remove features with undefined relevancy
         features = features.filter (feature) ->
@@ -28,6 +31,15 @@ app.directive 'featureMap', ['$timeout', ($timeout) ->
           features[targetFeatureIndex] = features[features.length - 1]
           features[features.length - 1] = scope.targetFeature
           targetFeatureIndex = features.length - 1
+
+        if not scope.zoomApi?
+          # Enable feature map paning and zooming
+          scope.zoomApi = svgPanZoom svg[0],
+            fit: false
+            controlIconsEnabled: false,
+            onZoom: render,
+            minZoom: 0.00001,
+            zoomScaleSensitivity: 0.3
 
         # evenly arrange the features around the target feature
         getFeaturePosition = (feature, idx) ->
@@ -49,9 +61,7 @@ app.directive 'featureMap', ['$timeout', ($timeout) ->
           [x, y] = getFeaturePosition feature, idx
 
           #Change size according to zoom level
-          zoom = attrs.defTransform
-          if scope.zoomApi?
-            zoom = scope.zoomApi.getZoom()
+          zoom = scope.zoomApi.getZoom()
           transform = (Math.tanh(3 * zoom - 1) + 1) / 2 / zoom
 
           return "translate(#{x}, #{y}) scale(#{transform})"
@@ -62,6 +72,7 @@ app.directive 'featureMap', ['$timeout', ($timeout) ->
 
         # Update feature map using d3
         nodes = d3.select svg[0]
+                    .select 'g.svg-pan-zoom_viewport'
                     .selectAll 'g.feature'
                     .data features
         # Remove old elements
@@ -78,14 +89,7 @@ app.directive 'featureMap', ['$timeout', ($timeout) ->
         nodes.attr 'transform', getFeatureTranslationString
               .classed 'is-target', (feature) -> feature == scope.targetFeature
 
-        if features.length > 0
-          # Enable feature map paning and zooming
-          scope.zoomApi = svgPanZoom svg[0],
-                                      fit: false
-                                      controlIconsEnabled: false,
-                                      onZoom: render,
-                                      minZoom: 0.1,
-                                      zoomScaleSensitivity: 0.3
+        scope.zoomApi.updateBBox()
 
         return
 

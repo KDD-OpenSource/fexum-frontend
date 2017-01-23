@@ -26,5 +26,3 @@ app.config ['$routeProvider', '$locationProvider', ($routeProvider, $locationPro
   $locationProvider.html5Mode true
   return
 ]
-app.constant 'apiUri', '/api/'
-app.constant 'socketUri', "ws://#{window.location.host}/socket"
