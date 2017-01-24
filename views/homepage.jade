@@ -3,7 +3,7 @@ extends ./layout
 
 block body
   md-content(ng-controller='AppCtrl')
-    feature-map#feature-map(features='features', target-feature='targetFeature', zoom-api='zoomApi', max-distance='5000', offset='200', 
+    feature-map#feature-map(features='features', target-feature='targetFeature', zoom-api='zoomApi', max-distance='5000', offset='200',
                             def-transform='1')
     #map-overlay(layout='column', layout-fill)
       .md-padding.left-pane
@@ -19,10 +19,11 @@ block body
                 {{item.name}}
             md-not-found No feature found
       #content(flex,layout='row', ng-view)
-    #loading-state.md-padding
-      .md-whiteframe-1dp(layout='row', layout-align='center center', layout-padding, ng-show='loadingQueue.length', ng-cloak)
+    #control-bar(layout='row', layout-padding)
+      #loading-state.md-whiteframe-1dp(layout='row', layout-align='center center', layout-padding, ng-show='loadingQueue.length', ng-cloak)
         span {{loadingQueue[loadingQueue.length - 1].message}}
         md-progress-circular(md-mode='indeterminate', md-diameter='20')
+      corner-menu
     #zoom-controls.md-padding
       .md-whiteframe-1dp(layout='column')
         md-button.md-icon-button(aria-label='Zoom in', ng-click='zoomApi.zoomIn()')

@@ -1,4 +1,4 @@
-app = angular.module 'predots', ['ngMaterial', 'ngRoute', 'nvd3', 'ngWebSocket']
+app = angular.module 'predots', ['ngMaterial', 'ngRoute', 'nvd3', 'ngWebSocket', 'ngFileUpload']
 
 # Define theme
 app.config ['$mdThemingProvider', ($mdThemingProvider) ->
@@ -17,6 +17,9 @@ app.config ['$routeProvider', '$locationProvider', ($routeProvider, $locationPro
     .when('/',
       template: JST['assets/templates/featureList']
       controller: 'FeatureListCtrl')
+    .when('/change-dataset',
+      template: JST['assets/templates/changeDataset']
+      controller: 'ChangeDatasetCtrl')
     .when('/feature-list',
       template: JST['assets/templates/featureList']
       controller: 'FeatureListCtrl')
