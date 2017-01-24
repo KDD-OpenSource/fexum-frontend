@@ -2,8 +2,8 @@
 	md-card#feature-list.overlay-window(flex)
 		md-toolbar
 			.md-toolbar-tools
-				span Feature List
+				span Select new target from list
 		md-content
 			md-list
-				md-list-item(ng-repeat='feature in features', ng-click='setTarget(feature)')
+				md-list-item(ng-repeat='feature in features | orderBy: "name"', ng-click='setTarget(feature)')
 					p {{feature.name}}
