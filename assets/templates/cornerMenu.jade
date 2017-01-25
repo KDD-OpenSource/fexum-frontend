@@ -1,0 +1,8 @@
+md-menu
+  md-button.md-icon-button(aria-label='Open menu', ng-click='$mdOpenMenu($event)')
+    md-icon menu
+  md-menu-content
+    md-menu-item
+      md-button(href='/change-dataset', ng-click='$mdCloseMenu($event)')
+        md-icon list
+        | Select dataset

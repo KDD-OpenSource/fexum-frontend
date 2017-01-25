@@ -18,6 +18,12 @@ app.factory 'backendService', [
           return datasets
         .fail console.error
 
+    retrieveSessions = ->
+      $http.get API_URI + 'sessions'
+        .then (response) ->
+          return response.data
+        .fail console.error
+
     retrieveHistogramBuckets = (featureId) ->
       $http.get API_URI + "features/#{featureId}/histogram"
         .then (response) ->
@@ -38,7 +44,7 @@ app.factory 'backendService', [
               y: sample.value
             }
           return samples
-      .fail console.error
+        .fail console.error
 
     wsStream = $websocket SOCKET_URI
     wsStream.onMessage (message) ->
@@ -57,24 +63,23 @@ app.factory 'backendService', [
 
       constructor: (@id, @dataset, @target) ->
 
-      @create: (datasetId) ->
+      @create: (datasetId) =>
         return $http.post API_URI + 'sessions', dataset: datasetId
-          .then (response) ->
-            return new Session(
-              response.data.id,
-              response.data.dataset,
-              response.data.target
-            )
+          .then (response) =>
+            return @fromJson response.data
 
-      @restore: ->
+      @restore: =>
         lastSessionJson = localStorage.getItem @LAST_SESSION_KEY
         if lastSessionJson?
           lastSession = angular.fromJson lastSessionJson
-          return new Session(
-            lastSession.id,
-            lastSession.dataset,
-            lastSession.target
-          )
+          return @fromJson lastSession
+
+      @fromJson: (json) ->
+        return new Session(
+          json.id,
+          json.dataset,
+          json.target
+        )
 
       store: =>
         lastSession =
@@ -135,7 +140,7 @@ app.factory 'backendService', [
 
       getSession: (datasetId) ->
         session = @session or Session.restore()
-        if session?
+        if session? and (not datasetId? or session.dataset == datasetId)
           @session = session
           return $q.resolve session
 
@@ -153,9 +158,13 @@ app.factory 'backendService', [
                 return $q.reject 'No datasets available'
             .then Session.create
             .then saveAndPersist
-            .fail console.error
 
-        return Session.create dataSetId
+        return retrieveSessions()
+          .then (sessions) ->
+            matchingSessions = sessions.filter (sess) -> sess.dataset == datasetId
+            if matchingSessions.length > 0
+              return Session.fromJson matchingSessions[0]
+            return Session.create datasetId
           .then saveAndPersist
 
     return service
