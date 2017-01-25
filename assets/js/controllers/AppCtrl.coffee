@@ -3,17 +3,8 @@ app.controller 'AppCtrl', [
   'backendService',
   '$timeout',
   '$q',
-  ($scope, backendService, $timeout, $q) ->
-
-    $scope.waitForVariableSet = (variableName) ->
-      currentValue = $scope.$eval variableName
-      if currentValue?
-        $q.resolve currentValue
-      return $q (resolve, reject) ->
-        unregister = $scope.$watch variableName, (newValue, oldValue) ->
-          if newValue?
-            resolve newValue
-            unregister()
+  'scopeUtils',
+  ($scope, backendService, $timeout, $q, scopeUtils) ->
 
     buildFeatureIdMap = ->
       $scope.featureIdMap = {}

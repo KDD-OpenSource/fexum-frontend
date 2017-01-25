@@ -14,11 +14,9 @@
 						p Variance: {{feature.variance}}
 			section
 				md-subheader.md-primary Time series preview
-				.chart-holder
-					nvd3.chart(options='lineChart.options', data='lineChart.data', api='lineChartApi')
+				time-series-plot(feature='feature')
 			section
 				md-subheader.md-primary Histogram
-				.chart-holder
-					nvd3.chart(options='histogram.options', data='histogram.data', api='histogramApi')
+				histogram-plot(feature='feature')
 feature-slice-visualizer(ng-if='selectedRange', feature='feature', target-feature='targetFeature', range='selectedRange', \
 																		on-close='clearSelectedRange()', flex='60', ng-cloak, layout)
