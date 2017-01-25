@@ -2,7 +2,8 @@ app.controller 'AppCtrl', [
   '$scope',
   'backendService',
   '$timeout',
-  ($scope, backendService, $timeout) ->
+  '$analytics'
+  ($scope, backendService, $timeout, $analytics) ->
 
     # Retrieve features
     $scope.retrieveFeatures = ->
@@ -17,6 +18,16 @@ app.controller 'AppCtrl', [
         .fail console.error
 
     updateFeatureFromFeatureSelection = (featureData) ->
+      # Log rar calculation time in Analytics
+      if rarTime[$scope.targetFeature.id]?
+        delta = Date.now() - rarTime[$scope.targetFeature.id]
+        rarTime[$scope.targetFeature.id] = null
+        $analytics.userTimings 'rarFinished', {
+              category: 'd' + $scope.datasetName + '|t' + $scope.targetFeature.name,
+              label: 'ElapsedTimeMs'
+              value: delta
+        }
+
       feature = $scope.featureIdMap[featureData.feature]
       feature.relevancy = featureData.relevancy
       feature.redundancy = featureData.redundancy
@@ -66,22 +77,31 @@ app.controller 'AppCtrl', [
 
     backendService.getSession()
       .then (session) ->
-        $scope.datasetId = session.dataset
-        $scope.targetFeatureId = session.target
+        $scope.datasetId = session.dataset.id
+        $scope.datasetName = session.dataset.name
+        $scope.targetFeatureId = session.targetId
 
     $scope.$watch 'targetFeature', (newTargetFeature) ->
-      if newTargetFeature
+      if newTargetFeature?
         $scope.searchText = newTargetFeature.name
+        # Track setting the target in relation to dataset
+        $analytics.eventTrack 'setTarget', {
+          category: 'd' + $scope.datasetName,
+          label: 't' + $scope.targetFeature.name
+        }
 
+    rarTime = []
     $scope.setTarget = (targetFeature) ->
       if targetFeature?
         $scope.targetFeature = targetFeature
+        rarTime[targetFeature.id] = Date.now()
 
         backendService.getSession()
           .then (session) -> session.setTarget targetFeature.id
           .then ->
             for feature in $scope.features
               feature.relevancy = null
+
 
         # Create promise that waits for updated relevancies
         relevancyUpdate = backendService.waitForWebsocketEvent 'rar_result'

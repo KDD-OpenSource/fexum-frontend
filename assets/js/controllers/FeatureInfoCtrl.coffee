@@ -5,7 +5,8 @@ app.controller 'FeatureInfoCtrl', [
   'chartTemplates',
   'chartColors',
   'backendService',
-  ($scope, $routeParams, $timeout, chartTemplates, chartColors, backendService) ->
+  '$analytics'
+  ($scope, $routeParams, $timeout, chartTemplates, chartColors, backendService, $analytics) ->
 
     retrieveSelectedFeature = (features) ->
       if $scope.feature? and $scope.feature.id
@@ -20,6 +21,13 @@ app.controller 'FeatureInfoCtrl', [
         # Setup mock feature until loaded
         $scope.feature =
           name: $routeParams.featureName
+
+      if $scope.feature.id?
+        # Track that a user opened feature info in relation to dataset/target
+        $analytics.eventTrack 'featureClick', {
+              category: 'd' + $scope.datasetName + '|t' + $scope.targetFeature.name,
+              label: 'f' + $scope.feature.name
+        }
 
     retrieveSelectedFeature $scope.features
     $scope.$watch 'features', retrieveSelectedFeature

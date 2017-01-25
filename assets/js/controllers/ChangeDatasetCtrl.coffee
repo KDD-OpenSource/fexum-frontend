@@ -9,8 +9,9 @@ app.controller 'ChangeDatasetCtrl', [
     $scope.progress = 0
 
     setCurrentDatasetFromSession = (session) ->
-      $scope.datasetId = session.dataset
-      filter = (d) -> d.id == session.dataset
+      $scope.datasetId = session.dataset.id
+      $scope.datasetName = session.dataset.name
+      filter = (d) -> d.id == session.dataset.id
       $scope.currentDataset = $scope.datasets.filter(filter)[0]
 
     backendService.retrieveDatasets()
@@ -46,7 +47,7 @@ app.controller 'ChangeDatasetCtrl', [
       $scope.uploadRunning = true
 
     $scope.changeDataset = (dataset) ->
-      backendService.getSession dataset.id
+      backendService.getSession dataset
         .then setCurrentDatasetFromSession
         .fail console.error
       # Change back to overview
