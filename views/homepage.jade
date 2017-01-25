@@ -8,22 +8,24 @@ block body
     #map-overlay(layout='column', layout-fill)
       .md-padding.left-pane
         form.overlay-window(ng-submit='$event.preventDefault()',ng-cloak)
-          md-autocomplete(md-selected-item='selectedTarget',
-                          md-search-text='searchText',
-                          md-selected-item-change='setTarget(selectedTarget)',
-                          md-items='item in features | filter:{name: searchText}',
-                          md-item-text='item.name',
-                          placeholder='Search for target feature')
-            md-item-template
-              span(md-highlight-text='searchText', md-highlight-flags='^i')
-                {{item.name}}
-            md-not-found No feature found
+          #search.md-whiteframe-z1(layout='row')
+            corner-menu
+            md-autocomplete(flex,
+                            md-selected-item='selectedTarget',
+                            md-search-text='searchText',
+                            md-selected-item-change='setTarget(selectedTarget)',
+                            md-items='item in features | filter:{name: searchText}',
+                            md-item-text='item.name',
+                            placeholder='Search for target feature')
+              md-item-template
+                span(md-highlight-text='searchText', md-highlight-flags='^i')
+                  {{item.name}}
+              md-not-found No feature found
       #content(flex,layout='row', ng-view)
     #control-bar(layout='row', layout-padding)
       #loading-state.md-whiteframe-1dp(layout='row', layout-align='center center', layout-padding, ng-show='loadingQueue.length', ng-cloak)
         span {{loadingQueue[loadingQueue.length - 1].message}}
         md-progress-circular(md-mode='indeterminate', md-diameter='20')
-      corner-menu
     #zoom-controls.md-padding
       .md-whiteframe-1dp(layout='column')
         md-button.md-icon-button(aria-label='Zoom in', ng-click='zoomApi.zoomIn()')
