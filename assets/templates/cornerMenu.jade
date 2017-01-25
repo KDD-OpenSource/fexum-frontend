@@ -3,6 +3,14 @@ md-menu
     md-icon menu
   md-menu-content
     md-menu-item
+      md-button(href='/selections', ng-click='$mdCloseMenu($event)')
+        md-icon select_all
+        | View selected features
+    md-menu-item
       md-button(href='/change-dataset', ng-click='$mdCloseMenu($event)')
         md-icon list
         | Datasets
+    md-menu-item
+      md-button(href='/change-target', ng-click='$mdCloseMenu($event)')
+        md-icon flare
+        | Change target

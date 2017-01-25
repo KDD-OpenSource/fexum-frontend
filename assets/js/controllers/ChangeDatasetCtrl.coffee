@@ -50,7 +50,7 @@ app.controller 'ChangeDatasetCtrl', [
         .then setCurrentDatasetFromSession
         .fail console.error
       # Change back to overview
-      $location.path '/'
+      $location.path '/change-target'
 
       return
 ]

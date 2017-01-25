@@ -1,9 +1,11 @@
 .md-padding.left-pane(ng-cloak, layout, ng-show='features.length > 0')
-	md-card#feature-list.overlay-window(flex)
-		md-toolbar
-			.md-toolbar-tools
-				span Select new target from list
-		md-content
-			md-list
-				md-list-item(ng-repeat='feature in features | orderBy: "name"', ng-click='setTarget(feature)')
-					p {{feature.name}}
+  md-card#feature-list.overlay-window(flex)
+    md-toolbar
+      .md-toolbar-tools
+        md-button.md-icon-button(aria-label='Back', href='/')
+          md-icon keyboard_arrow_left
+        span Select new target from list
+    md-content
+      md-list
+        md-list-item(ng-repeat='feature in features | orderBy: "name"', ng-click='setTarget(feature)')
+          p {{feature.name}}

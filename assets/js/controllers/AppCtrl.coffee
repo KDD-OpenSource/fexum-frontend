@@ -2,19 +2,61 @@ app.controller 'AppCtrl', [
   '$scope',
   'backendService',
   '$timeout',
-  ($scope, backendService, $timeout) ->
+  '$q',
+  ($scope, backendService, $timeout, $q) ->
+
+    $scope.waitForVariableSet = (variableName) ->
+      currentValue = $scope.$eval variableName
+      if currentValue?
+        $q.resolve currentValue
+      return $q (resolve, reject) ->
+        unregister = $scope.$watch variableName, (newValue, oldValue) ->
+          if newValue?
+            resolve newValue
+            unregister()
+
+    buildFeatureIdMap = ->
+      $scope.featureIdMap = {}
+      $scope.features.forEach (feature) ->
+        $scope.featureIdMap[feature.id] = feature
 
     # Retrieve features
     $scope.retrieveFeatures = ->
       backendService.getSession()
         .then (session) -> session.retrieveFeatures()
         .then (features) ->
+          # Restore selected states
+          if $scope.features?
+            for feature in features
+              oldFeature = $scope.featureIdMap[feature.id]
+              if oldFeature?
+                feature.selected = oldFeature.selected
+
           $scope.features = features
-          $scope.featureIdMap = {}
+          buildFeatureIdMap()
           features.forEach (feature) ->
-            $scope.featureIdMap[feature.id] = feature
+            # TODO remove this mock value
+            feature.isCategorical = true
+
           $scope.targetFeature = $scope.featureIdMap[$scope.targetFeatureId]
         .fail console.error
+
+    $scope.getSearchItems = ->
+      categoricalFeatures = $scope.features.filter (f) -> f.isCategorical
+      targetChoices = categoricalFeatures.map (feature, i) ->
+        return {
+          feature: feature
+          index: i
+          isTargetChoice: true
+        }
+      locatableFeatures = $scope.features.map (feature, i) ->
+        return {
+          feature: feature
+          index: i
+          isTargetChoice: false
+        }
+      searchItems = locatableFeatures.concat targetChoices
+      return searchItems.sort (a, b) -> a.index - b.index
 
     updateFeatureFromFeatureSelection = (featureData) ->
       feature = $scope.featureIdMap[featureData.feature]
@@ -69,24 +111,28 @@ app.controller 'AppCtrl', [
         $scope.datasetId = session.dataset
         $scope.targetFeatureId = session.target
 
-    $scope.$watch 'targetFeature', (newTargetFeature) ->
-      if newTargetFeature
-        $scope.searchText = newTargetFeature.name
+    $scope.onFeatureSearched = (searchedItem) ->
+      if not searchedItem?
+        return
+      if searchedItem.isTargetChoice
+        $scope.setTarget searchedItem.feature
+      else
+        # TODO zoom to location of feature
+        console.log 'Zooming to location feature'
+      $scope.searchText = ''
 
     $scope.setTarget = (targetFeature) ->
-      if targetFeature?
-        $scope.targetFeature = targetFeature
+      $scope.targetFeature = targetFeature
 
-        backendService.getSession()
-          .then (session) -> session.setTarget targetFeature.id
-          .then ->
-            for feature in $scope.features
-              feature.relevancy = null
+      backendService.getSession()
+        .then (session) -> session.setTarget targetFeature.id
+        .then ->
+          for feature in $scope.features
+            feature.relevancy = null
 
-        # Create promise that waits for updated relevancies
-        relevancyUpdate = backendService.waitForWebsocketEvent 'rar_result'
-        # TODO internationalization
-        $scope.addLoadingQueueItem relevancyUpdate,
-                                   "Running feature selection for #{targetFeature.name}"
-      return
+      # Create promise that waits for updated relevancies
+      relevancyUpdate = backendService.waitForWebsocketEvent 'rar_result'
+      # TODO internationalization
+      $scope.addLoadingQueueItem relevancyUpdate,
+                                 "Running feature selection for #{targetFeature.name}"
 ]
