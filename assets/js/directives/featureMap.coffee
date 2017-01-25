@@ -82,6 +82,8 @@ app.directive 'featureMap', ['$timeout', ($timeout) ->
                     .classed 'feature', true
         newLinks = newNodes.append 'a'
         newLinks.append 'ellipse'
+              .attr 'rx', 80
+              .attr 'ry', 40
         newLinks.append 'text'
         # Update elements
         nodes.select 'a'
