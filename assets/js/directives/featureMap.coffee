@@ -3,6 +3,7 @@ app.directive 'featureMap', ['$timeout', 'chartColors', ($timeout, chartColors) 
     restrict: 'E'
     scope:
       features: '='
+      selectedFeatures: '='
       targetFeature: '='
       zoomApi: '='
     link: (scope, element, attrs) ->
@@ -76,7 +77,11 @@ app.directive 'featureMap', ['$timeout', 'chartColors', ($timeout, chartColors) 
           if feature == scope.targetFeature
             return
           scope.$apply ->
-            feature.selected = !feature.selected
+            index = scope.selectedFeatures.indexOf feature
+            if index >= 0
+              scope.selectedFeatures.splice index, 1
+            else
+              scope.selectedFeatures.push feature
 
         # Update feature map using d3
         nodes = d3.select svg[0]
@@ -101,7 +106,7 @@ app.directive 'featureMap', ['$timeout', 'chartColors', ($timeout, chartColors) 
               .text (feature) -> feature.name
         nodes.attr 'transform', getFeatureTranslationString
               .classed 'is-target', (feature) -> feature == scope.targetFeature
-              .classed 'selected', (feature) -> feature.selected
+              .classed 'selected', (feature) -> scope.selectedFeatures.includes feature
 
         scope.zoomApi.updateBBox()
 
@@ -113,6 +118,7 @@ app.directive 'featureMap', ['$timeout', 'chartColors', ($timeout, chartColors) 
       # Rerender when variables change
       scope.$watch 'features', render, true
       scope.$watch 'targetFeature', render
+      scope.$watchCollection 'selectedFeatures', render
       return
   }
 ]

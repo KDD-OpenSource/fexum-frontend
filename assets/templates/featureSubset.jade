@@ -8,9 +8,9 @@
 					md-icon lightbulb_outline
 		md-content.md-padding
 			md-list
-				md-list-item(ng-repeat='feature in features | filter:{selected: true} | orderBy: "name"')
+				md-list-item(ng-repeat='feature in selectedFeatures')
 					p {{feature.name}}
 					span(flex)
-					md-button.md-icon-button(aria-label='Delete feature', ng-click='feature.selected = false')
+					md-button.md-icon-button(aria-label='Delete feature', ng-click='unselect(feature)')
 						md-icon delete
 					md-divider

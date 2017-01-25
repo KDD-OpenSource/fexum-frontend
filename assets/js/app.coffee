@@ -1,4 +1,10 @@
-app = angular.module 'predots', ['ngMaterial', 'ngRoute', 'nvd3', 'ngWebSocket', 'ngFileUpload']
+app = angular.module 'predots', [
+  'ngMaterial',
+  'ngRoute',
+  'nvd3',
+  'ngWebSocket',
+  'ngFileUpload',
+  'rzModule']
 
 # Define theme
 app.config ['$mdThemingProvider', ($mdThemingProvider) ->

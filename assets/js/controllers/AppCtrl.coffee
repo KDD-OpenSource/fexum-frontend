@@ -11,18 +11,13 @@ app.controller 'AppCtrl', [
       $scope.features.forEach (feature) ->
         $scope.featureIdMap[feature.id] = feature
 
+    $scope.selectedFeatures = []
+
     # Retrieve features
     $scope.retrieveFeatures = ->
       backendService.getSession()
         .then (session) -> session.retrieveFeatures()
         .then (features) ->
-          # Restore selected states
-          if $scope.features?
-            for feature in features
-              oldFeature = $scope.featureIdMap[feature.id]
-              if oldFeature?
-                feature.selected = oldFeature.selected
-
           $scope.features = features
           buildFeatureIdMap()
           features.forEach (feature) ->
@@ -30,6 +25,15 @@ app.controller 'AppCtrl', [
             feature.isCategorical = true
 
           $scope.targetFeature = $scope.featureIdMap[$scope.targetFeatureId]
+
+          # Restore selected states
+          if $scope.selectedFeatures.length > 0
+            newSelectedFeatures = []
+            $scope.selectedFeatures.forEach (feature) ->
+              newFeature = $scope.featureIdMap[feature.id]
+              if newFeature?
+                newSelectedFeatures.push newFeature
+            $scope.selectedFeatures = newSelectedFeatures
         .fail console.error
 
     $scope.getSearchItems = ->

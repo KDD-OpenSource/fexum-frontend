@@ -6,11 +6,15 @@
 					md-icon keyboard_arrow_left
 				span Analyze features
 		md-content(flex, layout='row')
-			.feature-column(ng-repeat='feature in features | filter:{selected:true}')
+			.feature-column(ng-repeat='feature in selectedFeatures')
 				section
 					md-subheader.md-primary Feature #[i {{feature.name}}]
-					time-series-plot(feature='feature')
+					//time-series-plot(feature='feature')
 				section
 					md-subheader.md-primary Histogram
 					histogram-plot(feature='feature')
+					.slider-box
+						rzslider(rz-slider-model='getSlider(feature).minValue',
+											rz-slider-high='getSlider(feature).maxValue',
+											rz-slider-options='getSlider(feature).options')
 //feature-slice-visualizer(target-feature='targetFeature', flex='60', ng-cloak, layout)
