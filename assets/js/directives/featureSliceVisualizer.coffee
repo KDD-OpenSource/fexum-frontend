@@ -3,7 +3,8 @@ app.directive 'featureSliceVisualizer', [
   'chartTemplates',
   'chartColors',
   'backendService',
-  ($timeout, chartTemplates, chartColors, backendService) ->
+  '$analytics'
+  ($timeout, chartTemplates, chartColors, backendService, $analytics) ->
 
     return {
       restrict: 'E'
@@ -12,6 +13,8 @@ app.directive 'featureSliceVisualizer', [
         feature: '='
         targetFeature: '='
         range: '='
+        datasetName: '='
+        chartRange: '='
         close: '&onClose'
       link: (scope, element, attrs) ->
 
@@ -117,6 +120,13 @@ app.directive 'featureSliceVisualizer', [
           return
 
         scope.showProbabilityDistributions = (slice) ->
+          backendService.getSession().then (session) ->
+            $analytics.eventTrack 'sliceClick', {
+              category: "d#{session.dataset.name}|t#{scope.targetFeature.name}" +
+                        "|f#{scope.feature.name}",
+              label: 's' + slice.range[0] + '-' + slice.range[1]
+            }
+
           generateChartDataFromValues = (item, idx, arr) ->
             return { x: item.value, y: item.frequency }
 

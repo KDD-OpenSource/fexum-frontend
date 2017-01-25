@@ -5,7 +5,7 @@ app.controller 'FeatureInfoCtrl', [
   'chartTemplates',
   'chartColors',
   'backendService',
-  '$analytics'
+  '$analytics',
   ($scope, $routeParams, $timeout, chartTemplates, chartColors, backendService, $analytics) ->
 
     retrieveSelectedFeature = (features) ->
@@ -22,11 +22,11 @@ app.controller 'FeatureInfoCtrl', [
         $scope.feature =
           name: $routeParams.featureName
 
-      if $scope.feature.id?
+      if $scope.feature? and $scope.targetFeature?
         # Track that a user opened feature info in relation to dataset/target
         $analytics.eventTrack 'featureClick', {
-              category: 'd' + $scope.datasetName + '|t' + $scope.targetFeature.name,
-              label: 'f' + $scope.feature.name
+          category: 'd' + $scope.datasetName + '|t' + $scope.targetFeature.name,
+          label: 'f' + $scope.feature.name
         }
 
     retrieveSelectedFeature $scope.features
@@ -107,6 +107,12 @@ app.controller 'FeatureInfoCtrl', [
             bars:
               dispatch:
                 elementClick: (event) ->
+                  $analytics.eventTrack 'bucketClick', {
+                    category: "d#{$scope.datasetName}|t#{$scope.targetFeature.name}" +
+                              "|f#{$scope.feature.name}",
+                    label: 'b' + event.data.range[0] + '-' + event.data.range[1]
+                  }
+
                   $scope.$apply ->
                     $scope.selectedRange = event.data.range
                     $scope.histogramApi.update()
@@ -118,6 +124,8 @@ app.controller 'FeatureInfoCtrl', [
                 svg = d3.select element[0]
 
                 slicesContained = (d) ->
+                  if not $scope.feature.slices?
+                    return []
                   return $scope.feature.slices.filter (slice) ->
                     return slice.range[0] < d.range[1] and
                             slice.range[1] > d.range[0]

@@ -92,7 +92,7 @@ app.factory 'backendService', [
         lastSession =
           id: @id
           dataset: @dataset
-          target: @targetId
+          targetId: @targetId
         localStorage.setItem Session.LAST_SESSION_KEY, angular.toJson(lastSession)
 
       retrieveFeatures: =>
@@ -164,6 +164,7 @@ app.factory 'backendService', [
                 return $q.reject 'No datasets available'
             .then Session.create
             .then saveAndPersist
+            .fail console.error
 
         return retrieveSessions()
           .then (sessions) ->
@@ -174,6 +175,7 @@ app.factory 'backendService', [
               return session
             return Session.create dataset
           .then saveAndPersist
+          .fail console.error
 
     return service
 ]

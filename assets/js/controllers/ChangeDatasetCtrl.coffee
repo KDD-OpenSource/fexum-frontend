@@ -53,7 +53,6 @@ app.controller 'ChangeDatasetCtrl', [
             category: 'd' + dataset.name,
             label: 'datasetInit'
       }
-      console.log dataset
 
       backendService.getSession dataset
         .then setCurrentDatasetFromSession

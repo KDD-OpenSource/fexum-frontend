@@ -7,7 +7,8 @@
 				span #[i {{feature.name}}] in range [{{range[0] | number:2}}, {{range[1] | number:2}}]
 		md-content.md-padding(layout='column')
 			nvd3.chart.histogram(options='histogram.options', data='histogram.data')
-			slice-chart(chart-range='range', slices='feature.slices', selected-slice='selectedSlice', on-slice-click='showProbabilityDistributions(slice)')
+			slice-chart(datasetName='{{datasetName}}', feature='feature', targetFeature='{{targetFeature.name}}', chart-range='range', \
+						slices='feature.slices', selected-slice='selectedSlice', on-slice-click='showProbabilityDistributions(slice)')
 .md-padding(flex='50', layout, ng-show='selectedSlice')
 	md-card#feature-slice-distributions.overlay-window(flex)
 		md-toolbar

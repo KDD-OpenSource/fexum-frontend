@@ -17,15 +17,18 @@ app.controller 'AppCtrl', [
           $scope.targetFeature = $scope.featureIdMap[$scope.targetFeatureId]
         .fail console.error
 
+    rarTime = []
     updateFeatureFromFeatureSelection = (featureData) ->
       # Log rar calculation time in Analytics
-      if rarTime[$scope.targetFeature.id]?
+      if $scope.targetFeature? and rarTime[$scope.targetFeature.id]?
         delta = Date.now() - rarTime[$scope.targetFeature.id]
         rarTime[$scope.targetFeature.id] = null
-        $analytics.userTimings 'rarFinished', {
-              category: 'd' + $scope.datasetName + '|t' + $scope.targetFeature.name,
-              label: 'ElapsedTimeMs'
-              value: delta
+
+        $analytics.userTimings {
+              timingCategory: 'd' + $scope.datasetName + '|t' + $scope.targetFeature.name,
+              timingVar: 'rarFinished',
+              timingLabel: 'ElapsedTimeMs',
+              timingValue: delta
         }
 
       feature = $scope.featureIdMap[featureData.feature]
@@ -37,6 +40,7 @@ app.controller 'AppCtrl', [
       backendService.getSession()
         .then (session) -> session.retrieveRarResults()
         .then (rarResults) -> rarResults.forEach updateFeatureFromFeatureSelection
+        .fail console.error
 
     $scope.loadingQueue = []
     $scope.addLoadingQueueItem = (promise, message) ->
@@ -69,19 +73,6 @@ app.controller 'AppCtrl', [
     $scope.$on 'ws/rar_result', (event, payload) ->
       updateFeatureFromFeatureSelection(payload.data)
 
-    $scope.$watch 'datasetId', ((newValue, oldValue) ->
-      if newValue?
-        $scope.retrieveFeatures()
-          .then $scope.retrieveRarResults
-      ), true
-
-    backendService.getSession()
-      .then (session) ->
-        $scope.datasetId = session.dataset.id
-        $scope.datasetName = session.dataset.name
-        $scope.targetFeatureId = session.targetId
-      .fail console.error
-
     $scope.$watch 'targetFeature', (newTargetFeature) ->
       if newTargetFeature?
         $scope.searchText = newTargetFeature.name
@@ -91,7 +82,19 @@ app.controller 'AppCtrl', [
           label: 't' + $scope.targetFeature.name
         }
 
-    rarTime = []
+    backendService.getSession()
+      .then (session) ->
+        $scope.datasetId = session.dataset.id
+        $scope.datasetName = session.dataset.name
+        $scope.targetFeatureId = session.targetId
+      .fail console.error
+
+    $scope.$watch 'datasetId', ((newValue, oldValue) ->
+      if newValue?
+        $scope.retrieveFeatures()
+          .then $scope.retrieveRarResults
+      ), true
+
     $scope.setTarget = (targetFeature) ->
       if targetFeature?
         $scope.targetFeature = targetFeature
