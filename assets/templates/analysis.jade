@@ -1,0 +1,16 @@
+.md-padding(ng-cloak, layout)
+	md-card#analysis.overlay-window(flex)
+		md-toolbar
+			.md-toolbar-tools
+				md-button.md-icon-button(aria-label='Back', href='/')
+					md-icon keyboard_arrow_left
+				span Analyze features
+		md-content(flex, layout='row')
+			.feature-column(ng-repeat='feature in features | filter:{selected:true}')
+				section
+					md-subheader.md-primary Feature #[i {{feature.name}}]
+					time-series-plot(feature='feature')
+				section
+					md-subheader.md-primary Histogram
+					histogram-plot(feature='feature')
+//feature-slice-visualizer(target-feature='targetFeature', flex='60', ng-cloak, layout)

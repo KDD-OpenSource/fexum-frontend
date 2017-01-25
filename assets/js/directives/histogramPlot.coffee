@@ -4,7 +4,8 @@ app.directive 'histogramPlot', [
   'chartColors',
   'scopeUtils',
   'backendService',
-  ($timeout, chartTemplates, chartColors, scopeUtils, backendService) ->
+  '$q',
+  ($timeout, chartTemplates, chartColors, scopeUtils, backendService, $q) ->
     return {
       restrict: 'E'
       template: JST['assets/templates/histogramPlot']
@@ -69,18 +70,19 @@ app.directive 'histogramPlot', [
             scope.histogram.data[0].values = newBuckets
 
         featureAvailable = scopeUtils.waitForVariableSet scope, 'feature.id'
-        featureAvailable
+        bucketsAvailable = featureAvailable
           .then (featureId) ->
             return backendService.retrieveHistogramBuckets featureId
           .then (buckets) -> scope.feature.buckets = buckets
-          .then scope.setupCharts
           .fail console.error
-        featureAvailable
+        slicesAvailable = featureAvailable
           .then (featuredId) ->
             return backendService.getSession()
           .then (session) -> session.retrieveSlices scope.feature.id
           .then (slices) -> scope.feature.slices = slices
           .fail console.error
+        $q.all [bucketsAvailable, slicesAvailable]
+          .then scope.setupCharts
 
         return
     }

@@ -54,7 +54,7 @@ app.directive 'timeSeriesPlot', [
                                               - chart.yAxis.scale()(d[1])
             data: [
               {
-                values: scope.feature.samples or []
+                values: scope.feature.samples
                 key: scope.feature.name
                 color: chartColors.defaultColor
               }
@@ -68,7 +68,9 @@ app.directive 'timeSeriesPlot', [
           .then (featureId) ->
             return backendService.retrieveSamples featureId
           .then (samples) -> scope.feature.samples = samples
-          .then scope.setupCharts
+          .then ->
+            # TODO this timeout is necessary because layouting is not yet done
+            $timeout scope.setupCharts, 1000
           .fail console.error
 
         return
