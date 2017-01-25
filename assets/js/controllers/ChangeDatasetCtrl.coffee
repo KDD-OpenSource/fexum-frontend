@@ -23,7 +23,6 @@ app.controller 'ChangeDatasetCtrl', [
     $scope.upload = (file) ->
 
       success = (response) ->
-        console.log "Success #{response.config.data.file.name} uploaded. Response:", response.data
         $scope.uploadRunning = false
         $scope.progress = 0
         $scope.changeDataset response.data
