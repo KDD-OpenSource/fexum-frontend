@@ -47,9 +47,14 @@ app.factory 'backendService', [
         .fail console.error
 
     wsStream = $websocket SOCKET_URI
+    wsStream.reconnectIfNotNormalClose = true
+
     wsStream.onMessage (message) ->
       jsonData = JSON.parse message.data
       $rootScope.$broadcast "ws/#{jsonData.stream}", jsonData.payload
+
+    wsStream.onClose ->
+      $rootScope.$broadcast 'ws/closed'
 
     waitForWebsocketEvent = (eventName) ->
       return $q (resolve, reject) ->
