@@ -80,6 +80,7 @@ app.controller 'AppCtrl', [
         $scope.datasetId = session.dataset.id
         $scope.datasetName = session.dataset.name
         $scope.targetFeatureId = session.targetId
+      .fail console.error
 
     $scope.$watch 'targetFeature', (newTargetFeature) ->
       if newTargetFeature?

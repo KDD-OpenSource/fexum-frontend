@@ -3,7 +3,8 @@ app.controller 'ChangeDatasetCtrl', [
   '$location',
   'Upload',
   'backendService',
-  ($scope, $location, Upload, backendService) ->
+  '$analytics'
+  ($scope, $location, Upload, backendService, $analytics) ->
 
     $scope.uploadRunning = false
     $scope.progress = 0
@@ -47,6 +48,13 @@ app.controller 'ChangeDatasetCtrl', [
       $scope.uploadRunning = true
 
     $scope.changeDataset = (dataset) ->
+      # Track a user selecting a new dataset
+      $analytics.eventTrack 'datasetSelected', {
+            category: 'd' + dataset.name,
+            label: 'datasetInit'
+      }
+      console.log dataset
+
       backendService.getSession dataset
         .then setCurrentDatasetFromSession
         .fail console.error

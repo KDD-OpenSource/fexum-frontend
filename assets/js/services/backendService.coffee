@@ -71,7 +71,9 @@ app.factory 'backendService', [
       @create: (dataset) =>
         return $http.post API_URI + 'sessions', dataset: dataset.id
           .then (response) =>
-            return @fromJson response.data
+            session = @fromJson response.data
+            session.dataset = dataset
+            return session
 
       @restore: =>
         lastSessionJson = localStorage.getItem @LAST_SESSION_KEY
@@ -94,7 +96,7 @@ app.factory 'backendService', [
         localStorage.setItem Session.LAST_SESSION_KEY, angular.toJson(lastSession)
 
       retrieveFeatures: =>
-        $http.get API_URI + "datasets/#{@dataset}/features"
+        $http.get API_URI + "datasets/#{@dataset.id}/features"
           .then (response) ->
             # Response is in the form
             # [{name, rank, mean, variance, min, max}, ...]
@@ -137,7 +139,6 @@ app.factory 'backendService', [
             return rar_results
 
     service =
-
       retrieveDatasets: retrieveDatasets
       retrieveHistogramBuckets: retrieveHistogramBuckets
       retrieveSamples: retrieveSamples
@@ -145,7 +146,7 @@ app.factory 'backendService', [
 
       getSession: (dataset) ->
         session = @session or Session.restore()
-        if session? and (not dataset? or session.dataset == dataset)
+        if session? and (not dataset? or session.dataset.id == dataset.id)
           @session = session
           return $q.resolve session
 
@@ -166,10 +167,12 @@ app.factory 'backendService', [
 
         return retrieveSessions()
           .then (sessions) ->
-            matchingSessions = sessions.filter (sess) -> sess.dataset == dataset
+            matchingSessions = sessions.filter (sess) -> sess.dataset == dataset.id
             if matchingSessions.length > 0
-              return Session.fromJson matchingSessions[0]
-            return Session.create datasetId
+              session = Session.fromJson matchingSessions[0]
+              session.dataset = dataset
+              return session
+            return Session.create dataset
           .then saveAndPersist
 
     return service
