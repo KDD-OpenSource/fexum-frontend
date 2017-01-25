@@ -1,0 +1,28 @@
+.md-padding.left-pane(ng-cloak, layout)
+  md-card#upload-dataset.overlay-window(flex)
+    md-toolbar
+      .md-toolbar-tools
+        md-button.md-icon-button(aria-label='Back', href='/')
+          md-icon keyboard_arrow_left
+        span Change dataset
+    md-content(layout='column')
+      section
+        md-subheader.md-primary Current dataset
+        md-list
+          md-list-item
+            strong {{currentDataset.name}}
+      section
+        md-subheader.md-primary New dataset
+        md-button(ngf-pattern="'application/octet-stream,application/zip,application/x-zip-compressed'",
+          ngf-accept="'application/octet-stream,application/zip,application/x-zip-compressed'",
+          ngf-select='upload($file)',
+          ng-hide='uploadRunning') Select dataset csv
+          md-tooltip Please compress your csv into a zip file first to speed up the process
+        md-button(ng-click='currentUpload.abort()', ng-show='uploadRunning') Abort processing
+        md-progress-linear(md-mode='determinate', value='{{progress}}')
+      section
+        md-subheader.md-primary Existing dataset
+        md-list
+          md-list-item(ng-repeat='dataset in datasets', ng-click='changeDataset(dataset)')
+            md-icon arrow_forward
+            p {{dataset.name}}

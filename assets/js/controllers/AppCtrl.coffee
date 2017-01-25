@@ -3,9 +3,7 @@ app.controller 'AppCtrl', ['$scope', 'backendService', ($scope, backendService) 
   # Retrieve features
   $scope.retrieveFeatures = ->
     backendService.getSession()
-      .then (session) ->
-        $scope.targetFeatureId = session.target
-        return session.retrieveFeatures()
+      .then (session) -> session.retrieveFeatures()
       .then (features) ->
         $scope.features = features
         $scope.featureIdMap = {}
@@ -39,6 +37,17 @@ app.controller 'AppCtrl', ['$scope', 'backendService', ($scope, backendService) 
   $scope.$on 'ws/rar_result', (event, payload) ->
     updateFeatureFromFeatureSelection(payload.data)
 
+  $scope.$watch 'datasetId', ((newValue, oldValue) ->
+    if newValue?
+      $scope.retrieveFeatures()
+        .then $scope.retrieveRarResults
+    ), true
+
+  backendService.getSession()
+    .then (session) ->
+      $scope.datasetId = session.dataset
+      $scope.targetFeatureId = session.target
+
   $scope.$watch 'targetFeature', (newTargetFeature) ->
     if newTargetFeature
       $scope.searchText = newTargetFeature.name
@@ -59,9 +68,6 @@ app.controller 'AppCtrl', ['$scope', 'backendService', ($scope, backendService) 
       $scope.addLoadingQueueItem relevancyUpdate,
                                  "Running feature selection for #{targetFeature.name}"
     return
-
-  $scope.retrieveFeatures()
-    .then $scope.retrieveRarResults
 
   return
 ]
