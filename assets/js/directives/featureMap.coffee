@@ -84,13 +84,10 @@ app.directive 'featureMap', ['$timeout', ($timeout) ->
         newLinks.append 'ellipse'
         newLinks.append 'text'
         # Update elements
-        console.log nodes.selectAll 'text'
-        nodes.selectAll 'text'
-              .data features
-              .text (feature) -> feature.name
-        nodes.selectAll 'a'
-              .data features
+        nodes.select 'a'
               .attr 'xlink:href', getFeatureLink
+              .select 'text'
+              .text (feature) -> feature.name
         nodes.attr 'transform', getFeatureTranslationString
               .classed 'is-target', (feature) -> feature == scope.targetFeature
 
