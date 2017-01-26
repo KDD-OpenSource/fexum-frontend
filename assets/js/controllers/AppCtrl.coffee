@@ -20,9 +20,6 @@ app.controller 'AppCtrl', [
         .then (features) ->
           $scope.features = features
           buildFeatureIdMap()
-          features.forEach (feature) ->
-            # TODO remove this mock value
-            feature.isCategorical = true
 
           $scope.targetFeature = $scope.featureIdMap[$scope.targetFeatureId]
 
@@ -37,7 +34,7 @@ app.controller 'AppCtrl', [
         .fail console.error
 
     $scope.getSearchItems = ->
-      categoricalFeatures = $scope.features.filter (f) -> f.isCategorical
+      categoricalFeatures = $scope.features.filter (f) -> f.is_categorical
       targetChoices = categoricalFeatures.map (feature, i) ->
         return {
           feature: feature

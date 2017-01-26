@@ -7,5 +7,5 @@
         span Select new target from list
     md-content
       md-list
-        md-list-item(ng-repeat='feature in features | orderBy: "name"', ng-click='setTarget(feature)')
+        md-list-item(ng-repeat='feature in features | filter:{is_categorical:true} | orderBy: "name"', ng-click='setTarget(feature)')
           p {{feature.name}}
