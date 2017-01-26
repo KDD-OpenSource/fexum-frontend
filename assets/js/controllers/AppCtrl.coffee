@@ -72,6 +72,12 @@ app.controller 'AppCtrl', [
     $scope.$on 'ws/relevancy_result', (event, payload) ->
       updateFeatureFromFeatureSelection(payload.data)
 
+    $scope.$watch 'dataset', ((newValue, oldValue) ->
+      if newValue?
+        $scope.retrieveFeatures()
+          .then $scope.retrieveRarResults
+      ), true
+
     $scope.$watch 'targetFeature', (newTargetFeature) ->
       if newTargetFeature?
         $scope.searchText = newTargetFeature.name
@@ -86,12 +92,6 @@ app.controller 'AppCtrl', [
         $scope.dataset = {id: session.dataset.id, name: session.dataset.name}
         $scope.targetFeatureId = session.targetId
       .fail console.error
-
-    $scope.$watch 'dataset', ((newValue, oldValue) ->
-      if newValue?
-        $scope.retrieveFeatures()
-          .then $scope.retrieveRarResults
-      ), true
 
     $scope.setTarget = (targetFeature) ->
       if targetFeature?
