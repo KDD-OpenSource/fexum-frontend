@@ -13,9 +13,9 @@ Array.prototype.sum = ->
 Array.prototype.mean = ->
   return @sum() / @length
 
-Object.prototype.map = (callback) ->
-  mappedValues = []
-  for k, v of @
-    result = callback k, v
-    mappedValues.push result
-  return mappedValues
+#Object.prototype.map = (callback) ->
+#  mappedValues = []
+#  for k, v of @
+#    result = callback k, v
+#    mappedValues.push result
+#  return mappedValues

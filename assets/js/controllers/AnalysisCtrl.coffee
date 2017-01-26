@@ -19,7 +19,10 @@ app.controller 'AnalysisCtrl', [
         # Bugfix for rzslider, where initial values were not drawn
         $timeout (-> $scope.$broadcast 'rzSliderForceRender'), 1000
 
-    $scope.getSlider = (feature) -> $scope.sliders[feature.id]
+    $scope.getSlider = (feature) ->
+      if $scope.sliders?
+        return $scope.sliders[feature.id]
+      return {}
 
     $scope.updateFromSlice = (slice) ->
       # Rest all sliders first

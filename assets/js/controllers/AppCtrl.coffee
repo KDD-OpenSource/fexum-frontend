@@ -98,10 +98,17 @@ app.controller 'AppCtrl', [
           .then $scope.retrieveRarResults
       ), true
 
+    $scope.$watchCollection 'selectedFeatures', (newSelectedFeatures) ->
+      backendService.getSession()
+        .then (session) -> session.setSelection newSelectedFeatures
+
     backendService.getSession()
       .then (session) ->
         $scope.datasetId = session.dataset
         $scope.targetFeatureId = session.target
+        selection = session.getSelection()
+        if selection?
+          $scope.selectedFeatures = selection
 
     $scope.onFeatureSearched = (searchedItem) ->
       if not searchedItem?

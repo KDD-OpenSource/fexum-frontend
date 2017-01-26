@@ -65,7 +65,7 @@ app.directive 'featureSliceVisualizer', [
           else
             return $q.resolve feature.samples
 
-        scopeUtils.waitForVariableSet scope, 'selectedFeatures'
+        scopeUtils.waitForVariableSet scope, 'targetFeature'
           .then ->
             promises = scope.selectedFeatures.map retrieveSamples
             promises.push retrieveSamples scope.targetFeature

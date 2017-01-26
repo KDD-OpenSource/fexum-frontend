@@ -25,6 +25,8 @@ app.directive 'sliceTable', [
               slice.features.forEach (participatingItem) ->
                 slice.rangeDict[participatingItem.feature] = participatingItem.range
               # Define function to obtain the range for a given feature
+              slice.hasFeatureRange = (feature) ->
+                return slice.rangeDict[feature.id]?
               slice.getFeatureRange = (feature) ->
                 return slice.rangeDict[feature.id]
             scope.slices = slices

@@ -80,17 +80,27 @@ app.factory 'backendService', [
           return @fromJson lastSession
 
       @fromJson: (json) ->
-        return new Session(
+        session = new Session(
           json.id,
           json.dataset,
           json.target
         )
+        session.selection = json.selection
+        return session
+
+      setSelection: (selection) =>
+        @selection = selection
+        @store()
+
+      getSelection: =>
+        return @selection
 
       store: =>
         lastSession =
           id: @id
           dataset: @dataset
           target: @target
+          selection: @selection
         localStorage.setItem Session.LAST_SESSION_KEY, angular.toJson(lastSession)
 
       retrieveFeatures: =>
