@@ -8,6 +8,7 @@ app.directive 'sliceTable', [
       template: JST['assets/templates/sliceTable']
       scope:
         features: '='
+        onSliceClicked: '&sliceClick'
       link: (scope, element, attrs) ->
 
         scopeUtils.waitForVariableSet scope, 'features'

@@ -4,7 +4,7 @@ table
       th Score
       th(ng-repeat='feature in features') Range of {{feature.name}}
   tbody
-    tr(ng-repeat='slice in slices')
+    tr(ng-repeat='slice in slices', ng-click='onSliceClicked({slice: slice})')
       td {{slice.deviation | number:4}}
       td(ng-repeat='feature in features').
         [{{slice.getFeatureRange(feature)[0]}}, {{slice.getFeatureRange(feature)[1]}}]

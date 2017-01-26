@@ -1,11 +1,22 @@
 slice-table {
-  table td {
-    width: 215px;
-    &:first-child {
-      width: 50px;
+  table {
+    td {
+      width: 215px;
+      &:first-child {
+        width: 50px;
+      }
+      &:nth-child(2) {
+        width: 165px;
+      }
     }
-    &:nth-child(2) {
-      width: 165px;
+    tbody {
+      tr[ng-click], tr[href] {
+        outline: none;
+        &:hover {
+          cursor: pointer;
+          background-color: #f2f2f2;
+        }
+      }
     }
   }
 }
@@ -61,5 +72,4 @@ td, th{
   display: table-cell;
   text-align: left;
   vertical-align: middle;
-  border-radius: 2px;
 }
