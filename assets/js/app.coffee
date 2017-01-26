@@ -1,5 +1,11 @@
-app = angular.module 'predots', ['ngMaterial', 'ngRoute', 'nvd3', 'ngWebSocket',
-                    'ngFileUpload', 'angulartics.google.analytics']
+app = angular.module 'predots', [
+  'ngMaterial',
+  'ngRoute',
+  'nvd3',
+  'ngWebSocket',
+  'ngFileUpload',
+  'rzModule',
+  'angulartics.google.analytics']
 
 # Define theme
 app.config ['$mdThemingProvider', ($mdThemingProvider) ->
@@ -16,6 +22,15 @@ app.config ['$mdThemingProvider', ($mdThemingProvider) ->
 app.config ['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
   $routeProvider
     .when('/',
+      template: JST['assets/templates/featureSubset']
+      controller: 'FeatureSubsetCtrl')
+    .when('/selections',
+      template: JST['assets/templates/featureSubset']
+      controller: 'FeatureSubsetCtrl')
+    .when('/analyze',
+      template: JST['assets/templates/analysis']
+      controller: 'AnalysisCtrl')
+    .when('/change-target',
       template: JST['assets/templates/featureList']
       controller: 'FeatureListCtrl')
     .when('/change-dataset',

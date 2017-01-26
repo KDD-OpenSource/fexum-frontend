@@ -3,7 +3,12 @@ extends ./layout
 
 block body
   md-content(ng-controller='AppCtrl')
-    feature-map#feature-map(features='features', target-feature='targetFeature', zoom-api='zoomApi', max-distance='5000', offset='200',
+    feature-map#feature-map(features='features',
+                            selected-features='selectedFeatures',
+                            target-feature='targetFeature',
+                            zoom-api='zoomApi',
+                            max-distance='5000',
+                            offset='200',
                             def-transform='1')
     #map-overlay(layout='column', layout-fill)
       .md-padding.left-pane
@@ -11,15 +16,18 @@ block body
           #search.md-whiteframe-z1(layout='row')
             corner-menu
             md-autocomplete(flex,
-                            md-selected-item='selectedTarget',
+                            md-selected-item='searchedItem',
                             md-search-text='searchText',
-                            md-selected-item-change='setTarget(selectedTarget)',
-                            md-items='item in features | filter:{name: searchText}',
-                            md-item-text='item.name',
-                            placeholder='Search for target feature')
+                            md-selected-item-change='onFeatureSearched(searchedItem)',
+                            md-items='item in getSearchItems() | filter:{feature:{name: searchText}}',
+                            md-item-text='item.feature.name',
+                            placeholder='Search for feature')
               md-item-template
-                span(md-highlight-text='searchText', md-highlight-flags='^i')
-                  {{item.name}}
+                span.item-title
+                  md-icon {{item.isTargetChoice ? 'flare' : 'search'}}
+                  span(md-highlight-text='searchText', md-highlight-flags='^i').
+                    {{item.isTargetChoice ? 'Set target ' : 'Locate feature '}}
+                    {{item.feature.name}}
               md-not-found No feature found
       #content(flex,layout='row', ng-view)
     #control-bar(layout='row', layout-padding)

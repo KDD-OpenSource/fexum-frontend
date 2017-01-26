@@ -1,0 +1,16 @@
+.md-padding.left-pane(ng-cloak, layout, ng-show='targetFeature')
+	md-card#feature-list.overlay-window(flex)
+		md-toolbar
+			.md-toolbar-tools
+				span Selected features
+				span(flex)
+				md-button.md-icon-button(aria-label='Analyze', href='/analyze', ng-disabled='selectedFeatures.length == 0')
+					md-icon lightbulb_outline
+		md-content.md-padding
+			md-list
+				md-list-item(ng-repeat='feature in selectedFeatures')
+					p {{feature.name}}
+					span(flex)
+					md-button.md-icon-button(aria-label='Delete feature', ng-click='unselect(feature)')
+						md-icon delete
+					md-divider

@@ -1,0 +1,46 @@
+.md-padding(ng-cloak, layout)
+	md-card#analysis.overlay-window(flex)
+		md-toolbar
+			.md-toolbar-tools
+				md-button.md-icon-button(aria-label='Back', href='/')
+					md-icon keyboard_arrow_left
+				span Analyze features
+		md-content(flex, layout='column')
+			div(flex='noshrink', layout='row')
+				md-content.feature-column(ng-repeat='feature in selectedFeatures')
+					section
+						md-subheader.md-primary Feature #[i {{feature.name}}]
+						//time-series-plot(feature='feature')
+					section
+						md-subheader.md-primary Histogram
+						histogram-plot(feature='feature')
+						.horizontal-padding
+							rzslider(rz-slider-model='getSlider(feature).minValue',
+												rz-slider-high='getSlider(feature).maxValue',
+												rz-slider-options='getSlider(feature).options')
+						.horizontal-padding
+							span
+								| [
+								input(type='number',
+									ng-model='getSlider(feature).minValueFnc',
+									ng-model-options='{debounce:1000, getterSetter: true}',
+									step='any',
+									min='{{getSlider(feature).options.floor}}',
+									max='{{getSlider(feature).options.ceil}}')
+								| ,
+								input(type='number',
+									ng-model='getSlider(feature).maxValueFnc',
+									ng-model-options='{debounce:1000, getterSetter: true}',
+									step='any',
+									min='{{getSlider(feature).options.floor}}',
+									max='{{getSlider(feature).options.ceil}}')
+								| ]
+
+			md-content.horizontal-padding
+				slice-table(features='selectedFeatures', slice-click='updateFromSlice(slice)')
+feature-slice-visualizer(target-feature='targetFeature',
+	selected-features='selectedFeatures',
+	ranges='selectedRanges',
+	flex='60',
+	ng-cloak,
+	layout)

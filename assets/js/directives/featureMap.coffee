@@ -1,8 +1,9 @@
-app.directive 'featureMap', ['$timeout', ($timeout) ->
+app.directive 'featureMap', ['$timeout', 'chartColors', ($timeout, chartColors) ->
   return {
     restrict: 'E'
     scope:
       features: '='
+      selectedFeatures: '='
       targetFeature: '='
       zoomApi: '='
     link: (scope, element, attrs) ->
@@ -92,6 +93,7 @@ app.directive 'featureMap', ['$timeout', ($timeout) ->
               .text (feature) -> feature.name
         nodes.attr 'transform', getFeatureTranslationString
               .classed 'is-target', (feature) -> feature == scope.targetFeature
+              .classed 'selected', (feature) -> scope.selectedFeatures.includes feature
 
         scope.zoomApi.updateBBox()
 
@@ -103,6 +105,7 @@ app.directive 'featureMap', ['$timeout', ($timeout) ->
       # Rerender when variables change
       scope.$watch 'features', render, true
       scope.$watch 'targetFeature', render
+      scope.$watchCollection 'selectedFeatures', render
       return
   }
 ]

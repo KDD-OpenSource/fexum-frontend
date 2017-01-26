@@ -1,25 +1,28 @@
-.md-padding(flex='50', layout)
-	md-card#feature-slice-overview.overlay-window(flex)
-		md-toolbar
-			.md-toolbar-tools
-				md-button.md-icon-button(aria-label='Close', ng-click='close()')
-					md-icon keyboard_arrow_left
-				span #[i {{feature.name}}] in range [{{range[0] | number:2}}, {{range[1] | number:2}}]
-		md-content.md-padding(layout='column')
-			nvd3.chart.histogram(options='histogram.options', data='histogram.data')
-			slice-chart(chart-range='range', slices='feature.slices', selected-slice='selectedSlice', on-slice-click='showProbabilityDistributions(slice)')
-.md-padding(flex='50', layout, ng-show='selectedSlice')
+.md-padding(layout)
 	md-card#feature-slice-distributions.overlay-window(flex)
 		md-toolbar
 			.md-toolbar-tools
-				md-button.md-icon-button(aria-label='Close', ng-click='selectedSlice = null')
-					md-icon keyboard_arrow_left
-				span Slice [{{selectedSlice.range[0] | number:2}}, {{selectedSlice.range[1] | number:2}}]
-		md-content.md-padding(layout='column')
-			p.md-body-1.
-				When #[i {{feature.name}}] is in value range
-				[{{selectedSlice.range[0] | number:2}}, {{selectedSlice.range[1] | number:2}}]
-				#[i {{targetFeature.name}}] behaves significantly (with KLD = {{selectedSlice.deviation * 100 | number:2}}%) different:
-			nvd3.chart.probability-distributions(options='probabilityDistributions.options', data='probabilityDistributions.data')
-			md-subheader.md-primary Scatter plot
-			nvd3.chart.scatterChart(options='scatterChart.options', data='scatterChart.data', api='scatterChartApi')
+				span Visualize selected ranges
+		md-content(layout='column')
+			section
+				md-subheader.md-primary Probability distributions
+				.chart-holder
+					nvd3.chart.probability-distributions(options='probabilityDistributions.options', data='probabilityDistributions.data')
+			section(ng-if='selectedFeatures.length >= 2')
+				md-subheader.md-primary Scatter plot
+				.chart-holder(flex='noshrink')
+					nvd3.chart.scatterChart(options='scatterChart.options', data='scatterChart.data', api='scatterChartApi')
+				.horizontal-padding(layout='row', layout-margin)
+					span(flex) Feature on y-axis
+					md-select(ng-model='yFeature', ng-change='updateYFeature(yFeature)', aria-label='Feature on y-axis')
+						md-option(ng-repeat='feature in selectedFeatures',
+											ng-disabled='feature == xFeature',
+											ng-value='feature').
+							{{feature.name}}
+				.horizontal-padding(layout='row', layout-margin)
+					span(flex) Feature on x-axis
+					md-select(ng-model='xFeature', ng-change='updateXFeature(xFeature)', aria-label='Feature on x-axis')
+						md-option(ng-repeat='feature in selectedFeatures',
+											ng-disabled='feature == yFeature',
+											ng-value='feature').
+							{{feature.name}}

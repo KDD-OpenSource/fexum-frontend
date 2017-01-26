@@ -82,17 +82,27 @@ app.factory 'backendService', [
           return @fromJson lastSession
 
       @fromJson: (json) ->
-        return new Session(
+        session = new Session(
           json.id,
           json.dataset,
           json.targetId
         )
+        session.selection = json.selection
+        return session
+
+      setSelection: (selection) =>
+        @selection = selection
+        @store()
+
+      getSelection: =>
+        return @selection
 
       store: =>
         lastSession =
           id: @id
           dataset: @dataset
           targetId: @targetId
+          selection: @selection
         localStorage.setItem Session.LAST_SESSION_KEY, angular.toJson(lastSession)
 
       retrieveFeatures: =>
@@ -113,7 +123,27 @@ app.factory 'backendService', [
           .then (response) =>
             @targetId = targetFeatureId
             @store()
-            # console.log "Set new target #{targetFeatureId} on server"
+          .fail console.error
+
+      retrieveSlicesForSubset: (featureSubset) =>
+        if featureSubset.length == 0
+          return $q.resolve []
+        paramsString = featureSubset.join ','
+        $http.get API_URI + "targets/#{@targetId}/slices?feature__in=#{paramsString}"
+          .then (response) ->
+            sortByValue = (a, b) -> a.value - b.value
+            slices = response.data.map (slice) ->
+              features = slice.features.map (feature) ->
+                return {
+                  feature: feature.feature
+                  range: [feature.from_value, feature.to_value]
+                }
+              return {
+                features: features
+                frequency: slice.frequency
+                deviation: slice.deviation
+              }
+            return slices
           .fail console.error
 
       retrieveSlices: (featureId) =>
@@ -124,12 +154,18 @@ app.factory 'backendService', [
               return {
                 range: [slice.from_value, slice.to_value]
                 frequency: slice.frequency
-                significance: slice.significance
                 deviation: slice.deviation
                 marginal: slice.marginal_distribution.sort sortByValue
                 conditional: slice.conditional_distribution.sort sortByValue
               }
             return slices
+          .fail console.error
+
+      getProbabilityDistribution: (rangesSpecification) =>
+        $http.post API_URI + "targets/#{@targetId}/distributions", rangesSpecification
+          .then (response) ->
+            distribution = response.data
+            return distribution
           .fail console.error
 
       retrieveRarResults: =>
@@ -172,7 +208,7 @@ app.factory 'backendService', [
 
         return retrieveSessions()
           .then (sessions) ->
-            matchingSessions = sessions.filter (sess) -> sess.dataset == dataset.id
+            matchingSessions = sessions.filter (sess) -> sess.dataset.id == dataset.id
             if matchingSessions.length > 0
               session = Session.fromJson matchingSessions[0]
               session.dataset = dataset

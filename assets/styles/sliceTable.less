@@ -1,0 +1,75 @@
+slice-table {
+  table {
+    td {
+      width: 215px;
+      &:first-child {
+        width: 50px;
+      }
+      &:nth-child(2) {
+        width: 165px;
+      }
+    }
+    tbody {
+      tr[ng-click], tr[href] {
+        outline: none;
+        &:hover {
+          cursor: pointer;
+          background-color: #f2f2f2;
+        }
+      }
+    }
+  }
+}
+
+@table-border-color: #d0d0d0;
+@table-striped-color: #f2f2f2;
+
+// General table styling
+table, th, td {
+   border: none;
+}
+
+table {
+  width:100%;
+  display: table;
+
+  &.bordered > thead > tr,
+  &.bordered > tbody > tr {
+    border-bottom: 1px solid @table-border-color;
+  }
+
+  &.striped > tbody {
+    > tr:nth-child(odd) {
+      background-color: @table-striped-color;
+    }
+
+    > tr > td {
+      border-radius: 0;
+    }
+  }
+
+  &.highlight > tbody > tr {
+    transition: background-color .25s ease;
+    &:hover {
+      background-color: @table-striped-color;
+    }
+  }
+
+  &.centered {
+    thead tr th, tbody tr td {
+      text-align: center;
+    }
+  }
+
+}
+
+thead {
+  border-bottom: 1px solid @table-border-color;
+}
+
+td, th{
+  padding: 15px 5px;
+  display: table-cell;
+  text-align: left;
+  vertical-align: middle;
+}

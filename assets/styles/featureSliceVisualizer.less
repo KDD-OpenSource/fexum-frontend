@@ -1,12 +1,7 @@
 feature-slice-visualizer {
-	.histogram {
-		height: 170px;
-		rect.nv-bar {
-			fill: @chartSelectionColor;
-		}
-	}
 	.probability-distributions {
 		height: 200px;
+		width: 300px;
 		display: block;
 	}
 	#feature-slice-distributions {
@@ -16,10 +11,11 @@ feature-slice-visualizer {
 	}
 	.scatterChart {
 		height: 320px;
+		width: 300px;
+		.nv-point {
+			fill-opacity: 0.2 !important;
+			stroke-opacity: 0.4 !important;
+		}
 	}
 
-	.nv-series-0 .nv-point {
-	  fill-opacity: 0.05 !important;
-	  stroke-opacity: 0.1 !important;
-	}
 }

@@ -12,3 +12,10 @@ Array.prototype.sum = ->
 # Calculates the mean
 Array.prototype.mean = ->
   return @sum() / @length
+
+objectMap = (object, callback) ->
+  mappedValues = []
+  for k, v of object
+    result = callback k, v
+    mappedValues.push result
+  return mappedValues

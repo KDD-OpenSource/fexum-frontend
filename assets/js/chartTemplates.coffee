@@ -3,6 +3,18 @@ app.constant 'chartColors',
   targetColor: '#4CAF50'
   selectionColor1: '#FFB74D'
   selectionColor2: '#FF5722'
+  targetClassColors: [
+    '#F44336',
+    '#9C27B0',
+    '#673AB7',
+    '#2196F3',
+    '#009688',
+    '#4CAF50',
+    '#FFEB3B',
+    '#FF5722',
+    '#795548',
+    '#000000'
+  ]
 app.constant 'chartTemplates',
   lineChart:
     options:
