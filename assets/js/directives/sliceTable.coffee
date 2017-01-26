@@ -13,14 +13,14 @@ app.directive 'sliceTable', [
         scopeUtils.waitForVariableSet scope, 'features'
           .then -> backendService.getSession()
           .then (session) ->
-            slices = $scope.features.map (feature) ->
+            slices = scope.features.map (feature) ->
               return session.retrieveSlices feature.id
             return $q.all slices
           .then (slices) ->
             mergedSlices = []
             return mergedSlices.concat slices
           .then (slices) ->
-            $scope.slices = slices
+            scope.slices = slices
           .fail console.error
 
         return

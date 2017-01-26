@@ -14,6 +14,7 @@ app.controller 'AnalysisCtrl', [
               floor: feature.min
               ceil: feature.max
               step: (feature.max - feature.min) / 100
+              precision: 4
               noSwitching: true
         # Bugfix for rzslider, where initial values were not drawn
         $timeout (-> $scope.$broadcast 'rzSliderForceRender'), 100

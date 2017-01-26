@@ -23,13 +23,15 @@
 								| [
 								input(type='number',
 									ng-model='getSlider(feature).minValue',
-									min='getSlider(feature).options.floor',
-									max='getSlider(feature).options.ceil')
+									step='{{getSlider(feature).options.step}}',
+									min='{{getSlider(feature).options.floor}}',
+									max='{{getSlider(feature).options.ceil}}')
 								| ,
 								input(type='number',
 									ng-model='getSlider(feature).maxValue',
-									min='getSlider(feature).options.floor',
-									max='getSlider(feature).options.ceil')
+									step='{{getSlider(feature).options.step}}',
+									min='{{getSlider(feature).options.floor}}',
+									max='{{getSlider(feature).options.ceil}}')
 								| ]
 
 			slice-table(features='selectedFeatures')
