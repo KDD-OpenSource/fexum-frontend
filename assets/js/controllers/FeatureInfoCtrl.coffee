@@ -6,7 +6,9 @@ app.controller 'FeatureInfoCtrl', [
   'chartColors',
   'backendService',
   'scopeUtils',
-  ($scope, $routeParams, $timeout, chartTemplates, chartColors, backendService, scopeUtils) ->
+  '$analytics',
+  ($scope, $routeParams, $timeout, chartTemplates, chartColors,
+  backendService, scopeUtils, $analytics) ->
 
     $scope.feature =
       name: $routeParams.featureName

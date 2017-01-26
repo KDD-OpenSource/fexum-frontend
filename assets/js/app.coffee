@@ -4,7 +4,8 @@ app = angular.module 'predots', [
   'nvd3',
   'ngWebSocket',
   'ngFileUpload',
-  'rzModule']
+  'rzModule',
+  'angulartics.google.analytics']
 
 # Define theme
 app.config ['$mdThemingProvider', ($mdThemingProvider) ->

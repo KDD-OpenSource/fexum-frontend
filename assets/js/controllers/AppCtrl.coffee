@@ -4,7 +4,8 @@ app.controller 'AppCtrl', [
   '$timeout',
   '$q',
   'scopeUtils',
-  ($scope, backendService, $timeout, $q, scopeUtils) ->
+  '$analytics',
+  ($scope, backendService, $timeout, $q, scopeUtils, $analytics) ->
 
     buildFeatureIdMap = ->
       $scope.featureIdMap = {}
@@ -50,7 +51,20 @@ app.controller 'AppCtrl', [
       searchItems = locatableFeatures.concat targetChoices
       return searchItems.sort (a, b) -> a.index - b.index
 
+    rarTime = []
     updateFeatureFromFeatureSelection = (featureData) ->
+      # Log rar calculation time in Analytics
+      if $scope.targetFeature? and rarTime[$scope.targetFeature.id]?
+        delta = Date.now() - rarTime[$scope.targetFeature.id]
+        rarTime[$scope.targetFeature.id] = null
+
+        $analytics.userTimings {
+              timingCategory: 'd' + $scope.dataset.name + '|t' + $scope.targetFeature.name,
+              timingVar: 'rarFinished',
+              timingLabel: 'ElapsedTimeMs',
+              timingValue: delta
+        }
+
       feature = $scope.featureIdMap[featureData.feature]
       feature.relevancy = featureData.relevancy
       feature.rank = featureData.rank
@@ -92,7 +106,7 @@ app.controller 'AppCtrl', [
     $scope.$on 'ws/relevancy_result', (event, payload) ->
       updateFeatureFromFeatureSelection(payload.data)
 
-    $scope.$watch 'datasetId', ((newValue, oldValue) ->
+    $scope.$watch 'dataset', ((newValue, oldValue) ->
       if newValue?
         $scope.retrieveFeatures()
           .then $scope.retrieveRarResults
@@ -104,11 +118,12 @@ app.controller 'AppCtrl', [
 
     backendService.getSession()
       .then (session) ->
-        $scope.datasetId = session.dataset
-        $scope.targetFeatureId = session.target
+        $scope.dataset = {id: session.dataset.id, name: session.dataset.name}
+        $scope.targetFeatureId = session.targetId
         selection = session.getSelection()
         if selection?
           $scope.selectedFeatures = selection
+      .fail console.error
 
     $scope.onFeatureSearched = (searchedItem) ->
       if not searchedItem?
@@ -122,6 +137,7 @@ app.controller 'AppCtrl', [
 
     $scope.setTarget = (targetFeature) ->
       $scope.targetFeature = targetFeature
+      rarTime[targetFeature.id] = Date.now()
 
       backendService.getSession()
         .then (session) -> session.setTarget targetFeature.id
@@ -134,4 +150,13 @@ app.controller 'AppCtrl', [
       # TODO internationalization
       $scope.addLoadingQueueItem relevancyUpdate,
                                  "Running feature selection for #{targetFeature.name}"
+
+    $scope.$watch 'targetFeature', (newTargetFeature) ->
+      if newTargetFeature?
+        # Track setting the target in relation to dataset
+        $analytics.eventTrack 'setTarget', {
+          category: 'd' + $scope.dataset.name,
+          label: 't' + $scope.targetFeature.name
+        }
+
 ]
