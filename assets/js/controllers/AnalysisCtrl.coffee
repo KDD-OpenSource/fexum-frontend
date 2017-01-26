@@ -34,5 +34,8 @@ app.controller 'AnalysisCtrl', [
         slider.minValue = feature.range[0]
         slider.maxValue = feature.range[1]
 
+    # TODO fill those in
+    $scope.selectedRanges = {}
+
     return
 ]

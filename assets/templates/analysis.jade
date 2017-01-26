@@ -36,4 +36,9 @@
 
 			md-content.horizontal-padding
 				slice-table(features='selectedFeatures', slice-click='updateFromSlice(slice)')
-//feature-slice-visualizer(target-feature='targetFeature', flex='60', ng-cloak, layout)
+feature-slice-visualizer(target-feature='targetFeature',
+	selected-features='selectedFeatures',
+	ranges='selectedRanges',
+	flex='60',
+	ng-cloak,
+	layout)

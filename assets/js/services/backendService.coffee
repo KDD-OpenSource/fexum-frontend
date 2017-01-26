@@ -150,6 +150,13 @@ app.factory 'backendService', [
             return slices
           .fail console.error
 
+      getProbabilityDistribution: (rangesSpecification) =>
+        $http.post API_URI + "targets/#{@target}/distributions", rangesSpecification
+          .then (response) ->
+            distribution = response.data
+            return distribution
+          .fail console.error
+
       retrieveRarResults: =>
         if @target?
           relevancy = $http.get API_URI + "targets/#{@target}/relevancy_results"
