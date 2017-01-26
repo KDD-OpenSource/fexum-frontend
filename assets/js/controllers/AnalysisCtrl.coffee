@@ -26,7 +26,7 @@ app.controller 'AnalysisCtrl', [
 
         # Create sliders
         $scope.sliders = {}
-        features.forEach (feature) ->
+        $scope.selectedFeatures.forEach (feature) ->
           $scope.sliders[feature.id] =
             minValue: feature.min
             maxValue: feature.max
