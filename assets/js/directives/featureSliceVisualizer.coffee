@@ -13,8 +13,6 @@ app.directive 'featureSliceVisualizer', [
         feature: '='
         targetFeature: '='
         range: '='
-        datasetName: '='
-        chartRange: '='
         close: '&onClose'
       link: (scope, element, attrs) ->
 

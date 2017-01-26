@@ -117,7 +117,7 @@ app.factory 'backendService', [
           .fail console.error
 
       retrieveSlices: (featureId) =>
-        $http.get API_URI + "targets/#{@target}/features/#{featureId}/slices"
+        $http.get API_URI + "targets/#{@targetId}/features/#{featureId}/slices"
           .then (response) ->
             sortByValue = (a, b) -> a.value - b.value
             slices = response.data.map (slice) ->
@@ -133,8 +133,8 @@ app.factory 'backendService', [
           .fail console.error
 
       retrieveRarResults: =>
-        if @target?
-          relevancy = $http.get API_URI + "targets/#{@target}/relevancy_results"
+        if @targetId?
+          relevancy = $http.get API_URI + "targets/#{@targetId}/relevancy_results"
             .then (response) ->
               rar_results = response.data
               return rar_results

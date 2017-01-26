@@ -25,7 +25,7 @@ app.controller 'FeatureInfoCtrl', [
       if $scope.feature? and $scope.targetFeature?
         # Track that a user opened feature info in relation to dataset/target
         $analytics.eventTrack 'featureClick', {
-          category: 'd' + $scope.datasetName + '|t' + $scope.targetFeature.name,
+          category: 'd' + $scope.dataset.name + '|t' + $scope.targetFeature.name,
           label: 'f' + $scope.feature.name
         }
 
@@ -108,7 +108,7 @@ app.controller 'FeatureInfoCtrl', [
               dispatch:
                 elementClick: (event) ->
                   $analytics.eventTrack 'bucketClick', {
-                    category: "d#{$scope.datasetName}|t#{$scope.targetFeature.name}" +
+                    category: "d#{$scope.dataset.name}|t#{$scope.targetFeature.name}" +
                               "|f#{$scope.feature.name}",
                     label: 'b' + event.data.range[0] + '-' + event.data.range[1]
                   }
