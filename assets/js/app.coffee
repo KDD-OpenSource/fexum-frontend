@@ -1,4 +1,5 @@
-app = angular.module 'predots', ['ngMaterial', 'ngRoute', 'nvd3', 'ngWebSocket', 'ngFileUpload']
+app = angular.module 'predots', ['ngMaterial', 'ngRoute', 'nvd3', 'ngWebSocket',
+                    'ngFileUpload', 'angulartics.google.analytics']
 
 # Define theme
 app.config ['$mdThemingProvider', ($mdThemingProvider) ->

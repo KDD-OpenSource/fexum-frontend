@@ -66,12 +66,14 @@ app.factory 'backendService', [
 
       @LAST_SESSION_KEY = 'lastSession'
 
-      constructor: (@id, @dataset, @target) ->
+      constructor: (@id, @dataset, @targetId) ->
 
-      @create: (datasetId) =>
-        return $http.post API_URI + 'sessions', dataset: datasetId
+      @create: (dataset) =>
+        return $http.post API_URI + 'sessions', dataset: dataset.id
           .then (response) =>
-            return @fromJson response.data
+            session = @fromJson response.data
+            session.dataset = dataset
+            return session
 
       @restore: =>
         lastSessionJson = localStorage.getItem @LAST_SESSION_KEY
@@ -83,18 +85,18 @@ app.factory 'backendService', [
         return new Session(
           json.id,
           json.dataset,
-          json.target
+          json.targetId
         )
 
       store: =>
         lastSession =
           id: @id
           dataset: @dataset
-          target: @target
+          targetId: @targetId
         localStorage.setItem Session.LAST_SESSION_KEY, angular.toJson(lastSession)
 
       retrieveFeatures: =>
-        $http.get API_URI + "datasets/#{@dataset}/features"
+        $http.get API_URI + "datasets/#{@dataset.id}/features"
           .then (response) ->
             # Response is in the form
             # [{name, rank, mean, variance, min, max}, ...]
@@ -105,17 +107,17 @@ app.factory 'backendService', [
           .fail console.error
 
       setTarget: (targetFeatureId) =>
-        @target = targetFeatureId
+        @targetId = targetFeatureId
         # Notify server of new target
         $http.put API_URI + "sessions/#{@id}/target", target: targetFeatureId
           .then (response) =>
-            @target = targetFeatureId
+            @targetId = targetFeatureId
             @store()
-            console.log "Set new target #{targetFeatureId} on server"
+            # console.log "Set new target #{targetFeatureId} on server"
           .fail console.error
 
       retrieveSlices: (featureId) =>
-        $http.get API_URI + "targets/#{@target}/features/#{featureId}/slices"
+        $http.get API_URI + "targets/#{@targetId}/features/#{featureId}/slices"
           .then (response) ->
             sortByValue = (a, b) -> a.value - b.value
             slices = response.data.map (slice) ->
@@ -131,8 +133,8 @@ app.factory 'backendService', [
           .fail console.error
 
       retrieveRarResults: =>
-        if @target?
-          relevancy = $http.get API_URI + "targets/#{@target}/relevancy_results"
+        if @targetId?
+          relevancy = $http.get API_URI + "targets/#{@targetId}/relevancy_results"
             .then (response) ->
               rar_results = response.data
               return rar_results
@@ -141,15 +143,14 @@ app.factory 'backendService', [
         return relevancy
 
     service =
-
       retrieveDatasets: retrieveDatasets
       retrieveHistogramBuckets: retrieveHistogramBuckets
       retrieveSamples: retrieveSamples
       waitForWebsocketEvent: waitForWebsocketEvent
 
-      getSession: (datasetId) ->
+      getSession: (dataset) ->
         session = @session or Session.restore()
-        if session? and (not datasetId? or session.dataset == datasetId)
+        if session? and (not dataset? or session.dataset.id == dataset.id)
           @session = session
           return $q.resolve session
 
@@ -158,23 +159,27 @@ app.factory 'backendService', [
           session.store()
           return session
 
-        if not datasetId?
+        if not dataset?
           return retrieveDatasets()
             .then (datasets) ->
               if datasets.length > 0
-                return datasets[0].id
+                return datasets[0]
               else
                 return $q.reject 'No datasets available'
             .then Session.create
             .then saveAndPersist
+            .fail console.error
 
         return retrieveSessions()
           .then (sessions) ->
-            matchingSessions = sessions.filter (sess) -> sess.dataset == datasetId
+            matchingSessions = sessions.filter (sess) -> sess.dataset == dataset.id
             if matchingSessions.length > 0
-              return Session.fromJson matchingSessions[0]
-            return Session.create datasetId
+              session = Session.fromJson matchingSessions[0]
+              session.dataset = dataset
+              return session
+            return Session.create dataset
           .then saveAndPersist
+          .fail console.error
 
     return service
 ]

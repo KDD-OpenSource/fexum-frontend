@@ -2,7 +2,7 @@ app.directive 'featureSliceVisualizer', [
   '$timeout',
   'chartTemplates',
   'chartColors',
-  'backendService',
+  'backendService'
   ($timeout, chartTemplates, chartColors, backendService) ->
 
     return {
@@ -117,6 +117,13 @@ app.directive 'featureSliceVisualizer', [
           return
 
         scope.showProbabilityDistributions = (slice) ->
+          backendService.getSession().then (session) ->
+            $analytics.eventTrack 'sliceClick', {
+              category: "d#{session.dataset.name}|t#{scope.targetFeature.name}" +
+                        "|f#{scope.feature.name}",
+              label: 's' + slice.range[0] + '-' + slice.range[1]
+            }
+
           generateChartDataFromValues = (item, idx, arr) ->
             return { x: item.value, y: item.frequency }
 

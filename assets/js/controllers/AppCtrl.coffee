@@ -2,7 +2,8 @@ app.controller 'AppCtrl', [
   '$scope',
   'backendService',
   '$timeout',
-  ($scope, backendService, $timeout) ->
+  '$analytics'
+  ($scope, backendService, $timeout, $analytics) ->
 
     # Retrieve features
     $scope.retrieveFeatures = ->
@@ -16,7 +17,20 @@ app.controller 'AppCtrl', [
           $scope.targetFeature = $scope.featureIdMap[$scope.targetFeatureId]
         .fail console.error
 
+    rarTime = []
     updateFeatureFromFeatureSelection = (featureData) ->
+      # Log rar calculation time in Analytics
+      if $scope.targetFeature? and rarTime[$scope.targetFeature.id]?
+        delta = Date.now() - rarTime[$scope.targetFeature.id]
+        rarTime[$scope.targetFeature.id] = null
+
+        $analytics.userTimings {
+              timingCategory: 'd' + $scope.dataset.name + '|t' + $scope.targetFeature.name,
+              timingVar: 'rarFinished',
+              timingLabel: 'ElapsedTimeMs',
+              timingValue: delta
+        }
+
       feature = $scope.featureIdMap[featureData.feature]
       feature.relevancy = featureData.relevancy
       feature.rank = featureData.rank
@@ -66,22 +80,30 @@ app.controller 'AppCtrl', [
 
     backendService.getSession()
       .then (session) ->
-        $scope.dataset = {id: session.dataset}
-        $scope.targetFeatureId = session.target
+        $scope.dataset = {id: session.dataset.id, name: session.dataset.name}
+        $scope.targetFeatureId = session.targetId
+      .fail console.error
 
     $scope.$watch 'targetFeature', (newTargetFeature) ->
-      if newTargetFeature
+      if newTargetFeature?
         $scope.searchText = newTargetFeature.name
+        # Track setting the target in relation to dataset
+        $analytics.eventTrack 'setTarget', {
+          category: 'd' + $scope.dataset.name,
+          label: 't' + $scope.targetFeature.name
+        }
 
     $scope.setTarget = (targetFeature) ->
       if targetFeature?
         $scope.targetFeature = targetFeature
+        rarTime[targetFeature.id] = Date.now()
 
         backendService.getSession()
           .then (session) -> session.setTarget targetFeature.id
           .then ->
             for feature in $scope.features
               feature.relevancy = null
+
 
         # Create promise that waits for updated relevancies
         relevancyUpdate = backendService.waitForWebsocketEvent 'rar_result'
