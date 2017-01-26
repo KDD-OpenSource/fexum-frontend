@@ -53,6 +53,7 @@ app.directive 'featureSliceVisualizer', [
                 chart:
                   height: 200 # TODO make this work in css
                   interactiveUpdateDelay: 0
+                  duration: 0
                   xAxis:
                     axisLabel: scope.xFeature.name
                   yAxis:
@@ -149,8 +150,11 @@ app.directive 'featureSliceVisualizer', [
           scope.promiseCDP = $timeout updateConditionalProbDistrChart, 50
 
           if scope.selectedFeatures.length >= 2
-            scope.scatterChart.options.chart.xAxis.axisLabel = scope.xFeature.name
-            scope.scatterChart.options.chart.yAxis.axisLabel = scope.yFeature.name
+            scatterChart = scope.scatterChart.options.chart
+            scatterChart.xAxis.axisLabel = scope.xFeature.name
+            scatterChart.yAxis.axisLabel = scope.yFeature.name
+            scatterChart.forceY = [scope.yFeature.min, scope.yFeature.max]
+            scatterChart.forceX = [scope.xFeature.min, scope.xFeature.max]
             scope.scatterChart.data.length = 0
             getTargetClasses().forEach (targetClass, i) ->
               scope.scatterChart.data.push
