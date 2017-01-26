@@ -56,13 +56,13 @@ app.controller 'AppCtrl', [
     updateFeatureFromFeatureSelection = (featureData) ->
       feature = $scope.featureIdMap[featureData.feature]
       feature.relevancy = featureData.relevancy
-      feature.redundancy = featureData.redundancy
       feature.rank = featureData.rank
 
     $scope.retrieveRarResults = ->
       backendService.getSession()
         .then (session) -> session.retrieveRarResults()
         .then (rarResults) -> rarResults.forEach updateFeatureFromFeatureSelection
+        .fail console.error
 
     $scope.loadingQueue = []
     $scope.addLoadingQueueItem = (promise, message) ->
@@ -92,7 +92,7 @@ app.controller 'AppCtrl', [
             $timeout refetch, timeoutDuration
       $timeout refetch, timeoutDuration
 
-    $scope.$on 'ws/rar_result', (event, payload) ->
+    $scope.$on 'ws/relevancy_result', (event, payload) ->
       updateFeatureFromFeatureSelection(payload.data)
 
     $scope.$watch 'datasetId', ((newValue, oldValue) ->
