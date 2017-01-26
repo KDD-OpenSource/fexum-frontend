@@ -138,15 +138,7 @@ app.factory 'backendService', [
               return rar_results
         else
           relevancy = $q.resolve []
-        redundancy = $http.get API_URI + "datasets/#{@dataset}/redundancy_results"
-          .then (response) ->
-            rar_results = response.data
-            return rar_results
-        return $q.all [relevancy, redundancy]
-          .then (results) ->
-            return results[0].concat results[1]
-
-
+        return relevancy
 
     service =
 
