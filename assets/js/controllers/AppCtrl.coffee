@@ -33,7 +33,6 @@ app.controller 'AppCtrl', [
 
       feature = $scope.featureIdMap[featureData.feature]
       feature.relevancy = featureData.relevancy
-      feature.redundancy = featureData.redundancy
       feature.rank = featureData.rank
 
     $scope.retrieveRarResults = ->
@@ -70,7 +69,7 @@ app.controller 'AppCtrl', [
             $timeout refetch, timeoutDuration
       $timeout refetch, timeoutDuration
 
-    $scope.$on 'ws/rar_result', (event, payload) ->
+    $scope.$on 'ws/relevancy_result', (event, payload) ->
       updateFeatureFromFeatureSelection(payload.data)
 
     $scope.$watch 'targetFeature', (newTargetFeature) ->
@@ -84,12 +83,11 @@ app.controller 'AppCtrl', [
 
     backendService.getSession()
       .then (session) ->
-        $scope.datasetId = session.dataset.id
-        $scope.datasetName = session.dataset.name
+        $scope.dataset = {id: session.dataset.id, name: session.dataset.name}
         $scope.targetFeatureId = session.targetId
       .fail console.error
 
-    $scope.$watch 'datasetId', ((newValue, oldValue) ->
+    $scope.$watch 'dataset', ((newValue, oldValue) ->
       if newValue?
         $scope.retrieveFeatures()
           .then $scope.retrieveRarResults
