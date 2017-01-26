@@ -10,10 +10,18 @@ app.controller 'FeatureSubsetCtrl', [
           for feature in features
             searchedName = $routeParams.select or $routeParams.unselect
             if feature.name == searchedName
-              feature.selected = $routeParams.select?
+              if $routeParams.select?
+                $scope.select feature
+              else
+                $scope.unselect feature
               return
 
     $scope.unselect = (feature) ->
       index = $scope.selectedFeatures.indexOf feature
       $scope.selectedFeatures.splice index, 1
+
+    $scope.select = (feature) ->
+      index = $scope.selectedFeatures.indexOf feature
+      if index == -1
+        $scope.selectedFeatures.push feature
 ]

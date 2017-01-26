@@ -69,19 +69,7 @@ app.directive 'featureMap', ['$timeout', 'chartColors', ($timeout, chartColors) 
 
         getFeatureLink = (feature) ->
           encodedName = window.encodeURIComponent feature.name
-          if feature == scope.targetFeature
-            return '#'
-          return '/selections'
-
-        getClickAction = (feature) ->
-          if feature == scope.targetFeature
-            return
-          scope.$apply ->
-            index = scope.selectedFeatures.indexOf feature
-            if index >= 0
-              scope.selectedFeatures.splice index, 1
-            else
-              scope.selectedFeatures.push feature
+          return "/feature/#{encodedName}"
 
         # Update feature map using d3
         nodes = d3.select svg[0]
@@ -101,7 +89,6 @@ app.directive 'featureMap', ['$timeout', 'chartColors', ($timeout, chartColors) 
         # Update elements
         nodes.select 'a'
               .attr 'xlink:href', getFeatureLink
-              .on 'click', getClickAction
               .select 'text'
               .text (feature) -> feature.name
         nodes.attr 'transform', getFeatureTranslationString
