@@ -22,14 +22,16 @@
 							span
 								| [
 								input(type='number',
-									ng-model='getSlider(feature).minValue',
-									step='{{getSlider(feature).options.step}}',
+									ng-model='getSlider(feature).minValueFnc',
+									ng-model-options='{debounce:1000, getterSetter: true}',
+									step='any',
 									min='{{getSlider(feature).options.floor}}',
 									max='{{getSlider(feature).options.ceil}}')
 								| ,
 								input(type='number',
-									ng-model='getSlider(feature).maxValue',
-									step='{{getSlider(feature).options.step}}',
+									ng-model='getSlider(feature).maxValueFnc',
+									ng-model-options='{debounce:1000, getterSetter: true}',
+									step='any',
 									min='{{getSlider(feature).options.floor}}',
 									max='{{getSlider(feature).options.ceil}}')
 								| ]

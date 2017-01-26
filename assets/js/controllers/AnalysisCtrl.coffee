@@ -29,7 +29,17 @@ app.controller 'AnalysisCtrl', [
         $scope.selectedFeatures.forEach (feature) ->
           $scope.sliders[feature.id] =
             minValue: feature.min
+            minValueFnc: (newValue) ->
+              if newValue?
+                return @minValue = Math.max newValue, feature.min
+              else
+                return @minValue
             maxValue: feature.max
+            maxValueFnc: (newValue) ->
+              if newValue?
+                return @maxValue = Math.min newValue, feature.max
+              else
+                return @maxValue
             options:
               floor: feature.min
               ceil: feature.max
