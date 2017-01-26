@@ -13,13 +13,19 @@ app.directive 'sliceTable', [
         scopeUtils.waitForVariableSet scope, 'features'
           .then -> backendService.getSession()
           .then (session) ->
-            slices = scope.features.map (feature) ->
-              return session.retrieveSlices feature.id
-            return $q.all slices
+            ids = scope.features.map (f) -> f.id
+            return session.retrieveSlicesForSubset ids
           .then (slices) ->
-            mergedSlices = []
-            return mergedSlices.concat slices
-          .then (slices) ->
+            sortByDeviation = (a, b) -> b.deviation - a.deviation
+            slices.sort sortByDeviation
+            slices.forEach (slice) ->
+              # Create feature range dictionary for participating features
+              slice.rangeDict = {}
+              slice.features.forEach (participatingItem) ->
+                slice.rangeDict[participatingItem.feature] = participatingItem.range
+              # Define function to obtain the range for a given feature
+              slice.getFeatureRange = (feature) ->
+                return slice.rangeDict[feature.id]
             scope.slices = slices
           .fail console.error
 

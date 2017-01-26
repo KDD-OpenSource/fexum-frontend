@@ -6,8 +6,8 @@
 					md-icon keyboard_arrow_left
 				span Analyze features
 		md-content(flex, layout='column')
-			div(layout='row')
-				.feature-column(ng-repeat='feature in selectedFeatures')
+			div(flex='noshrink', layout='row')
+				md-content.feature-column(ng-repeat='feature in selectedFeatures')
 					section
 						md-subheader.md-primary Feature #[i {{feature.name}}]
 						//time-series-plot(feature='feature')
@@ -34,5 +34,6 @@
 									max='{{getSlider(feature).options.ceil}}')
 								| ]
 
-			slice-table(features='selectedFeatures')
+			md-content.horizontal-padding
+				slice-table(features='selectedFeatures')
 //feature-slice-visualizer(target-feature='targetFeature', flex='60', ng-cloak, layout)

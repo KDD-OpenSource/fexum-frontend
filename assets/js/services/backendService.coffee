@@ -114,6 +114,27 @@ app.factory 'backendService', [
             console.log "Set new target #{targetFeatureId} on server"
           .fail console.error
 
+      retrieveSlicesForSubset: (featureSubset) =>
+        if featureSubset.length == 0
+          return $q.resolve []
+        paramsString = featureSubset.join ','
+        $http.get API_URI + "targets/#{@target}/slices?feature__in=#{paramsString}"
+          .then (response) ->
+            sortByValue = (a, b) -> a.value - b.value
+            slices = response.data.map (slice) ->
+              features = slice.features.map (feature) ->
+                return {
+                  feature: feature.feature
+                  range: [feature.from_value, feature.to_value]
+                }
+              return {
+                features: features
+                frequency: slice.frequency
+                deviation: slice.deviation
+              }
+            return slices
+          .fail console.error
+
       retrieveSlices: (featureId) =>
         $http.get API_URI + "targets/#{@target}/features/#{featureId}/slices"
           .then (response) ->
@@ -122,7 +143,6 @@ app.factory 'backendService', [
               return {
                 range: [slice.from_value, slice.to_value]
                 frequency: slice.frequency
-                significance: slice.significance
                 deviation: slice.deviation
                 marginal: slice.marginal_distribution.sort sortByValue
                 conditional: slice.conditional_distribution.sort sortByValue

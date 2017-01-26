@@ -1,10 +1,10 @@
 table
   thead
     tr
-      td Score
-      td(ng-repeat='feature in selectedFeatures') Range of {{feature.name}}
+      th Score
+      th(ng-repeat='feature in features') Range of {{feature.name}}
   tbody
     tr(ng-repeat='slice in slices')
       td {{slice.deviation | number:4}}
-      td(ng-repeat='feature in selectedFeatures').
+      td(ng-repeat='feature in features').
         [{{slice.getFeatureRange(feature)[0]}}, {{slice.getFeatureRange(feature)[1]}}]
