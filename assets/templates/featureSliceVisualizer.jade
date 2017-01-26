@@ -14,13 +14,15 @@
 					nvd3.chart.scatterChart(options='scatterChart.options', data='scatterChart.data', api='scatterChartApi')
 				.horizontal-padding(layout='row', layout-margin)
 					span(flex) Feature on y-axis
-					md-select(ng-model='yFeature', aria-label='Feature on y-axis')
-						md-option(ng-repeat='feature in selectedFeatures | filter:!{id:xFeature.id}',
+					md-select(ng-model='yFeature', ng-change='updateYFeature(yFeature)', aria-label='Feature on y-axis')
+						md-option(ng-repeat='feature in selectedFeatures',
+											ng-disabled='feature == xFeature',
 											ng-value='feature').
 							{{feature.name}}
 				.horizontal-padding(layout='row', layout-margin)
 					span(flex) Feature on x-axis
-					md-select(ng-model='xFeature', aria-label='Feature on x-axis')
-						md-option(ng-repeat='feature in selectedFeatures | filter:!{id:yFeature.id}',
+					md-select(ng-model='xFeature', ng-change='updateXFeature(xFeature)', aria-label='Feature on x-axis')
+						md-option(ng-repeat='feature in selectedFeatures',
+											ng-disabled='feature == yFeature',
 											ng-value='feature').
 							{{feature.name}}

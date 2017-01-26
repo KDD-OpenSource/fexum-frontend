@@ -1,10 +1,11 @@
 app.directive 'featureSliceVisualizer', [
+  '$timeout',
   '$q',
   'chartTemplates',
   'chartColors',
   'backendService',
   'scopeUtils',
-  ($q, chartTemplates, chartColors, backendService, scopeUtils) ->
+  ($timeout, $q, chartTemplates, chartColors, backendService, scopeUtils) ->
 
     return {
       restrict: 'E'
@@ -119,6 +120,7 @@ app.directive 'featureSliceVisualizer', [
           filterFeatures = scope.selectedFeatures
           return createSamples scope.xFeature, scope.yFeature, filterFeatures, targetClass
 
+        updateChartCounter = 0
         scope.updateCharts = ->
           if not scope.ranges?
             return
@@ -130,14 +132,24 @@ app.directive 'featureSliceVisualizer', [
               to_value: range[1]
             }
 
-          backendService.getSession()
-            .then (session) ->
-              return session.getProbabilityDistribution rangesQuery
-            .then (conditionalProbDistr) ->
-              scope.conditionalProbDistr.values = conditionalProbDistr
-            .fail console.error
+          updateChartCounter += 1
+          currentRun = updateChartCounter
+          updateConditionalProbDistrChart = ->
+            backendService.getSession()
+              .then (session) ->
+                return session.getProbabilityDistribution rangesQuery
+              .then (conditionalProbDistr) ->
+                # Only update if there was no update to the charts since last time
+                if currentRun == updateChartCounter
+                  scope.conditionalProbDistr.values = conditionalProbDistr
+              .fail console.error
+          if scope.promiseCDP?
+            $timeout.cancel scope.promiseCDP
+          scope.promiseCDP = $timeout updateConditionalProbDistrChart, 50
 
           if scope.selectedFeatures.length >= 2
+            scope.scatterChart.options.chart.xAxis.axisLabel = scope.xFeature.name
+            scope.scatterChart.options.chart.yAxis.axisLabel = scope.yFeature.name
             scope.scatterChart.data.length = 0
             getTargetClasses().forEach (targetClass) ->
               scope.scatterChart.data.push
@@ -149,7 +161,14 @@ app.directive 'featureSliceVisualizer', [
             scope.updateCharts()
 
         scope.$watch 'ranges', updateChartsIfInitialized, true
-        scope.$watchGroup ['xFeature', 'yFeature'], updateChartsIfInitialized
+
+        scope.updateYFeature = (newFeature) ->
+          scope.yFeature = newFeature
+          scope.updateCharts()
+
+        scope.updateXFeature = (newFeature) ->
+          scope.xFeature = newFeature
+          scope.updateCharts()
 
         return
     }
