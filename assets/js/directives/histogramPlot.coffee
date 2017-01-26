@@ -34,7 +34,8 @@ app.directive 'histogramPlot', [
                       slices = slicesContained bucket
                       if slices.length == 0
                         return null
-                      sliceSignificances = slices.map (slice) -> slice.significance
+                      # TODO reintroduce significances or rename to deviations
+                      sliceSignificances = slices.map (slice) -> slice.deviation
                       return sliceSignificances.mean()
 
                     filteredSignificances = bucketSignificances.filter (b) -> b?
