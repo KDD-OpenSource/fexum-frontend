@@ -123,7 +123,7 @@ app.controller 'AppCtrl', [
             feature.relevancy = null
 
       # Create promise that waits for updated relevancies
-      relevancyUpdate = backendService.waitForWebsocketEvent 'rar_result'
+      relevancyUpdate = backendService.waitForWebsocketEvent 'relevancy_result'
       # TODO internationalization
       $scope.addLoadingQueueItem relevancyUpdate,
                                  "Running feature selection for #{targetFeature.name}"
