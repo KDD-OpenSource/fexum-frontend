@@ -58,7 +58,7 @@ app.controller 'AppCtrl', [
     $scope.$on 'ws/relevancy_result', (event, payload) ->
       updateFeatureFromFeatureSelection(payload.data)
 
-    $scope.$watch 'datasetId', ((newValue, oldValue) ->
+    $scope.$watch 'dataset', ((newValue, oldValue) ->
       if newValue?
         $scope.retrieveFeatures()
           .then $scope.retrieveRarResults
@@ -66,7 +66,7 @@ app.controller 'AppCtrl', [
 
     backendService.getSession()
       .then (session) ->
-        $scope.datasetId = session.dataset
+        $scope.dataset = {id: session.dataset}
         $scope.targetFeatureId = session.target
 
     $scope.$watch 'targetFeature', (newTargetFeature) ->

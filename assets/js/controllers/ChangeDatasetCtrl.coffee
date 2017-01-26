@@ -9,7 +9,7 @@ app.controller 'ChangeDatasetCtrl', [
     $scope.progress = 0
 
     setCurrentDatasetFromSession = (session) ->
-      $scope.datasetId = session.dataset
+      $scope.dataset.id = session.dataset
       filter = (d) -> d.id == session.dataset
       $scope.currentDataset = $scope.datasets.filter(filter)[0]
 
