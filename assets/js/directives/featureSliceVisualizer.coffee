@@ -2,9 +2,8 @@ app.directive 'featureSliceVisualizer', [
   '$timeout',
   'chartTemplates',
   'chartColors',
-  'backendService',
-  '$analytics'
-  ($timeout, chartTemplates, chartColors, backendService, $analytics) ->
+  'backendService'
+  ($timeout, chartTemplates, chartColors, backendService) ->
 
     return {
       restrict: 'E'
