@@ -6,7 +6,21 @@
 		md-content(layout='column')
 			section
 				md-subheader.md-primary Probability distributions
-				nvd3.chart.probability-distributions(options='probabilityDistributions.options', data='probabilityDistributions.data')
-			section
+				.chart-holder
+					nvd3.chart.probability-distributions(options='probabilityDistributions.options', data='probabilityDistributions.data')
+			section(ng-if='selectedFeatures.length >= 2')
 				md-subheader.md-primary Scatter plot
-				nvd3.chart.scatterChart(options='scatterChart.options', data='scatterChart.data', api='scatterChartApi')
+				.chart-holder(flex='noshrink')
+					nvd3.chart.scatterChart(options='scatterChart.options', data='scatterChart.data', api='scatterChartApi')
+				.horizontal-padding(layout='row', layout-margin)
+					span(flex) Feature on y-axis
+					md-select(ng-model='yFeature', aria-label='Feature on y-axis')
+						md-option(ng-repeat='feature in selectedFeatures | filter:!{id:xFeature.id}',
+											ng-value='feature').
+							{{feature.name}}
+				.horizontal-padding(layout='row', layout-margin)
+					span(flex) Feature on x-axis
+					md-select(ng-model='xFeature', aria-label='Feature on x-axis')
+						md-option(ng-repeat='feature in selectedFeatures | filter:!{id:yFeature.id}',
+											ng-value='feature').
+							{{feature.name}}

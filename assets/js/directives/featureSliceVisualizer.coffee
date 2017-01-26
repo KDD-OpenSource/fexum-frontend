@@ -17,7 +17,7 @@ app.directive 'featureSliceVisualizer', [
 
         scope.setupCharts = ->
           marginalProbDistr =
-            values: scope.targetFeature.marginalDistribution
+            values: scope.targetFeature.marginalProbDistr
             key: 'Marginal probability distribution'
             area: true
             color: chartColors.targetColor
@@ -36,6 +36,7 @@ app.directive 'featureSliceVisualizer', [
                 yAxis:
                   axisLabel: 'Probability density'
                   tickFormat: d3.format '.0%'
+                forceY: [0, 1]
                 stacked: false
                 showControls: false
                 legend:
@@ -43,19 +44,20 @@ app.directive 'featureSliceVisualizer', [
                   maxKeyLength: 1000
             data: [marginalProbDistr, conditionalProbDistr]
 
-          # Store distribution in scope to update later
-          scope.conditionalProbDistr = conditionalProbDistr
+          scope.conditionalProbDistr = scope.probabilityDistributions.data[1]
 
-          scope.scatterChart = angular.merge {}, chartTemplates.scatterChart,
-            options:
-              chart:
-                xAxis:
-                  axisLabel: scope.xFeature.name
-                yAxis:
-                  axisLabel: scope.yFeature.name
-                legend:
-                  updateState: false
-            data: []
+          if scope.selectedFeatures.length >= 2
+            scope.scatterChart = angular.merge {}, chartTemplates.scatterChart,
+              options:
+                chart:
+                  height: 200 # TODO make this work in css
+                  xAxis:
+                    axisLabel: scope.xFeature.name
+                  yAxis:
+                    axisLabel: scope.yFeature.name
+                  legend:
+                    updateState: false
+              data: []
           return
 
         retrieveSamples = (feature) ->
@@ -74,12 +76,18 @@ app.directive 'featureSliceVisualizer', [
 
         scopeUtils.waitForVariableSet scope, 'targetFeature'
           .then ->
+
+            # Set defaults for xFeature and yFeature
+            if scope.selectedFeatures.length >= 2
+              scope.xFeature = scope.selectedFeatures[0]
+              scope.yFeature = scope.selectedFeatures[1]
+            
             promises = scope.selectedFeatures.map retrieveSamples
             promises.push retrieveSamples scope.targetFeature
             promises.push retrieveMarginalDistribution()
             $q.all promises
-              .then -> scope.setupCharts
-              .then -> scope.updateCharts
+              .then -> scope.setupCharts()
+              .then -> scope.updateCharts()
               .then -> scope.initialized = true
               .fail console.error
           .fail console.error
@@ -108,38 +116,40 @@ app.directive 'featureSliceVisualizer', [
             }
           
         createSamplesForState = (targetClass) ->
-          displayedFeatures = new Set [scope.xFeature, scope.yFeature]
-          filterFeatures = scope.selectedFeatures.filter (x) -> not displayedFeatures.has x
+          filterFeatures = scope.selectedFeatures
           return createSamples scope.xFeature, scope.yFeature, filterFeatures, targetClass
 
         scope.updateCharts = ->
           if not scope.ranges?
             return
 
-          rangesQuery = scope.ranges.map (featureId, range) ->
+          rangesQuery = objectMap scope.ranges, (featureId, range) ->
             return {
               feature: featureId
               from_value: range[0]
               to_value: range[1]
             }
 
-          session = backendService.getSession()
-          session
+          backendService.getSession()
             .then (session) ->
               return session.getProbabilityDistribution rangesQuery
             .then (conditionalProbDistr) ->
               scope.conditionalProbDistr.values = conditionalProbDistr
             .fail console.error
 
-          scope.scatterChart.data.clear()
-          getTargetClasses().forEach (targetClass) ->
-            scope.scatterChart.data.push
-              key: targetClass
-              values: createSamplesForState targetClass
+          if scope.selectedFeatures.length >= 2
+            scope.scatterChart.data.length = 0
+            getTargetClasses().forEach (targetClass) ->
+              scope.scatterChart.data.push
+                key: targetClass
+                values: createSamplesForState targetClass
 
-        scope.$watch 'ranges', ->
+        updateChartsIfInitialized = ->
           if scope.initialized
             scope.updateCharts()
+
+        scope.$watch 'ranges', updateChartsIfInitialized, true
+        scope.$watchGroup ['xFeature', 'yFeature'], updateChartsIfInitialized
 
         return
     }

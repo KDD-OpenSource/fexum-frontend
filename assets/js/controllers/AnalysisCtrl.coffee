@@ -3,8 +3,28 @@ app.controller 'AnalysisCtrl', [
   '$timeout',
   ($scope, $timeout) ->
 
+    $scope.selectedRanges = {}
+
+    updateSelectedRangeForFeature = (featureId) ->
+      slider = $scope.sliders[featureId]
+      range = [slider.minValue, slider.maxValue]
+      $scope.selectedRanges[featureId] = range
+
+    sliderWatches = []
+
+    watchSlider = (featureId) ->
+      watchVariables = ["sliders['#{featureId}'].minValue", "sliders['#{featureId}'].maxValue"]
+      return $scope.$watchGroup watchVariables, ->
+        updateSelectedRangeForFeature featureId
+
     $scope.$watch 'features', (features) ->
       if features?
+        # Clear current watches
+        sliderWatches.forEach (unregisterWatch) ->
+          unregisterWatch()
+        sliderWatches.length = 0
+
+        # Create sliders
         $scope.sliders = {}
         features.forEach (feature) ->
           $scope.sliders[feature.id] =
@@ -16,6 +36,9 @@ app.controller 'AnalysisCtrl', [
               step: (feature.max - feature.min) / 100
               precision: 4
               noSwitching: true
+          updateSelectedRangeForFeature feature.id
+          sliderWatches.push watchSlider feature.id
+
         # Bugfix for rzslider, where initial values were not drawn
         $timeout (-> $scope.$broadcast 'rzSliderForceRender'), 1000
 
@@ -36,9 +59,6 @@ app.controller 'AnalysisCtrl', [
         slider = $scope.sliders[feature.feature]
         slider.minValue = feature.range[0]
         slider.maxValue = feature.range[1]
-
-    # TODO fill those in
-    $scope.selectedRanges = {}
 
     return
 ]

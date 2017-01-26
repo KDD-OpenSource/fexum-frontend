@@ -4,7 +4,7 @@
 			.md-toolbar-tools
 				span Selected features
 				span(flex)
-				md-button.md-icon-button(aria-label='Analyze', href='/analyze')
+				md-button.md-icon-button(aria-label='Analyze', href='/analyze', ng-disabled='selectedFeatures.length == 0')
 					md-icon lightbulb_outline
 		md-content.md-padding
 			md-list
