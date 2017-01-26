@@ -178,6 +178,13 @@ app.factory 'backendService', [
           relevancy = $q.resolve []
         return relevancy
 
+      retrieveRedundancies: =>
+        return $http.get API_URI + "datasets/#{@dataset.id}/redundancy_results"
+          .then (response) ->
+            redundancies = response.data
+            return redundancies
+          .fail console.error
+
     service =
       retrieveDatasets: retrieveDatasets
       retrieveHistogramBuckets: retrieveHistogramBuckets

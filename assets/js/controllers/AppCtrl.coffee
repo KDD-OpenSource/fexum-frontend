@@ -34,6 +34,14 @@ app.controller 'AppCtrl', [
             $scope.selectedFeatures = newSelectedFeatures
         .fail console.error
 
+
+    $scope.retrieveRedundancies = ->
+      backendService.getSession()
+        .then (session) -> session.retrieveRedundancies()
+        .then (redundancies) ->
+          redundancies.forEach updateRedundanciesFromItem
+        .fail console.error
+
     $scope.getSearchItems = ->
       categoricalFeatures = $scope.features.filter (f) -> f.is_categorical
       targetChoices = categoricalFeatures.map (feature, i) ->
@@ -68,6 +76,16 @@ app.controller 'AppCtrl', [
       feature = $scope.featureIdMap[featureData.feature]
       feature.relevancy = featureData.relevancy
       feature.rank = featureData.rank
+
+    $scope.redundancies = {}
+    updateRedundanciesFromItem = (redundancyItem) ->
+      first = redundancyItem.first_feature
+      second = redundancyItem.second_feature
+      $scope.redundancies[first + ',' + second] =
+        firstFeature: first
+        secondFeature: second
+        redundancy: redundancyItem.redundancy
+        weight: redundancyItem.weight
 
     $scope.retrieveRarResults = ->
       backendService.getSession()
@@ -106,10 +124,14 @@ app.controller 'AppCtrl', [
     $scope.$on 'ws/relevancy_result', (event, payload) ->
       updateFeatureFromFeatureSelection(payload.data)
 
+    $scope.$on 'ws/redundancy_result', (event, payload) ->
+      updateRedundanciesFromItem payload
+
     $scope.$watch 'dataset', ((newValue, oldValue) ->
       if newValue?
         $scope.retrieveFeatures()
           .then $scope.retrieveRarResults
+          .then $scope.retrieveRedundancies
       ), true
 
     $scope.$watchCollection 'selectedFeatures', (newSelectedFeatures) ->
