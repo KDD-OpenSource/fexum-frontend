@@ -62,22 +62,27 @@ app.directive 'featureSliceVisualizer', [
           if not feature.samples?
             return backendService.retrieveSamples feature.id
               .then (samples) -> feature.samples = samples
+              .fail console.error
           else
             return $q.resolve feature.samples
+
+        retrieveMarginalDistribution = ->
+          return backendService.getSession()
+            .then (session) -> session.getProbabilityDistribution []
+            .then (distr) -> scope.targetFeature.marginalProbDistr = distr
+            .fail console.error
 
         scopeUtils.waitForVariableSet scope, 'targetFeature'
           .then ->
             promises = scope.selectedFeatures.map retrieveSamples
             promises.push retrieveSamples scope.targetFeature
-            promises.push backendService.getSession()
-              # Retrieve marginal probability distribution for target
-              .then (session) -> session.getProbabilityDistribution []
-              .then (distr) -> scope.targetFeature.marginalProbDistr = distr
+            promises.push retrieveMarginalDistribution()
             $q.all promises
               .then -> scope.setupCharts
               .then -> scope.updateCharts
               .then -> scope.initialized = true
               .fail console.error
+          .fail console.error
 
         getTargetClasses = ->
           return scope.targetFeature.marginalProbDistr.map (distrBucket) ->
