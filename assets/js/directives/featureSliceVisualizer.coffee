@@ -52,6 +52,7 @@ app.directive 'featureSliceVisualizer', [
               options:
                 chart:
                   height: 200 # TODO make this work in css
+                  interactiveUpdateDelay: 0
                   xAxis:
                     axisLabel: scope.xFeature.name
                   yAxis:
