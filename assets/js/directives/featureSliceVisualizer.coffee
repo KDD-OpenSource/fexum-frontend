@@ -152,10 +152,11 @@ app.directive 'featureSliceVisualizer', [
             scope.scatterChart.options.chart.xAxis.axisLabel = scope.xFeature.name
             scope.scatterChart.options.chart.yAxis.axisLabel = scope.yFeature.name
             scope.scatterChart.data.length = 0
-            getTargetClasses().forEach (targetClass) ->
+            getTargetClasses().forEach (targetClass, i) ->
               scope.scatterChart.data.push
                 key: targetClass
                 values: createSamplesForState targetClass
+                color: chartColors.targetClassColors[i]
 
         updateChartsIfInitialized = ->
           if scope.initialized
