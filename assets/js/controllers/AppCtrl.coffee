@@ -78,6 +78,12 @@ app.controller 'AppCtrl', [
           .then $scope.retrieveRarResults
       ), true
 
+    backendService.getSession()
+      .then (session) ->
+        $scope.dataset = {id: session.dataset.id, name: session.dataset.name}
+        $scope.targetFeatureId = session.targetId
+      .fail console.error
+
     $scope.$watch 'targetFeature', (newTargetFeature) ->
       if newTargetFeature?
         $scope.searchText = newTargetFeature.name
@@ -86,12 +92,6 @@ app.controller 'AppCtrl', [
           category: 'd' + $scope.dataset.name,
           label: 't' + $scope.targetFeature.name
         }
-
-    backendService.getSession()
-      .then (session) ->
-        $scope.dataset = {id: session.dataset.id, name: session.dataset.name}
-        $scope.targetFeatureId = session.targetId
-      .fail console.error
 
     $scope.setTarget = (targetFeature) ->
       if targetFeature?
