@@ -135,9 +135,9 @@ app.directive 'featureMap', [
             .links scope.links
 
         initialize = (targetFeature) ->
+          if scope.simulation?
+            scope.simulation.stop()
           if targetFeature?
-            if scope.simulation?
-              scope.simulation.stop()
             createNodes()
             setupSimulation()
             render()
