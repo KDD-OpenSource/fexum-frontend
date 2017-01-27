@@ -88,24 +88,17 @@ app.directive 'featureMap', [
 
         createNodes = ->
           scope.nodes = scope.features.map (feature) ->
-            return {
+            node = {
               feature: feature
               isTarget: feature == scope.targetFeature
               id: feature.id
               x: 0
               y: 0
             }
-
-        fixTarget = ->
-          for node in scope.nodes
             if node.isTarget
-              node.x = 0
-              node.y = 0
-              return
-
-        ticked = ->
-          fixTarget()
-          render()
+              node.fx = 0
+              node.fy = 0
+            return node
 
         setupSimulation = ->
           forceLinkDef = d3.forceLink []
@@ -116,7 +109,7 @@ app.directive 'featureMap', [
           scope.simulation = d3.forceSimulation scope.nodes
             .alphaDecay 0.0001
             .velocityDecay 0.5
-            .on 'tick', ticked
+            .on 'tick', render
             .force 'link', forceLinkDef
 
         distanceFromCorrelation = (correlation, isRedundancy) ->
