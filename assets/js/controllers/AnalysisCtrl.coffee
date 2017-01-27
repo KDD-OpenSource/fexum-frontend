@@ -1,7 +1,14 @@
 app.controller 'AnalysisCtrl', [
   '$scope',
   '$timeout',
-  ($scope, $timeout) ->
+  '$analytics'
+  ($scope, $timeout, $analytics) ->
+
+    if $scope.dataset? and $scope.targetFeature?
+      $analytics.eventTrack 'analyzeFeatures', {
+        category: 'd' + $scope.dataset.name + 't' + $scope.targetFeature.name
+        label: $scope.selectedFeatures.map((f) -> f.name).join '|'
+      }
 
     $scope.selectedRanges = {}
 
@@ -64,11 +71,22 @@ app.controller 'AnalysisCtrl', [
         .forEach (slider) ->
           slider.minValue = slider.options.floor
           slider.maxValue = slider.options.ceil
+
+      analyticsLabel = []
       # Then set from slice
       slice.features.forEach (feature) ->
+        name = $scope.featureIdMap[feature.feature].name
+        analyticsLabel.push name + '=[' + feature.range[0] + ',' + feature.range[1] + ']'
+
         slider = $scope.sliders[feature.feature]
         slider.minValue = feature.range[0]
         slider.maxValue = feature.range[1]
+
+      # Only send analytics if name was found for every feature (otherwise data is useless)
+      $analytics.eventTrack 'recommendedSliceSelected', {
+        category: 'd' + $scope.dataset.name + 't' + $scope.targetFeature.name
+        label: analyticsLabel.join '|'
+      }
 
     return
 ]
