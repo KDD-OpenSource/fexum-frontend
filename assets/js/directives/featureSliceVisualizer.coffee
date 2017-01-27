@@ -89,6 +89,8 @@ app.directive 'featureSliceVisualizer', [
             promises.push retrieveSamples scope.targetFeature
             promises.push retrieveMarginalDistribution()
             $q.all promises
+              # TODO remove this annoying timeout
+              .then -> $timeout null, 1500
               .then -> scope.setupCharts()
               .then -> scope.updateCharts()
               .then -> scope.initialized = true
