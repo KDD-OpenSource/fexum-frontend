@@ -13,5 +13,5 @@
   a.src = g
   m.parentNode.insertBefore a, m
   return
-) window, document, 'script', 'https://www.google-analytics.com/analytics_debug.js', 'ga'
+) window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga'
 ga 'create', 'UA-90861671-1', 'auto'
