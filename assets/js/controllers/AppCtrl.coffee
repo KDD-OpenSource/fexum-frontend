@@ -78,6 +78,9 @@ app.controller 'AppCtrl', [
         }
 
       feature = $scope.featureIdMap[featureData.feature]
+      if not feature?
+        console.warn 'Got relevancy result that is not for this client'
+        return
       $scope.relevancies[feature.id] = featureData.relevancy
       feature.relevancy = featureData.relevancy
       feature.rank = featureData.rank
@@ -86,8 +89,11 @@ app.controller 'AppCtrl', [
     updateRedundanciesFromItem = (redundancyItem) ->
       first = redundancyItem.first_feature
       second = redundancyItem.second_feature
-      console.assert first?, 'First should be not null'
-      console.assert second?, 'Second should be not null'
+
+      if not $scope.featureIdMap[first]? or not $scope.featureIdMap[second]?
+        console.warn 'Got redundancy result that is not for this client'
+        return
+
       $scope.redundancies[first + ',' + second] =
         firstFeature: first
         secondFeature: second
