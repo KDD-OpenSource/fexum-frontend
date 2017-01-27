@@ -1,4 +1,4 @@
-.md-padding.left-pane(ng-cloak, layout, ng-show='features.length > 0')
+.md-padding.left-pane(ng-cloak, layout)
   md-card#feature-list.overlay-window(flex)
     md-toolbar
       .md-toolbar-tools
@@ -6,6 +6,8 @@
           md-icon keyboard_arrow_left
         span Select new target from list
     md-content
+      .md-padding(ng-if='features.length == 0')
+        p No target features available. Please wait.
       md-list
         md-list-item(ng-repeat='feature in features | filter:{is_categorical:true} | orderBy: "name"', ng-click='setTarget(feature)')
           p {{feature.name}}
