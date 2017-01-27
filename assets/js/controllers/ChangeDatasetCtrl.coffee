@@ -10,10 +10,9 @@ app.controller 'ChangeDatasetCtrl', [
     $scope.progress = 0
 
     setCurrentDatasetFromSession = (session) ->
-      $scope.dataset.id = session.dataset.id
-      $scope.dataset.name = session.dataset.name
       filter = (d) -> d.id == session.dataset.id
       $scope.currentDataset = $scope.datasets.filter(filter)[0]
+      return session
 
     backendService.retrieveDatasets()
       .then (datasets) ->
@@ -56,6 +55,7 @@ app.controller 'ChangeDatasetCtrl', [
 
       backendService.getSession dataset
         .then setCurrentDatasetFromSession
+        .then $scope.initializeFromSession
         .fail console.error
       # Change back to overview
       $location.path '/change-target'
