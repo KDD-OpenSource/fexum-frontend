@@ -35,11 +35,14 @@ app.controller 'AppCtrl', [
         .fail console.error
 
 
+    $scope.redundanciesLoaded = false
     $scope.retrieveRedundancies = ->
       backendService.getSession()
         .then (session) -> session.retrieveRedundancies()
         .then (redundancies) ->
+          $scope.redundancies = {}
           redundancies.forEach updateRedundanciesFromItem
+          $scope.redundanciesLoaded = true
         .fail console.error
 
     $scope.getSearchItems = ->
@@ -60,6 +63,7 @@ app.controller 'AppCtrl', [
       return searchItems.sort (a, b) -> a.index - b.index
 
     rarTime = []
+    $scope.relevancies = {}
     updateFeatureFromFeatureSelection = (featureData) ->
       # Log rar calculation time in Analytics
       if $scope.targetFeature? and rarTime[$scope.targetFeature.id]?
@@ -74,6 +78,7 @@ app.controller 'AppCtrl', [
         }
 
       feature = $scope.featureIdMap[featureData.feature]
+      $scope.relevancies[feature.id] = featureData.relevancy
       feature.relevancy = featureData.relevancy
       feature.rank = featureData.rank
 
@@ -81,16 +86,22 @@ app.controller 'AppCtrl', [
     updateRedundanciesFromItem = (redundancyItem) ->
       first = redundancyItem.first_feature
       second = redundancyItem.second_feature
+      console.assert first?, 'First should be not null'
+      console.assert second?, 'Second should be not null'
       $scope.redundancies[first + ',' + second] =
         firstFeature: first
         secondFeature: second
         redundancy: redundancyItem.redundancy
         weight: redundancyItem.weight
 
+    $scope.relevanciesLoaded = false
     $scope.retrieveRarResults = ->
       backendService.getSession()
         .then (session) -> session.retrieveRarResults()
-        .then (rarResults) -> rarResults.forEach updateFeatureFromFeatureSelection
+        .then (rarResults) ->
+          $scope.relevancies = {}
+          rarResults.forEach updateFeatureFromFeatureSelection
+          $scope.relevanciesLoaded = true
         .fail console.error
 
     $scope.loadingQueue = []
@@ -122,10 +133,12 @@ app.controller 'AppCtrl', [
       $timeout refetch, timeoutDuration
 
     $scope.$on 'ws/relevancy_result', (event, payload) ->
-      updateFeatureFromFeatureSelection(payload.data)
+      if $scope.relevanciesLoaded
+        updateFeatureFromFeatureSelection payload.data
 
     $scope.$on 'ws/redundancy_result', (event, payload) ->
-      updateRedundanciesFromItem payload
+      if $scope.redundanciesLoaded
+        updateRedundanciesFromItem payload.data
 
     $scope.$watch 'dataset', ((newValue, oldValue) ->
       if newValue?
@@ -164,6 +177,8 @@ app.controller 'AppCtrl', [
       backendService.getSession()
         .then (session) -> session.setTarget targetFeature.id
         .then ->
+          $scope.redundancies = {}
+          $scope.relevancies = {}
           for feature in $scope.features
             feature.relevancy = null
 

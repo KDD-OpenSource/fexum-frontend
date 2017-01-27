@@ -4,11 +4,11 @@ extends ./layout
 block body
   md-content(ng-controller='AppCtrl')
     feature-map#feature-map(features='features',
+                            redundancies='redundancies',
+                            relevancies='relevancies',
                             selected-features='selectedFeatures',
                             target-feature='targetFeature',
                             zoom-api='zoomApi',
-                            max-distance='5000',
-                            offset='200',
                             def-transform='1')
     #map-overlay(layout='column', layout-fill)
       .md-padding.left-pane
