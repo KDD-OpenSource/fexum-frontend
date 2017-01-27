@@ -1,13 +1,16 @@
-.md-padding.left-pane(ng-cloak, layout, ng-show='targetFeature')
+.md-padding.left-pane(ng-cloak, layout)
 	md-card#feature-list.overlay-window(flex)
 		md-toolbar
 			.md-toolbar-tools
 				span Selected features
 				span(flex)
-				md-button.md-icon-button(aria-label='Analyze', href='/analyze', ng-disabled='selectedFeatures.length == 0')
+				md-button.md-icon-button(aria-label='Analyze', href='/analyze', ng-disabled='!targetFeature || selectedFeatures.length == 0')
 					md-icon lightbulb_outline
 		md-content.md-padding
-			md-list
+			p(ng-if='!targetFeature').
+				No target feature selected.
+				Please select #[a(href='/change-target') here] first.
+			md-list(ng-if='targetFeature')
 				md-list-item(ng-repeat='feature in selectedFeatures')
 					p {{feature.name}}
 					span(flex)
