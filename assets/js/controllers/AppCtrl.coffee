@@ -140,11 +140,11 @@ app.controller 'AppCtrl', [
 
     $scope.$on 'ws/relevancy_result', (event, payload) ->
       if $scope.relevanciesLoaded
-        updateFeatureFromFeatureSelection payload.data
+        $scope.retrieveRarResults()
 
     $scope.$on 'ws/redundancy_result', (event, payload) ->
       if $scope.redundanciesLoaded
-        updateRedundanciesFromItem payload.data
+        $scope.retrieveRedundancies()
 
     $scope.$watch 'dataset', ((newValue, oldValue) ->
       if newValue?
