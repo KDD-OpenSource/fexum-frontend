@@ -152,8 +152,8 @@ app.controller 'AppCtrl', [
         .then (session) -> session.setSelection newSelectedFeatures
 
     $scope.initializeFromSession = (session) ->
-      $scope.dataset = {id: session.dataset.id, name: session.dataset.name}
       $scope.targetFeatureId = session.targetId
+      $scope.dataset = {id: session.dataset.id, name: session.dataset.name}
       selection = session.getSelection()
       if selection?
         $scope.selectedFeatures = selection
