@@ -116,13 +116,15 @@ app.controller 'AppCtrl', [
       backendService.getSession()
         .then (session) -> session.setSelection newSelectedFeatures
 
+    $scope.initializeFromSession = (session) ->
+      $scope.dataset = {id: session.dataset.id, name: session.dataset.name}
+      $scope.targetFeatureId = session.targetId
+      selection = session.getSelection()
+      if selection?
+        $scope.selectedFeatures = selection
+
     backendService.getSession()
-      .then (session) ->
-        $scope.dataset = {id: session.dataset.id, name: session.dataset.name}
-        $scope.targetFeatureId = session.targetId
-        selection = session.getSelection()
-        if selection?
-          $scope.selectedFeatures = selection
+      .then $scope.initializeFromSession
       .fail console.error
 
     $scope.onFeatureSearched = (searchedItem) ->
