@@ -15,8 +15,6 @@ app.directive 'featureMap', [
         zoomApi: '='
       link: (scope, element, attrs) ->
 
-        d3 = d4
-
         svg = angular.element(document.createElementNS('http://www.w3.org/2000/svg', 'svg'))
         element.append svg
 
@@ -59,7 +57,7 @@ app.directive 'featureMap', [
             return "/feature/#{encodedName}"
 
           # Update feature map using d3
-          d3nodes = d3.select svg[0]
+          d3nodes = d4.select svg[0]
                       .select 'g.svg-pan-zoom_viewport'
                       .selectAll 'g.feature'
                       .data nodes
@@ -101,12 +99,12 @@ app.directive 'featureMap', [
             return node
 
         setupSimulation = ->
-          forceLinkDef = d3.forceLink []
+          forceLinkDef = d4.forceLink []
             .id (d) -> d.id
             .distance (d) -> d.distance
             .strength (d) -> d.strength
 
-          scope.simulation = d3.forceSimulation scope.nodes
+          scope.simulation = d4.forceSimulation scope.nodes
             .alphaDecay 0.0001
             .velocityDecay 0.5
             .on 'tick', render
