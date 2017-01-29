@@ -34,6 +34,17 @@ app.controller 'AppCtrl', [
             $scope.selectedFeatures = newSelectedFeatures
         .fail console.error
 
+
+    $scope.redundanciesLoaded = false
+    $scope.retrieveRedundancies = ->
+      backendService.getSession()
+        .then (session) -> session.retrieveRedundancies()
+        .then (redundancies) ->
+          $scope.redundancies = {}
+          redundancies.forEach updateRedundanciesFromItem
+          $scope.redundanciesLoaded = true
+        .fail console.error
+
     $scope.getSearchItems = ->
       categoricalFeatures = $scope.features.filter (f) -> f.is_categorical
       targetChoices = categoricalFeatures.map (feature, i) ->
@@ -52,6 +63,7 @@ app.controller 'AppCtrl', [
       return searchItems.sort (a, b) -> a.index - b.index
 
     rarTime = []
+    $scope.relevancies = {}
     updateFeatureFromFeatureSelection = (featureData) ->
       # Log rar calculation time in Analytics
       if $scope.targetFeature? and rarTime[$scope.targetFeature.id]?
@@ -66,13 +78,36 @@ app.controller 'AppCtrl', [
         }
 
       feature = $scope.featureIdMap[featureData.feature]
+      if not feature?
+        console.warn 'Got relevancy result that is not for this client'
+        return
+      $scope.relevancies[feature.id] = featureData.relevancy
       feature.relevancy = featureData.relevancy
       feature.rank = featureData.rank
 
+    $scope.redundancies = {}
+    updateRedundanciesFromItem = (redundancyItem) ->
+      first = redundancyItem.first_feature
+      second = redundancyItem.second_feature
+
+      if not $scope.featureIdMap[first]? or not $scope.featureIdMap[second]?
+        console.warn 'Got redundancy result that is not for this client'
+        return
+
+      $scope.redundancies[first + ',' + second] =
+        firstFeature: first
+        secondFeature: second
+        redundancy: redundancyItem.redundancy
+        weight: redundancyItem.weight
+
+    $scope.relevanciesLoaded = false
     $scope.retrieveRarResults = ->
       backendService.getSession()
         .then (session) -> session.retrieveRarResults()
-        .then (rarResults) -> rarResults.forEach updateFeatureFromFeatureSelection
+        .then (rarResults) ->
+          $scope.relevancies = {}
+          rarResults.forEach updateFeatureFromFeatureSelection
+          $scope.relevanciesLoaded = true
         .fail console.error
 
     $scope.loadingQueue = []
@@ -104,12 +139,18 @@ app.controller 'AppCtrl', [
       $timeout refetch, timeoutDuration
 
     $scope.$on 'ws/relevancy_result', (event, payload) ->
-      updateFeatureFromFeatureSelection(payload.data)
+      if $scope.relevanciesLoaded
+        $scope.retrieveRarResults()
+
+    $scope.$on 'ws/redundancy_result', (event, payload) ->
+      if $scope.redundanciesLoaded
+        $scope.retrieveRedundancies()
 
     $scope.$watch 'dataset', ((newValue, oldValue) ->
       if newValue?
         $scope.retrieveFeatures()
           .then $scope.retrieveRarResults
+          .then $scope.retrieveRedundancies
       ), true
 
     $scope.$watchCollection 'selectedFeatures', (newSelectedFeatures) ->
@@ -144,6 +185,8 @@ app.controller 'AppCtrl', [
       backendService.getSession()
         .then (session) -> session.setTarget targetFeature.id
         .then ->
+          $scope.redundancies = {}
+          $scope.relevancies = {}
           for feature in $scope.features
             feature.relevancy = null
 

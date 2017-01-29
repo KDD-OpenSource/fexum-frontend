@@ -34,10 +34,17 @@ module.exports = function(grunt) {
         }
       },
       proxies: [{
-        context: ['/bindings', '/api'],
+        context: ['/bindings'],
+        host: grunt.option('api-host') || '172.16.18.127',
+        port: grunt.option('api-websocket-port') || 80,
+        ws: true,
+        https: false,
+        xforward: false
+      }, {
+        context: ['/api'],
         host: grunt.option('api-host') || '172.16.18.127',
         port: grunt.option('api-port') || 80,
-        ws: true,
+        ws: false,
         https: false,
         xforward: false
       }]

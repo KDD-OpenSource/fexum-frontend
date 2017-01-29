@@ -46,6 +46,7 @@ Parameters
 - `--port=PORT` allows specifying a port to serve on (default: 1337)
 - `--api-host=HOST` specify the host to use as the application's API (default: 172.16.18.127)
 - `--api-port=PORT` specify the API's port (default: 80)
+- `--api-websocket-port=PORT` specify the websocket's port (default: 80)
 
 
 Then access your browser at http://localhost:1337

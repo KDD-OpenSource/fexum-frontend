@@ -46,6 +46,7 @@ app.controller 'AnalysisCtrl', [
               step: (feature.max - feature.min) / 100
               precision: 4
               noSwitching: true
+              enforceStep: false
           updateSelectedRangeForFeature feature.id
           sliderWatches.push watchSlider feature.id
 

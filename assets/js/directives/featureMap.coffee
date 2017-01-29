@@ -1,111 +1,159 @@
-app.directive 'featureMap', ['$timeout', 'chartColors', ($timeout, chartColors) ->
-  return {
-    restrict: 'E'
-    scope:
-      features: '='
-      selectedFeatures: '='
-      targetFeature: '='
-      zoomApi: '='
-    link: (scope, element, attrs) ->
-      maxDistance = attrs.maxDistance
-      offset = attrs.offset
+app.directive 'featureMap', [
+  '$timeout',
+  'chartColors',
+  'scopeUtils',
+  '$q',
+  ($timeout, chartColors, scopeUtils, $q) ->
+    return {
+      restrict: 'E'
+      scope:
+        features: '='
+        relevancies: '='
+        redundancies: '='
+        selectedFeatures: '='
+        targetFeature: '='
+        zoomApi: '='
+      link: (scope, element, attrs) ->
 
-      svg = angular.element(document.createElementNS('http://www.w3.org/2000/svg', 'svg'))
-      element.append svg
+        svg = angular.element(document.createElementNS('http://www.w3.org/2000/svg', 'svg'))
+        element.append svg
 
-      render = ->
-        # render nothing if no target is set or feature are not loaded
-        if not scope.targetFeature? or not scope.features
+        render = ->
+          nodes = scope.nodes
+
+          # remove nodes with undefined relevancy
+          nodes = nodes.filter (node) ->
+            feature = node.feature
+            return scope.relevancies[feature.id]? or node.isTarget
+
+          nodeCount = nodes.length
+
+          # ensure that target feature is at the end of list and therefore drawn on top
+          nodes.sort (a, b) -> a.isTarget - b.isTarget
+
+          if not scope.zoomApi?
+            # Enable feature map paning and zooming
+            scope.zoomApi = svgPanZoom svg[0],
+              fit: false
+              controlIconsEnabled: false,
+              onZoom: render,
+              minZoom: 0.00001,
+              zoomScaleSensitivity: 0.3
+
+          getFeaturePosition = (node, idx) ->
+            return [node.x, node.y]
+
+          getFeatureTranslationString = (node, idx) ->
+            [x, y] = getFeaturePosition node, idx
+
+            #Change size according to zoom level
+            zoom = scope.zoomApi.getZoom()
+            transform = (Math.tanh(3 * zoom - 1) + 1) / 2 / zoom
+
+            return "translate(#{x}, #{y}) scale(#{transform})"
+
+          getFeatureLink = (node) ->
+            encodedName = window.encodeURIComponent node.feature.name
+            return "/feature/#{encodedName}"
+
+          # Update feature map using d3
+          d3nodes = d4.select svg[0]
+                      .select 'g.svg-pan-zoom_viewport'
+                      .selectAll 'g.feature'
+                      .data nodes
+          # Remove old elements
+          d3nodes.exit().remove()
+          # Create new elements
+          newD3nodes = d3nodes.enter().append 'g'
+                      .classed 'feature', true
+          newD3Links = newD3nodes.append 'a'
+          newD3Links.append 'ellipse'
+                .attr 'rx', 80
+                .attr 'ry', 40
+          newD3Links.append 'text'
+          # Update elements
+          d3nodes.select 'a'
+                .attr 'xlink:href', getFeatureLink
+                .select 'text'
+                .text (node) -> node.feature.name
+          d3nodes.attr 'transform', getFeatureTranslationString
+                .classed 'is-target', (node) -> node.isTarget
+                .classed 'selected', (node) -> scope.selectedFeatures.includes node.feature
+
+          scope.zoomApi.updateBBox()
+
           return
 
-        features = scope.features
+        createNodes = ->
+          scope.nodes = scope.features.map (feature) ->
+            node = {
+              feature: feature
+              isTarget: feature == scope.targetFeature
+              id: feature.id
+              x: 0
+              y: 0
+            }
+            if node.isTarget
+              node.fx = 0
+              node.fy = 0
+            return node
 
-        # remove features with undefined relevancy
-        features = features.filter (feature) ->
-          return feature.relevancy? or feature == scope.targetFeature
+        setupSimulation = ->
+          forceLinkDef = d4.forceLink []
+            .id (d) -> d.id
+            .distance (d) -> d.distance
+            .strength (d) -> d.strength
 
-        featureCount = features.length
-        targetFeatureIndex = features.indexOf scope.targetFeature
+          scope.simulation = d4.forceSimulation scope.nodes
+            .alphaDecay 0.0001
+            .velocityDecay 0.5
+            .on 'tick', render
+            .force 'link', forceLinkDef
 
-        # swap target feature to be the last feature to draw it above all other elements
-        if targetFeatureIndex < features.length - 1
-          features[targetFeatureIndex] = features[features.length - 1]
-          features[features.length - 1] = scope.targetFeature
-          targetFeatureIndex = features.length - 1
+        distanceFromCorrelation = (correlation, isRedundancy) ->
+          minDistance = 500
+          maxDistance = 10 * minDistance * (if isRedundancy then 2 else 1)
+          difference = maxDistance - minDistance
+          return maxDistance - (difference * Math.sqrt(Math.sqrt(correlation)))
 
-        if not scope.zoomApi?
-          # Enable feature map paning and zooming
-          scope.zoomApi = svgPanZoom svg[0],
-            fit: false
-            controlIconsEnabled: false,
-            onZoom: render,
-            minZoom: 0.00001,
-            zoomScaleSensitivity: 0.3
+        updateLinks = ->
+          relevancyLinks = objectMap scope.relevancies, (featureId, relevancy) ->
+            source: scope.targetFeature.id
+            target: featureId
+            distance: distanceFromCorrelation relevancy, false
+            strength: 1
+          redundancyLinks = objectMap scope.redundancies, (key, result) ->
+            source: result.firstFeature
+            target: result.secondFeature
+            distance: distanceFromCorrelation result.redundancy, true
+            strength: 0.005 * Math.sqrt result.weight
+          scope.links = relevancyLinks.concat redundancyLinks
+          scope.simulation
+            .force 'link'
+            .links scope.links
 
-        # evenly arrange the features around the target feature
-        getFeaturePosition = (feature, idx) ->
-          isTarget = feature == scope.targetFeature
-          if isTarget
-            return [0, 0]
-          radius = (1 - feature.relevancy) * maxDistance + offset
-          # index is 1 too big if this item is behind the target in the list
-          if idx > targetFeatureIndex
-            idx -= 1
-          # calculate angle
-          angle = (2 * Math.PI / (featureCount - 1)) * idx
-          # convert polar coordinates to cartesian coordinates
-          x = radius * Math.cos angle
-          y = radius * Math.sin angle
-          return [x, y]
+        initialize = (targetFeature) ->
+          if scope.simulation?
+            scope.simulation.stop()
+          if targetFeature?
+            createNodes()
+            setupSimulation()
+            render()
+            updateLinks()
 
-        getFeatureTranslationString = (feature, idx) ->
-          [x, y] = getFeaturePosition feature, idx
+        areFeaturesSet = scopeUtils.waitForVariableSet scope, 'features'
+        isTargetFeatureSet = scopeUtils.waitForVariableSet scope, 'targetFeature'
+        $q.all [areFeaturesSet, isTargetFeatureSet]
+          .then ->
+            initialize scope.targetFeature
 
-          #Change size according to zoom level
-          zoom = scope.zoomApi.getZoom()
-          transform = (Math.tanh(3 * zoom - 1) + 1) / 2 / zoom
-
-          return "translate(#{x}, #{y}) scale(#{transform})"
-
-        getFeatureLink = (feature) ->
-          encodedName = window.encodeURIComponent feature.name
-          return "/feature/#{encodedName}"
-
-        # Update feature map using d3
-        nodes = d3.select svg[0]
-                    .select 'g.svg-pan-zoom_viewport'
-                    .selectAll 'g.feature'
-                    .data features
-        # Remove old elements
-        nodes.exit().remove()
-        # Create new elements
-        newNodes = nodes.enter().append 'g'
-                    .classed 'feature', true
-        newLinks = newNodes.append 'a'
-        newLinks.append 'ellipse'
-              .attr 'rx', 80
-              .attr 'ry', 40
-        newLinks.append 'text'
-        # Update elements
-        nodes.select 'a'
-              .attr 'xlink:href', getFeatureLink
-              .select 'text'
-              .text (feature) -> feature.name
-        nodes.attr 'transform', getFeatureTranslationString
-              .classed 'is-target', (feature) -> feature == scope.targetFeature
-              .classed 'selected', (feature) -> scope.selectedFeatures.includes feature
-
-        scope.zoomApi.updateBBox()
+            # Rerender when variables change
+            scope.$watch 'relevancies', updateLinks, true
+            scope.$watch 'redundancies', updateLinks, true
+            scope.$watch 'targetFeature', initialize
+            scope.$watchCollection 'selectedFeatures', render
+          .fail console.error
 
         return
-
-      # Initial d3 rendering
-      render()
-
-      # Rerender when variables change
-      scope.$watch 'features', render, true
-      scope.$watch 'targetFeature', render
-      scope.$watchCollection 'selectedFeatures', render
-      return
-  }
+    }
 ]
