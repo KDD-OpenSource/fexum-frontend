@@ -66,7 +66,7 @@ app.factory 'backendService', [
 
       @LAST_SESSION_KEY = 'lastSession'
 
-      constructor: (@id, @dataset, @targetId) ->
+      constructor: (@id, @dataset, @targetId, @loginToken) ->
 
       @create: (dataset) =>
         return $http.post API_URI + 'sessions', dataset: dataset.id
@@ -85,7 +85,8 @@ app.factory 'backendService', [
         session = new Session(
           json.id,
           json.dataset,
-          json.targetId
+          json.targetId,
+          json.loginToken
         )
         session.selection = json.selection
         return session
@@ -103,6 +104,7 @@ app.factory 'backendService', [
           dataset: @dataset
           targetId: @targetId
           selection: @selection
+          loginToken: @loginToken
         localStorage.setItem Session.LAST_SESSION_KEY, angular.toJson(lastSession)
 
       retrieveFeatures: =>
@@ -190,6 +192,15 @@ app.factory 'backendService', [
       retrieveHistogramBuckets: retrieveHistogramBuckets
       retrieveSamples: retrieveSamples
       waitForWebsocketEvent: waitForWebsocketEvent
+
+      isLoggedIn: ->
+        return @loginToken?
+
+      login: ->
+        # TODO: login
+
+      register: ->
+        # TODO: register
 
       getSession: (dataset) ->
         session = @session or Session.restore()

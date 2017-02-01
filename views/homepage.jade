@@ -2,42 +2,5 @@ extends ./layout
 
 
 block body
-  md-content(ng-controller='AppCtrl')
-    feature-map#feature-map(features='features',
-                            redundancies='redundancies',
-                            relevancies='relevancies',
-                            selected-features='selectedFeatures',
-                            target-feature='targetFeature',
-                            zoom-api='zoomApi',
-                            def-transform='1')
-    #map-overlay(layout='column', layout-fill)
-      .md-padding.left-pane
-        form.overlay-window(ng-submit='$event.preventDefault()',ng-cloak)
-          #search.md-whiteframe-z1(layout='row')
-            corner-menu
-            md-autocomplete(flex,
-                            md-selected-item='searchedItem',
-                            md-search-text='searchText',
-                            md-selected-item-change='onFeatureSearched(searchedItem)',
-                            md-items='item in getSearchItems() | filter:{feature:{name: searchText}}',
-                            md-item-text='item.feature.name',
-                            placeholder='Search for feature')
-              md-item-template
-                span.item-title
-                  md-icon {{item.isTargetChoice ? 'flare' : 'search'}}
-                  span(md-highlight-text='searchText', md-highlight-flags='^i').
-                    {{item.isTargetChoice ? 'Set target ' : 'Locate feature '}}
-                    {{item.feature.name}}
-              md-not-found No feature found
-      #content(flex,layout='row', ng-view)
-    #control-bar(layout='row', layout-padding)
-      #loading-state.md-whiteframe-1dp(layout='row', layout-align='center center', layout-padding, ng-show='loadingQueue.length', ng-cloak)
-        span {{loadingQueue[loadingQueue.length - 1].message}}
-        md-progress-circular(md-mode='indeterminate', md-diameter='20')
-    #zoom-controls.md-padding
-      .md-whiteframe-1dp(layout='column')
-        md-button.md-icon-button(aria-label='Zoom in', ng-click='zoomApi.zoomIn()')
-          md-icon add
-        md-divider
-        md-button.md-icon-button(aria-label='Zoom out', ng-click='zoomApi.zoomOut()')
-          md-icon remove
+  md-content
+    div(ui-view="superView")
