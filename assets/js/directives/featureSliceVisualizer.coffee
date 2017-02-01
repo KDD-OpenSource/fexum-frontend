@@ -177,9 +177,9 @@ app.directive 'featureSliceVisualizer', [
 
           backendService.getSession().then (session) ->
             $analytics.eventTrack 'scatterAxisChanged', {
-              category: "d#{session.dataset.name}t#{scope.targetFeature.name}" +
-                        "f#{scope.selectedFeatures.map((f) -> f.name).join '|'}"
-              label: 'x=' + scope.xFeature.name + '|y=' + newFeature.name
+              category: "d#{session.dataset.id}t#{scope.targetFeature.id}" +
+                        "f#{scope.selectedFeatures.map((f) -> f.id).join '|'}"
+              label: 'x=' + scope.xFeature.id + '|y=' + newFeature.id
             }
 
         scope.updateXFeature = (newFeature) ->
@@ -188,9 +188,9 @@ app.directive 'featureSliceVisualizer', [
 
           backendService.getSession().then (session) ->
             $analytics.eventTrack 'scatterAxisChanged', {
-              category: "d#{session.dataset.name}t#{scope.targetFeature.name}" +
-                        "f#{scope.selectedFeatures.map((f) -> f.name).join '|'}"
-              label: 'x=' + newFeature.name + '|y=' + scope.yFeature.name
+              category: "d#{session.dataset.id}t#{scope.targetFeature.id}" +
+                        "f#{scope.selectedFeatures.map((f) -> f.id).join '|'}"
+              label: 'x=' + newFeature.id + '|y=' + scope.yFeature.id
             }
 
         return
