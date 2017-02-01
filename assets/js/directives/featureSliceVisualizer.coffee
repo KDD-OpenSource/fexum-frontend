@@ -5,7 +5,8 @@ app.directive 'featureSliceVisualizer', [
   'chartColors',
   'backendService',
   'scopeUtils',
-  ($timeout, $q, chartTemplates, chartColors, backendService, scopeUtils) ->
+  '$analytics',
+  ($timeout, $q, chartTemplates, chartColors, backendService, scopeUtils, $analytics) ->
 
     return {
       restrict: 'E'
@@ -174,9 +175,23 @@ app.directive 'featureSliceVisualizer', [
           scope.yFeature = newFeature
           scope.updateCharts()
 
+          backendService.getSession().then (session) ->
+            $analytics.eventTrack 'scatterAxisChanged', {
+              category: "d#{session.dataset.id}t#{scope.targetFeature.id}" +
+                        "f#{scope.selectedFeatures.map((f) -> f.id).join '|'}"
+              label: 'x=' + scope.xFeature.id + '|y=' + newFeature.id
+            }
+
         scope.updateXFeature = (newFeature) ->
           scope.xFeature = newFeature
           scope.updateCharts()
+
+          backendService.getSession().then (session) ->
+            $analytics.eventTrack 'scatterAxisChanged', {
+              category: "d#{session.dataset.id}t#{scope.targetFeature.id}" +
+                        "f#{scope.selectedFeatures.map((f) -> f.id).join '|'}"
+              label: 'x=' + newFeature.id + '|y=' + scope.yFeature.id
+            }
 
         return
     }

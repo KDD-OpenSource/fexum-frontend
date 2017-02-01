@@ -49,7 +49,7 @@ app.controller 'ChangeDatasetCtrl', [
     $scope.changeDataset = (dataset) ->
       # Track a user selecting a new dataset
       $analytics.eventTrack 'datasetSelected', {
-            category: 'd' + dataset.name,
+            category: 'd' + dataset.id,
             label: 'datasetInit'
       }
 

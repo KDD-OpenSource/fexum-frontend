@@ -71,7 +71,7 @@ app.controller 'AppCtrl', [
         rarTime[$scope.targetFeature.id] = null
 
         $analytics.userTimings {
-              timingCategory: 'd' + $scope.dataset.name + '|t' + $scope.targetFeature.name,
+              timingCategory: 'd' + $scope.dataset.id + '|t' + $scope.targetFeature.id,
               timingVar: 'rarFinished',
               timingLabel: 'ElapsedTimeMs',
               timingValue: delta
@@ -200,8 +200,8 @@ app.controller 'AppCtrl', [
       if newTargetFeature?
         # Track setting the target in relation to dataset
         $analytics.eventTrack 'setTarget', {
-          category: 'd' + $scope.dataset.name,
-          label: 't' + $scope.targetFeature.name
+          category: 'd' + $scope.dataset.id,
+          label: 't' + $scope.targetFeature.id
         }
 
 ]
