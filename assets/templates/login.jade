@@ -1,14 +1,14 @@
 
-.col-md-6.col-md-offset-3
-    h2 Login
-    form(name='form', ng-submit='vm.login()', role='form')
-      .form-group(ng-class="{ 'has-error': form.username.$dirty && form.username.$error.required }")
-        label(for='username') Username
-        input#username.form-control(type='text', name='username', ng-model='vm.username', required='')
-        span.help-block(ng-show='form.username.$dirty && form.username.$error.required') Username is required
-      .form-group(ng-class="{ 'has-error': form.password.$dirty && form.password.$error.required }")
-        label(for='password') Password
-        input#password.form-control(type='password', name='password', ng-model='vm.password', required='')
-        span.help-block(ng-show='form.password.$dirty && form.password.$error.required') Password is required
-      .form-actions
-        button.btn.btn-primary(type='submit', ng-disabled='form.$invalid || vm.dataLoading') Login
+div
+  #content.login(layout="row" layout-align="center center" layout-fill)
+    form(name='login' layout='column')
+      h2 Login
+      md-input-container
+        input(ng-model='user.name', name='userName', type='text', placeholder='Username', ng-required='true' md-no-asterisk)
+        div(ng-messages='login.userName.$error')
+          div(ng-message='required') Your username is required
+      md-input-container
+        input(ng-model='user.password', type='password', placeholder='Password', ng-required='true', name='userPassword' md-no-asterisk)
+        div(ng-messages='login.userPassword.$error')
+          div(ng-message='required') Your password is required.
+      md-button.md-raised.md-primary Login

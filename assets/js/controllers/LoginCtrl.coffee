@@ -1,8 +1,13 @@
 app.controller 'LoginCtrl', [
   '$scope',
   'backendService',
-  ($scope, backendService) ->
+  '$location',
+  ($scope, backendService, $location) ->
 
-  # TODO: Implement login
+    $scope.clickLogin = ->
+      inProgress = true
+      backendService.login($scope.user).then ->
+          inProgress = false
+          $location.path '/'
 
 ]

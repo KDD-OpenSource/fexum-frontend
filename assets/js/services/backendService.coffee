@@ -196,7 +196,9 @@ app.factory 'backendService', [
       isLoggedIn: ->
         return @loginToken?
 
-      login: ->
+      login: (user) ->
+        console.log user
+        return $q.resolve ''
         # TODO: login
 
       register: ->
