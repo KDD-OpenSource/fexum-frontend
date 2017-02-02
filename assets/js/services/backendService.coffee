@@ -13,10 +13,11 @@ app.factory 'backendService', [
 
     retrieveDatasets = ->
       $http.get API_URI + 'datasets'
-        .then (response) ->
-          datasets = response.data
-          return datasets
-        .fail console.error
+      .then (response) ->
+        console.log response
+        datasets = response.data
+        return datasets
+      .fail console.error
 
     retrieveSessions = ->
       $http.get API_URI + 'sessions'
@@ -66,7 +67,7 @@ app.factory 'backendService', [
 
       @LAST_SESSION_KEY = 'lastSession'
 
-      constructor: (@id, @dataset, @targetId, @loginToken) ->
+      constructor: (@id, @dataset, @targetId) ->
 
       @create: (dataset) =>
         return $http.post API_URI + 'sessions', dataset: dataset.id
@@ -85,8 +86,7 @@ app.factory 'backendService', [
         session = new Session(
           json.id,
           json.dataset,
-          json.targetId,
-          json.loginToken
+          json.targetId
         )
         session.selection = json.selection
         return session
@@ -104,7 +104,6 @@ app.factory 'backendService', [
           dataset: @dataset
           targetId: @targetId
           selection: @selection
-          loginToken: @loginToken
         localStorage.setItem Session.LAST_SESSION_KEY, angular.toJson(lastSession)
 
       retrieveFeatures: =>
@@ -193,16 +192,33 @@ app.factory 'backendService', [
       retrieveSamples: retrieveSamples
       waitForWebsocketEvent: waitForWebsocketEvent
 
+      TOKEN_KEY: 'loginToken'
+
       isLoggedIn: ->
-        return @loginToken?
+        @loginToken = localStorage.getItem @TOKEN_KEY
+        if @loginToken?
+          $http.defaults.headers.common['Authorization'] = "Token #{@loginToken}"
+          return true
+        return false
 
       login: (user) ->
-        console.log user
-        return $q.resolve ''
-        # TODO: login
+        return $http.post API_URI + 'auth/login', username: user.name, password: user.password
+          .then (response) =>
+            @loginToken = response.data.token
+            $http.defaults.headers.common['Authorization'] = "Token #{@loginToken}"
+            localStorage.setItem @TOKEN_KEY, @loginToken
+            return response
 
       register: ->
         # TODO: register
+
+      logout: ->
+        return $http.delete API_URI + 'auth/logout'
+          .then (response) =>
+            $http.defaults.headers.common['Authorization'] = null
+            @loginToken = null
+            localStorage.setItem @TOKEN_KEY, null
+          .fail console.error
 
       getSession: (dataset) ->
         session = @session or Session.restore()
