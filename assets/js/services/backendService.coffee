@@ -14,7 +14,6 @@ app.factory 'backendService', [
     retrieveDatasets = ->
       $http.get API_URI + 'datasets'
       .then (response) ->
-        console.log response
         datasets = response.data
         return datasets
       .fail console.error
@@ -210,7 +209,6 @@ app.factory 'backendService', [
             return response
 
       register: (user) ->
-        console.log user.password
         return $http.post API_URI + 'users/register', username: user.name, password: user.password
           .then =>
             @login user
