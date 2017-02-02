@@ -217,7 +217,7 @@ app.factory 'backendService', [
           .then (response) =>
             $http.defaults.headers.common['Authorization'] = null
             @loginToken = null
-            localStorage.setItem @TOKEN_KEY, null
+            localStorage.removeItem @TOKEN_KEY
           .fail console.error
 
       getSession: (dataset) ->
