@@ -209,8 +209,12 @@ app.factory 'backendService', [
             localStorage.setItem @TOKEN_KEY, @loginToken
             return response
 
-      register: ->
-        # TODO: register
+      register: (user) ->
+        console.log user.password
+        return $http.post API_URI + 'users/register', username: user.name, password: user.password
+          .then =>
+            @login user
+          .fail console.error
 
       logout: ->
         return $http.delete API_URI + 'auth/logout'

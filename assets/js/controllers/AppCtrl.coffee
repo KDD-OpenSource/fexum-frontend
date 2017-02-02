@@ -18,7 +18,7 @@ app.controller 'AppCtrl', [
     $scope.logout = ->
       backendService.logout()
         .then ->
-          $location.path('/')
+          $location.path('/login')
 
     # Retrieve features
     $scope.retrieveFeatures = ->
