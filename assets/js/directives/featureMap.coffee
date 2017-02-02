@@ -3,7 +3,8 @@ app.directive 'featureMap', [
   'chartColors',
   'scopeUtils',
   '$q',
-  ($timeout, chartColors, scopeUtils, $q) ->
+  '$interval',
+  ($timeout, chartColors, scopeUtils, $q, $interval) ->
     return {
       restrict: 'E'
       scope:
@@ -39,6 +40,8 @@ app.directive 'featureMap', [
               onZoom: render,
               minZoom: 0.00001,
               zoomScaleSensitivity: 0.3
+
+          renderLineLinks()
 
           getFeaturePosition = (node, idx) ->
             return [node.x, node.y]
@@ -79,10 +82,45 @@ app.directive 'featureMap', [
           d3nodes.attr 'transform', getFeatureTranslationString
                 .classed 'is-target', (node) -> node.isTarget
                 .classed 'selected', (node) -> scope.selectedFeatures.includes node.feature
+                .on 'mouseover', (node) -> node.hovered = true
+                .on 'mouseout', (node) -> node.hovered = false
 
           scope.zoomApi.updateBBox()
 
           return
+
+        renderLineLinks = ->
+            if scope.links?
+              filteredLinks = scope.links.filter (link) ->
+                return (link.source.hovered or link.target.hovered) \
+                  and (link.source.isTarget or link.target.isTarget)
+
+              d3links = d4.select svg[0]
+                          .select 'g.svg-pan-zoom_viewport'
+                          .selectAll '.link'
+                          .data filteredLinks
+              d3links.exit().remove()
+
+              g = d3links.enter().append 'g'
+                    .classed 'link', true
+              g.append 'line'
+              g.append 'text'
+
+              d3links.select 'line'
+                .attr 'x1', (l) -> l.source.x
+                .attr 'y1', (l) -> l.source.y
+                .attr 'x2', (l) -> l.target.x
+                .attr 'y2', (l) -> l.target.y
+
+              d3links.select 'text'
+                .attr 'x', (l) -> (l.target.x - l.source.x) / 2
+                .attr 'y', (l) -> (l.target.y - l.source.y) / 2
+                .text (l) -> d4.format('.3g') l.target.feature.relevancy
+
+              d3links.each ->
+                firstChild = @.parentNode.firstChild
+                if firstChild?
+                  @.parentNode.insertBefore @, firstChild
 
         createNodes = ->
           scope.nodes = scope.features.map (feature) ->
@@ -111,6 +149,8 @@ app.directive 'featureMap', [
             .force 'link', forceLinkDef
 
           scope.simulationTimeout = $timeout scope.simulation.stop, attrs.simulationTimeout * 1000
+          scope.simulationTimeout.then ->
+            scope.simulationTimeout = $interval renderLineLinks, 30
 
         distanceFromCorrelation = (correlation, isRedundancy) ->
           minDistance = 500
@@ -133,6 +173,7 @@ app.directive 'featureMap', [
           scope.simulation
             .force 'link'
             .links scope.links
+
 
         initialize = (targetFeature) ->
           if scope.simulation?
