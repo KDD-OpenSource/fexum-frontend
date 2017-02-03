@@ -25,7 +25,6 @@ app.controller 'LoginCtrl', [
           resetErrors()
           $location.path '/'
         .fail (response) ->
-          console.error
           updateErrors(response)
 
     $scope.register = ->
@@ -34,7 +33,6 @@ app.controller 'LoginCtrl', [
           resetErrors()
           $location.path '/'
         .fail (response) ->
-          console.error
           updateErrors(response)
 
 ]
