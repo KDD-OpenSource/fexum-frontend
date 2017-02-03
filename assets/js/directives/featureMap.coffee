@@ -117,6 +117,7 @@ app.directive 'featureMap', [
                 .attr 'y', (l) -> (l.target.y - l.source.y) / 2
                 .text (l) -> d4.format('.3g') l.target.feature.relevancy
 
+              # Move links to back
               d3links.each ->
                 firstChild = @.parentNode.firstChild
                 if firstChild?
