@@ -46,10 +46,9 @@ app.controller 'AppCtrl', [
       backendService.getSession()
         .then (session) -> session.retrieveRedundancies()
         .then (redundancies) ->
-          if redundancies?
-            $scope.redundancies = {}
-            redundancies.forEach updateRedundanciesFromItem
-            $scope.redundanciesLoaded = true
+          $scope.redundancies = {}
+          redundancies.forEach updateRedundanciesFromItem
+          $scope.redundanciesLoaded = true
         .fail console.error
 
     $scope.getSearchItems = ->

@@ -48,7 +48,7 @@ app.config ['$stateProvider', '$locationProvider', ($stateProvider, $locationPro
       }
     }
     .state 'predots.subset', {
-      url: 'subset'
+      url: ''
       views: {
         predotsView: {
           template: JST['assets/templates/featureSubset']

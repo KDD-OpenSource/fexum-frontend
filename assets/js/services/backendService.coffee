@@ -7,6 +7,7 @@ app.factory 'backendService', [
 
     API_URI = '/api/'
     SOCKET_URI = "ws://#{window.location.host}/bindings"
+    TOKEN_KEY = 'loginToken'
 
     # coffeescript doesn't like functions called catch...
     $q.prototype.fail = $q.prototype.catch
@@ -191,35 +192,36 @@ app.factory 'backendService', [
       retrieveSamples: retrieveSamples
       waitForWebsocketEvent: waitForWebsocketEvent
 
-      TOKEN_KEY: 'loginToken'
+      setAuthorizationHeader: (header) ->
+        $http.defaults.headers.common['Authorization'] = header
 
-      isLoggedIn: ->
-        @loginToken = localStorage.getItem @TOKEN_KEY
+      isLoggedIn: =>
+        @loginToken = localStorage.getItem TOKEN_KEY
         if @loginToken?
-          $http.defaults.headers.common['Authorization'] = "Token #{@loginToken}"
+          @setAuthorizationHeader "Token #{@loginToken}"
           return true
         return false
 
-      login: (user) ->
+      login: (user) =>
         return $http.post API_URI + 'auth/login', username: user.name, password: user.password
           .then (response) =>
             @loginToken = response.data.token
-            $http.defaults.headers.common['Authorization'] = "Token #{@loginToken}"
-            localStorage.setItem @TOKEN_KEY, @loginToken
-            return response
+            @setAuthorizationHeader "Token #{@loginToken}"
+            localStorage.setItem TOKEN_KEY, @loginToken
+            return response.data
 
-      register: (user) ->
+      register: (user) =>
         return $http.post API_URI + 'users/register', username: user.name, password: user.password
           .then =>
             @login user
           .fail console.error
 
-      logout: ->
+      logout: =>
         return $http.delete API_URI + 'auth/logout'
           .then (response) =>
-            $http.defaults.headers.common['Authorization'] = null
+            @setAuthorizationHeader null
             @loginToken = null
-            localStorage.removeItem @TOKEN_KEY
+            localStorage.removeItem TOKEN_KEY
           .fail console.error
 
       getSession: (dataset) ->

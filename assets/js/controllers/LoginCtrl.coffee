@@ -7,35 +7,32 @@ app.controller 'LoginCtrl', [
     updateErrors = (response) ->
       error = response.data
       if error.non_field_errors?
-        errorMessage = error.non_field_errors.map((err) -> '  - ' + err + '\n')
-        document.getElementById('errorField').textContent = errorMessage
-        document.getElementById('errorField').setAttribute 'style', 'visibility:visible;'
+        $scope.errorMessage = error.non_field_errors.map((err) -> '  - ' + err + '\n').join ''
       if error.username?
-        $scope.login.userName.$error.custom = ' ' + error.username[0]
+        $scope.loginForm.userName.$error.custom = ' ' + error.username[0]
       if error.password?
-        $scope.login.userPassword.$error.custom = ' ' + error.password[0]
+        $scope.loginForm.userPassword.$error.custom = ' ' + error.password[0]
 
     resetErrors = ->
-      $scope.login.userName.$error.custom = null
-      $scope.login.userPassword.$error.custom = null
-      document.getElementById('errorField').textContent = null
-      document.getElementById('errorField').setAttribute 'style', 'visibility:hidden;'
+      $scope.loginForm.userName.$error.custom = null
+      $scope.loginForm.userPassword.$error.custom = null
+      $scope.errorMessage = null
 
 
-    $scope.clickLogin = ->
+    $scope.login = ->
       backendService.login($scope.user)
         .then ->
           resetErrors()
           $location.path '/'
-        .catch (response) ->
+        .fail (response) ->
           updateErrors(response)
 
-    $scope.clickRegister = ->
+    $scope.register = ->
       backendService.register($scope.user)
         .then ->
           resetErrors()
           $location.path '/'
-        .catch (response) ->
+        .fail (response) ->
           updateErrors(response)
 
 ]
