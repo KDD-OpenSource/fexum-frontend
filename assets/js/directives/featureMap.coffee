@@ -110,6 +110,8 @@ app.directive 'featureMap', [
             .on 'tick', render
             .force 'link', forceLinkDef
 
+          scope.simulationTimeout = $timeout scope.simulation.stop, attrs.simulationTimeout * 1000
+
         distanceFromCorrelation = (correlation, isRedundancy) ->
           minDistance = 500
           maxDistance = 10 * minDistance * (if isRedundancy then 2 else 1)
@@ -134,6 +136,7 @@ app.directive 'featureMap', [
 
         initialize = (targetFeature) ->
           if scope.simulation?
+            $timeout.cancel scope.simulationTimeout
             scope.simulation.stop()
           if targetFeature?
             createNodes()
