@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "angular-ui-router": "^0.4.2",
     "grunt": "1.0.1",
     "grunt-bower-task": "^0.3.4",
     "grunt-coffeelint": "0.0.16",

@@ -1,0 +1,19 @@
+
+div(background-image='')
+  #content.login(layout="row" layout-align="center center" layout-fill)
+    form(name='loginForm' layout='column' ng-submit='login()')
+      h2 Login
+      p.errorField(ng-if='errorMessage') {{errorMessage}}
+      md-input-container
+        input(ng-model='user.name', name='userName', type='text', placeholder='Username', ng-required='true' md-no-asterisk)
+        div(ng-messages='loginForm.userName.$error')
+          small(ng-show='loginForm.userName.$error.required') Your username is required.
+          small(ng-show='loginForm.userName.$error.custom') {{loginForm.userName.$error.custom}}
+      md-input-container
+        input(ng-model='user.password', type='password', placeholder='Password', ng-required='true', name='userPassword' md-no-asterisk)
+        div(ng-messages='loginForm.userPassword.$error')
+          small(ng-show='loginForm.userPassword.$error.required') Your password is required.
+          small(ng-show='loginForm.userPassword.$error.custom') {{loginForm.userPassword.$error.custom}}
+      div(layout='row')
+        md-button.md-raised.md-primary#loginbutton(type='submit') Login
+        md-button.md-raised.md-primary#registerbutton(ng-click='register()') Register

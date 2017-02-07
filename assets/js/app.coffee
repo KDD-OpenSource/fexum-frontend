@@ -5,7 +5,8 @@ app = angular.module 'predots', [
   'ngWebSocket',
   'ngFileUpload',
   'rzModule',
-  'angulartics.google.analytics']
+  'angulartics.google.analytics',
+  'ui.router']
 
 # Define theme
 app.config ['$mdThemingProvider', ($mdThemingProvider) ->
@@ -19,29 +20,104 @@ app.config ['$mdThemingProvider', ($mdThemingProvider) ->
 ]
 
 # Define routes
-app.config ['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
-  $routeProvider
-    .when('/',
-      template: JST['assets/templates/featureSubset']
-      controller: 'FeatureSubsetCtrl')
-    .when('/selections',
-      template: JST['assets/templates/featureSubset']
-      controller: 'FeatureSubsetCtrl')
-    .when('/analyze',
-      template: JST['assets/templates/analysis']
-      controller: 'AnalysisCtrl')
-    .when('/change-target',
-      template: JST['assets/templates/featureList']
-      controller: 'FeatureListCtrl')
-    .when('/change-dataset',
-      template: JST['assets/templates/changeDataset']
-      controller: 'ChangeDatasetCtrl')
-    .when('/feature-list',
-      template: JST['assets/templates/featureList']
-      controller: 'FeatureListCtrl')
-    .when('/feature/:featureName',
-      template: JST['assets/templates/featureInfo']
-      controller: 'FeatureInfoCtrl')
+app.config ['$stateProvider', '$locationProvider', ($stateProvider, $locationProvider) ->
+
+  $stateProvider
+    .state 'login', {
+      url: '/login'
+      views: {
+        superView: {
+          template: JST['assets/templates/login']
+          controller: 'LoginCtrl'
+        }
+      }
+      data: {
+        authenticate: false
+      }
+    }
+    .state 'predots', {
+      url: '/'
+      views: {
+        superView: {
+          template: JST['assets/templates/predots']
+          controller: 'AppCtrl'
+        }
+      }
+      data: {
+        authenticate: true
+      }
+    }
+    .state 'predots.subset', {
+      url: ''
+      views: {
+        predotsView: {
+          template: JST['assets/templates/featureSubset']
+          controller: 'FeatureSubsetCtrl'
+        }
+      }
+    }
+    .state 'predots.selections', {
+      url: 'selections'
+      views: {
+        predotsView: {
+          template: JST['assets/templates/featureSubset']
+          controller: 'FeatureSubsetCtrl'
+        }
+      }
+    }
+    .state 'predots.analyze', {
+      url: 'analyze'
+      views: {
+        predotsView: {
+          template: JST['assets/templates/analysis']
+          controller: 'AnalysisCtrl'
+        }
+      }
+    }
+    .state 'predots.change-target', {
+      url: 'change-target'
+      views: {
+        predotsView: {
+          template: JST['assets/templates/featureList']
+          controller: 'FeatureListCtrl'
+        }
+      }
+    }
+    .state 'predots.change-dataset', {
+      url: 'change-dataset'
+      views: {
+        predotsView: {
+          template: JST['assets/templates/changeDataset']
+          controller: 'ChangeDatasetCtrl'
+        }
+      }
+    }
+    .state 'predots.feature-list', {
+      url: 'feature-list'
+      views: {
+        predotsView: {
+          template: JST['assets/templates/featureList']
+          controller: 'FeatureListCtrl'
+        }
+      }
+    }
+    .state 'predots.feature', {
+      url: 'feature/:featureName'
+      views: {
+        predotsView: {
+          template: JST['assets/templates/featureInfo']
+          controller: 'FeatureInfoCtrl'
+        }
+      }
+    }
+
   $locationProvider.html5Mode true
   return
+]
+
+app.run ['$rootScope', 'backendService', '$state', ($rootScope, backendService, $state) ->
+  $rootScope.$on '$stateChangeStart', (event, toState, toParams, fromState, fromParams) ->
+    if toState.data.authenticate and not backendService.isLoggedIn()
+      $state.transitionTo 'login'
+      event.preventDefault()
 ]

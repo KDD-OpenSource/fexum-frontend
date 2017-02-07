@@ -5,7 +5,8 @@ app.controller 'AppCtrl', [
   '$q',
   'scopeUtils',
   '$analytics',
-  ($scope, backendService, $timeout, $q, scopeUtils, $analytics) ->
+  '$location',
+  ($scope, backendService, $timeout, $q, scopeUtils, $analytics, $location) ->
 
     buildFeatureIdMap = ->
       $scope.featureIdMap = {}
@@ -13,6 +14,11 @@ app.controller 'AppCtrl', [
         $scope.featureIdMap[feature.id] = feature
 
     $scope.selectedFeatures = []
+
+    $scope.logout = ->
+      backendService.logout()
+        .then ->
+          $location.path('/login')
 
     # Retrieve features
     $scope.retrieveFeatures = ->

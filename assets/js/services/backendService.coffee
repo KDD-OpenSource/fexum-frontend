@@ -7,16 +7,17 @@ app.factory 'backendService', [
 
     API_URI = '/api/'
     SOCKET_URI = "ws://#{window.location.host}/bindings"
+    TOKEN_KEY = 'loginToken'
 
     # coffeescript doesn't like functions called catch...
     $q.prototype.fail = $q.prototype.catch
 
     retrieveDatasets = ->
       $http.get API_URI + 'datasets'
-        .then (response) ->
-          datasets = response.data
-          return datasets
-        .fail console.error
+      .then (response) ->
+        datasets = response.data
+        return datasets
+      .fail console.error
 
     retrieveSessions = ->
       $http.get API_URI + 'sessions'
@@ -190,6 +191,38 @@ app.factory 'backendService', [
       retrieveHistogramBuckets: retrieveHistogramBuckets
       retrieveSamples: retrieveSamples
       waitForWebsocketEvent: waitForWebsocketEvent
+
+      setAuthorizationHeader: (header) ->
+        $http.defaults.headers.common['Authorization'] = header
+
+      isLoggedIn: ->
+        @loginToken = localStorage.getItem TOKEN_KEY
+        if @loginToken?
+          @setAuthorizationHeader "Token #{@loginToken}"
+          return true
+        return false
+
+      login: (user) ->
+        return $http.post API_URI + 'auth/login', username: user.name, password: user.password
+          .then (response) =>
+            @loginToken = response.data.token
+            @setAuthorizationHeader "Token #{@loginToken}"
+            localStorage.setItem TOKEN_KEY, @loginToken
+            return response.data
+
+      register: (user) ->
+        return $http.post API_URI + 'users/register', username: user.name, password: user.password
+          .then =>
+            @login user
+          .fail console.error
+
+      logout: =>
+        return $http.delete API_URI + 'auth/logout'
+          .then (response) =>
+            @setAuthorizationHeader null
+            @loginToken = null
+            localStorage.removeItem TOKEN_KEY
+          .fail console.error
 
       getSession: (dataset) ->
         session = @session or Session.restore()
