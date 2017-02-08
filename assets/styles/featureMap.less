@@ -4,11 +4,11 @@
 	height: 100%;
 
 	g.feature {
-		font-size: 12pt;
+		font-size: 18pt;
 
 		&:hover {
 			ellipse {
-				fill: #E0E0E0 !important;
+				fill: lighten(@featureColor, 26%);
 			}
 			cursor: pointer;
 		}
@@ -22,12 +22,30 @@
 			text-anchor: middle;
 		}
 
-		&.is-target ellipse {
-			fill: @targetColor;
+		&.is-target {
+			ellipse {
+				fill: @targetColor;
+			}
+
+			&:hover ellipse {
+				fill: lighten(@targetColor, 10%);
+			}
 		}
 
 		&.selected ellipse {
 			fill: @chartSelectionColor;
 		}
 	}
+
+	.link {
+		line {
+	    stroke: #000;
+	    stroke-width: 1.5px;
+  	}
+  	
+  	text {
+	  		text-align: center;
+	  		font-size: 4em;
+  	}
+  }
 }
