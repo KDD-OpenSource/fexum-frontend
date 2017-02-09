@@ -1,12 +1,13 @@
 app.controller 'AppCtrl', [
   '$scope',
   'backendService',
+  'systemStatus',
   '$timeout',
   '$q',
   'scopeUtils',
   '$analytics',
   '$location',
-  ($scope, backendService, $timeout, $q, scopeUtils, $analytics, $location) ->
+  ($scope, backendService, systemStatus, $timeout, $q, scopeUtils, $analytics, $location) ->
 
     buildFeatureIdMap = ->
       $scope.featureIdMap = {}
@@ -111,17 +112,6 @@ app.controller 'AppCtrl', [
           rarResults.forEach updateFeatureFromFeatureSelection
         .fail console.error
 
-    $scope.loadingQueue = []
-    $scope.addLoadingQueueItem = (promise, message) ->
-      item =
-        promise: promise
-        message: message
-      $scope.loadingQueue.push item
-      promise.then (result) ->
-        # Remove from loading queue when done
-        itemIndex = $scope.loadingQueue.indexOf item
-        $scope.loadingQueue.splice itemIndex, 1
-
     isRefetching = false
     $scope.$on 'ws/closed', ->
       # When websocket is closed we might have missed important notifications
@@ -139,16 +129,26 @@ app.controller 'AppCtrl', [
             $timeout refetch, timeoutDuration
       $timeout refetch, timeoutDuration
 
+    $scope.reloadDataset = ->
+      $scope.retrieveFeatures()
+        .then $scope.retrieveRarResults
+        .then $scope.retrieveRedundancies
+
     $scope.$on 'ws/rar_result', (event, payload) ->
       if payload.data.status == 'done'
         $scope.retrieveRarResults()
         $scope.retrieveRedundancies()
 
+    $scope.$on 'ws/dataset', (event, payload) ->
+      backendService.getExperiment()
+        .then (experiment) ->
+          dataset = experiment.dataset
+          if payload.data.status == 'done' and payload.pk == dataset.id
+            $scope.reloadDataset()
+
     $scope.$watch 'dataset', ((newValue, oldValue) ->
       if newValue?
-        $scope.retrieveFeatures()
-          .then $scope.retrieveRarResults
-          .then $scope.retrieveRedundancies
+        $scope.reloadDataset()
       ), true
 
     $scope.$watchCollection 'selectedFeatures', (newSelectedFeatures) ->
@@ -165,6 +165,8 @@ app.controller 'AppCtrl', [
     backendService.getExperiment()
       .then $scope.initializeFromExperiment
       .fail console.error
+
+    $scope.loadingQueue = systemStatus.loadingQueue
 
     $scope.onFeatureSearched = (searchedItem) ->
       if not searchedItem?
@@ -188,11 +190,7 @@ app.controller 'AppCtrl', [
           for feature in $scope.features
             feature.relevancy = null
 
-      # Create promise that waits for updated relevancies
-      relevancyUpdate = backendService.waitForWebsocketEvent 'rar_result'
-      # TODO internationalization
-      $scope.addLoadingQueueItem relevancyUpdate,
-                                 "Running feature selection for #{targetFeature.name}"
+      systemStatus.waitForFeatureSelection targetFeature
 
     $scope.$watch 'targetFeature', (newTargetFeature) ->
       if newTargetFeature?

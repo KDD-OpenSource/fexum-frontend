@@ -106,6 +106,15 @@ app.factory 'backendService', [
           selection: @selection
         localStorage.setItem Experiment.LAST_EXPERIMENT_KEY, angular.toJson(lastExperiment)
 
+      retrieveDatasetInfo: =>
+        # TODO for backend, have endpoint for single dataset
+        return retrieveDatasets()
+          .then (datasets) =>
+            filtered = datasets.filter (dataset) =>
+              return dataset.id == @dataset.id
+            return filtered[0]
+          .fail console.error
+
       retrieveFeatures: =>
         $http.get API_URI + "datasets/#{@dataset.id}/features"
           .then (response) ->

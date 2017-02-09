@@ -3,8 +3,9 @@ app.controller 'ChangeDatasetCtrl', [
   '$location',
   'Upload',
   'backendService',
+  'systemStatus',
   '$analytics'
-  ($scope, $location, Upload, backendService, $analytics) ->
+  ($scope, $location, Upload, backendService, systemStatus, $analytics) ->
 
     $scope.uploadRunning = false
     $scope.progress = 0
@@ -56,7 +57,9 @@ app.controller 'ChangeDatasetCtrl', [
       backendService.getExperiment dataset
         .then setCurrentDatasetFromExperiment
         .then $scope.initializeFromExperiment
+        .then systemStatus.checkIfDatasetIsProcessing
         .fail console.error
+      
       # Change back to overview
       $location.path '/change-target'
 
