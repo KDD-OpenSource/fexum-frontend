@@ -190,7 +190,8 @@ app.factory 'backendService', [
           redundancies = $q.resolve []
         return redundancies
 
-    service =
+    class Service
+
       retrieveDatasets: retrieveDatasets
       retrieveHistogramBuckets: retrieveHistogramBuckets
       retrieveSamples: retrieveSamples
@@ -261,5 +262,5 @@ app.factory 'backendService', [
           .then saveAndPersist
           .fail console.error
 
-    return service
+    return new Service()
 ]
