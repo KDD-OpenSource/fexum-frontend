@@ -7,9 +7,8 @@
     "tests"
   ],
   "dependencies": {
-    "angular": "1.6.0",
+    "angular": "^1.6.2",
     "angular-material": "^1.1.1",
-    "angular-route": "^1.6.0",
     "svg-pan-zoom": "^3.4.0",
     "d3": "^3.4.4",
     "d3-v4": "mbostock-bower/d3-bower#^4.4.4",
@@ -25,6 +24,6 @@
   "author": "Louis Kirsch",
   "private": true,
   "resolutions": {
-    "angular": "1.6.0"
+    "angular": "^1.6.2"
   }
 }
