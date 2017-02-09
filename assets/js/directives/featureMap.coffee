@@ -93,7 +93,8 @@ app.directive 'featureMap', [
             if scope.links?
               filteredLinks = scope.links.filter (link) ->
                 return (link.source.hovered or link.target.hovered) \
-                  and (link.source.isTarget or link.target.isTarget)
+                  and (link.source.isTarget or link.target.isTarget) \
+                  and link.relevancy?
 
               d3links = d4.select svg[0]
                           .select 'g.svg-pan-zoom_viewport'
@@ -115,7 +116,7 @@ app.directive 'featureMap', [
               d3links.select 'text'
                 .attr 'x', (l) -> (l.target.x - l.source.x) / 2
                 .attr 'y', (l) -> (l.target.y - l.source.y) / 2
-                .text (l) -> d4.format('.3g') l.target.feature.relevancy
+                .text (l) -> d4.format('.3g') l.relevancy
 
               # Move links to back
               d3links.each ->
@@ -165,9 +166,11 @@ app.directive 'featureMap', [
 
         updateLinks = ->
           relevancyLinks = objectMap scope.relevancies, (featureId, relevancy) ->
+            console.assert relevancy?
             source: scope.targetFeature.id
             target: featureId
             distance: distanceFromCorrelation relevancy, false
+            relevancy: relevancy
             strength: 1
           redundancyLinks = objectMap scope.redundancies, (key, result) ->
             source: result.firstFeature

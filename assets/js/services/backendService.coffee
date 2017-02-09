@@ -180,7 +180,7 @@ app.factory 'backendService', [
         return relevancy
 
       retrieveRedundancies: =>
-        return $http.get API_URI + "datasets/#{@dataset.id}/redundancy_results"
+        return $http.get API_URI + "targets/#{@targetId}/redundancy_results"
           .then (response) ->
             redundancies = response.data
             return redundancies
