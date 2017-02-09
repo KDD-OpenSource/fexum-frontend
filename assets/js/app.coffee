@@ -22,93 +22,64 @@ app.config ['$mdThemingProvider', ($mdThemingProvider) ->
 app.config ['$stateProvider', '$locationProvider', ($stateProvider, $locationProvider) ->
 
   $stateProvider
-    .state 'login', {
+    .state 'login',
       url: '/login'
-      views: {
-        superView: {
+      views:
+        superView:
           template: JST['assets/templates/login']
           controller: 'LoginCtrl'
-        }
-      }
-      data: {
+      data:
         authenticate: false
-      }
-    }
-    .state 'predots', {
+    .state 'predots',
       url: '/'
-      views: {
-        superView: {
+      views:
+        superView:
           template: JST['assets/templates/predots']
           controller: 'AppCtrl'
-        }
-      }
-      data: {
+      data:
         authenticate: true
-      }
-    }
-    .state 'predots.subset', {
+    .state 'predots.subset',
       url: ''
-      views: {
-        predotsView: {
+      views:
+        predotsView:
           template: JST['assets/templates/featureSubset']
           controller: 'FeatureSubsetCtrl'
-        }
-      }
-    }
-    .state 'predots.selections', {
-      url: 'selections'
-      views: {
-        predotsView: {
+    .state 'predots.selections',
+      url: 'selections?select&unselect'
+      views:
+        predotsView:
           template: JST['assets/templates/featureSubset']
           controller: 'FeatureSubsetCtrl'
-        }
-      }
-    }
-    .state 'predots.analyze', {
+    .state 'predots.analyze',
       url: 'analyze'
-      views: {
-        predotsView: {
+      views:
+        predotsView:
           template: JST['assets/templates/analysis']
           controller: 'AnalysisCtrl'
-        }
-      }
-    }
-    .state 'predots.change-target', {
+    .state 'predots.change-target',
       url: 'change-target'
-      views: {
-        predotsView: {
+      views:
+        predotsView:
           template: JST['assets/templates/featureList']
           controller: 'FeatureListCtrl'
-        }
-      }
-    }
-    .state 'predots.change-dataset', {
+    .state 'predots.change-dataset',
       url: 'change-dataset'
-      views: {
-        predotsView: {
+      views:
+        predotsView:
           template: JST['assets/templates/changeDataset']
           controller: 'ChangeDatasetCtrl'
-        }
-      }
-    }
-    .state 'predots.feature-list', {
+    .state 'predots.feature-list',
       url: 'feature-list'
-      views: {
-        predotsView: {
+      views:
+        predotsView:
           template: JST['assets/templates/featureList']
           controller: 'FeatureListCtrl'
-        }
-      }
-    }
-    .state 'predots.feature', {
+    .state 'predots.feature',
       url: 'feature/:featureName'
-      views: {
-        predotsView: {
+      views:
+        predotsView:
           template: JST['assets/templates/featureInfo']
           controller: 'FeatureInfoCtrl'
-        }
-      }
-    }
 
   $locationProvider.html5Mode true
   return
