@@ -78,8 +78,8 @@ app.directive 'histogramPlot', [
           .fail console.error
         slicesAvailable = featureAvailable
           .then (featuredId) ->
-            return backendService.getSession()
-          .then (session) -> session.retrieveSlices scope.feature.id
+            return backendService.getExperiment()
+          .then (experiment) -> experiment.retrieveSlices scope.feature.id
           .then (slices) -> scope.feature.slices = slices
           .fail console.error
         $q.all [bucketsAvailable, slicesAvailable]

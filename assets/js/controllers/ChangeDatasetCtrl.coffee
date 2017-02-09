@@ -9,16 +9,16 @@ app.controller 'ChangeDatasetCtrl', [
     $scope.uploadRunning = false
     $scope.progress = 0
 
-    setCurrentDatasetFromSession = (session) ->
-      filter = (d) -> d.id == session.dataset.id
+    setCurrentDatasetFromExperiment = (experiment) ->
+      filter = (d) -> d.id == experiment.dataset.id
       $scope.currentDataset = $scope.datasets.filter(filter)[0]
-      return session
+      return experiment
 
     backendService.retrieveDatasets()
       .then (datasets) ->
         $scope.datasets = datasets
-        return backendService.getSession()
-      .then setCurrentDatasetFromSession
+        return backendService.getExperiment()
+      .then setCurrentDatasetFromExperiment
       .fail console.error
 
     $scope.upload = (file) ->
@@ -53,9 +53,9 @@ app.controller 'ChangeDatasetCtrl', [
             label: 'datasetInit'
       }
 
-      backendService.getSession dataset
-        .then setCurrentDatasetFromSession
-        .then $scope.initializeFromSession
+      backendService.getExperiment dataset
+        .then setCurrentDatasetFromExperiment
+        .then $scope.initializeFromExperiment
         .fail console.error
       # Change back to overview
       $location.path '/change-target'

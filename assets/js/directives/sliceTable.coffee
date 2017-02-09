@@ -12,10 +12,10 @@ app.directive 'sliceTable', [
       link: (scope, element, attrs) ->
 
         scopeUtils.waitForVariableSet scope, 'features'
-          .then -> backendService.getSession()
-          .then (session) ->
+          .then -> backendService.getExperiment()
+          .then (experiment) ->
             ids = scope.features.map (f) -> f.id
-            return session.retrieveSlicesForSubset ids
+            return experiment.retrieveSlicesForSubset ids
           .then (slices) ->
             sortByDeviation = (a, b) -> b.deviation - a.deviation
             slices.sort sortByDeviation
