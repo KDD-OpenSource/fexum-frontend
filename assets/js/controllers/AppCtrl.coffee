@@ -40,15 +40,12 @@ app.controller 'AppCtrl', [
             $scope.selectedFeatures = newSelectedFeatures
         .fail console.error
 
-
-    $scope.redundanciesLoaded = false
     $scope.retrieveRedundancies = ->
       backendService.getExperiment()
         .then (experiment) -> experiment.retrieveRedundancies()
         .then (redundancies) ->
           $scope.redundancies = {}
           redundancies.forEach updateRedundanciesFromItem
-          $scope.redundanciesLoaded = true
         .fail console.error
 
     $scope.getSearchItems = ->
@@ -106,14 +103,12 @@ app.controller 'AppCtrl', [
         redundancy: redundancyItem.redundancy
         weight: redundancyItem.weight
 
-    $scope.relevanciesLoaded = false
     $scope.retrieveRarResults = ->
       backendService.getExperiment()
         .then (experiment) -> experiment.retrieveRarResults()
         .then (rarResults) ->
           $scope.relevancies = {}
           rarResults.forEach updateFeatureFromFeatureSelection
-          $scope.relevanciesLoaded = true
         .fail console.error
 
     $scope.loadingQueue = []
@@ -144,12 +139,10 @@ app.controller 'AppCtrl', [
             $timeout refetch, timeoutDuration
       $timeout refetch, timeoutDuration
 
-    $scope.$on 'ws/relevancy_result', (event, payload) ->
-      if $scope.relevanciesLoaded
+    $scope.$on 'ws/rar_result', (event, payload) ->
+      console.log payload
+      if payload.data.status == 'done'
         $scope.retrieveRarResults()
-
-    $scope.$on 'ws/redundancy_result', (event, payload) ->
-      if $scope.redundanciesLoaded
         $scope.retrieveRedundancies()
 
     $scope.$watch 'dataset', ((newValue, oldValue) ->
@@ -197,7 +190,7 @@ app.controller 'AppCtrl', [
             feature.relevancy = null
 
       # Create promise that waits for updated relevancies
-      relevancyUpdate = backendService.waitForWebsocketEvent 'relevancy_result'
+      relevancyUpdate = backendService.waitForWebsocketEvent 'rar_result'
       # TODO internationalization
       $scope.addLoadingQueueItem relevancyUpdate,
                                  "Running feature selection for #{targetFeature.name}"
