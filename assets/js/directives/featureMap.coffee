@@ -150,8 +150,12 @@ app.directive 'featureMap', [
             .force 'link', forceLinkDef
 
           scope.simulationTimeout = $timeout scope.simulation.stop, attrs.simulationTimeout * 1000
-          scope.simulationTimeout.then ->
-            scope.simulationTimeout = $interval renderLineLinks, 30
+          scope.simulationTimeout
+            .then ->
+              scope.simulationTimeout = $interval renderLineLinks, 30
+            .fail (error) ->
+              if error != 'canceled'
+                console.error error
 
         distanceFromCorrelation = (correlation, isRedundancy) ->
           minDistance = 500
