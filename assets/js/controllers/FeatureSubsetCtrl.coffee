@@ -4,7 +4,7 @@ app.controller 'FeatureSubsetCtrl', [
   'scopeUtils',
   ($scope, $stateParams, scopeUtils) ->
 
-    if $stateParams.select? or $stateParams.unselect
+    if $stateParams.select? or $stateParams.unselect?
       scopeUtils.waitForVariableSet $scope, 'features'
         .then (features) ->
           for feature in features
