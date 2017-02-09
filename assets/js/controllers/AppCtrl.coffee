@@ -140,7 +140,6 @@ app.controller 'AppCtrl', [
       $timeout refetch, timeoutDuration
 
     $scope.$on 'ws/rar_result', (event, payload) ->
-      console.log payload
       if payload.data.status == 'done'
         $scope.retrieveRarResults()
         $scope.retrieveRedundancies()
