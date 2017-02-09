@@ -1,16 +1,16 @@
 app.controller 'FeatureSubsetCtrl', [
   '$scope',
-  '$routeParams',
+  '$stateParams',
   'scopeUtils',
-  ($scope, $routeParams, scopeUtils) ->
+  ($scope, $stateParams, scopeUtils) ->
 
-    if $routeParams.select? or $routeParams.unselect
+    if $stateParams.select? or $stateParams.unselect
       scopeUtils.waitForVariableSet $scope, 'features'
         .then (features) ->
           for feature in features
-            searchedName = $routeParams.select or $routeParams.unselect
+            searchedName = $stateParams.select or $stateParams.unselect
             if feature.name == searchedName
-              if $routeParams.select?
+              if $stateParams.select?
                 $scope.select feature
               else
                 $scope.unselect feature
