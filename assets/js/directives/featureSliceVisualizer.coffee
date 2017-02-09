@@ -73,8 +73,8 @@ app.directive 'featureSliceVisualizer', [
             return $q.resolve feature.samples
 
         retrieveMarginalDistribution = ->
-          return backendService.getSession()
-            .then (session) -> session.getProbabilityDistribution []
+          return backendService.getExperiment()
+            .then (experiment) -> experiment.getProbabilityDistribution []
             .then (distr) -> scope.targetFeature.marginalProbDistr = distr
             .fail console.error
 
@@ -140,9 +140,9 @@ app.directive 'featureSliceVisualizer', [
           updateChartCounter += 1
           currentRun = updateChartCounter
           updateConditionalProbDistrChart = ->
-            backendService.getSession()
-              .then (session) ->
-                return session.getProbabilityDistribution rangesQuery
+            backendService.getExperiment()
+              .then (experiment) ->
+                return experiment.getProbabilityDistribution rangesQuery
               .then (conditionalProbDistr) ->
                 # Only update if there was no update to the charts since last time
                 if currentRun == updateChartCounter
@@ -175,9 +175,9 @@ app.directive 'featureSliceVisualizer', [
           scope.yFeature = newFeature
           scope.updateCharts()
 
-          backendService.getSession().then (session) ->
+          backendService.getExperiment().then (experiment) ->
             $analytics.eventTrack 'scatterAxisChanged', {
-              category: "d#{session.dataset.id}t#{scope.targetFeature.id}" +
+              category: "d#{experiment.dataset.id}t#{scope.targetFeature.id}" +
                         "f#{scope.selectedFeatures.map((f) -> f.id).join '|'}"
               label: 'x=' + scope.xFeature.id + '|y=' + newFeature.id
             }
@@ -186,9 +186,9 @@ app.directive 'featureSliceVisualizer', [
           scope.xFeature = newFeature
           scope.updateCharts()
 
-          backendService.getSession().then (session) ->
+          backendService.getExperiment().then (experiment) ->
             $analytics.eventTrack 'scatterAxisChanged', {
-              category: "d#{session.dataset.id}t#{scope.targetFeature.id}" +
+              category: "d#{experiment.dataset.id}t#{scope.targetFeature.id}" +
                         "f#{scope.selectedFeatures.map((f) -> f.id).join '|'}"
               label: 'x=' + newFeature.id + '|y=' + scope.yFeature.id
             }

@@ -19,8 +19,8 @@ app.factory 'backendService', [
         return datasets
       .fail console.error
 
-    retrieveSessions = ->
-      $http.get API_URI + 'sessions'
+    retrieveExperiments = ->
+      $http.get API_URI + 'experiments'
         .then (response) ->
           return response.data
         .fail console.error
@@ -63,33 +63,33 @@ app.factory 'backendService', [
           resolve.apply @, arguments
           removeListener()
 
-    class Session
+    class Experiment
 
-      @LAST_SESSION_KEY = 'lastSession'
+      @LAST_EXPERIMENT_KEY = 'lastExperiment'
 
       constructor: (@id, @dataset, @targetId) ->
 
       @create: (dataset) =>
-        return $http.post API_URI + 'sessions', dataset: dataset.id
+        return $http.post API_URI + 'experiments', dataset: dataset.id
           .then (response) =>
-            session = @fromJson response.data
-            session.dataset = dataset
-            return session
+            experiment = @fromJson response.data
+            experiment.dataset = dataset
+            return experiment
 
       @restore: =>
-        lastSessionJson = localStorage.getItem @LAST_SESSION_KEY
-        if lastSessionJson?
-          lastSession = angular.fromJson lastSessionJson
-          return @fromJson lastSession
+        lastExperimentJson = localStorage.getItem @LAST_EXPERIMENT_KEY
+        if lastExperimentJson?
+          lastExperiment = angular.fromJson lastExperimentJson
+          return @fromJson lastExperiment
 
       @fromJson: (json) ->
-        session = new Session(
+        experiment = new Experiment(
           json.id,
           json.dataset,
           json.targetId
         )
-        session.selection = json.selection
-        return session
+        experiment.selection = json.selection
+        return experiment
 
       setSelection: (selection) =>
         @selection = selection
@@ -99,12 +99,12 @@ app.factory 'backendService', [
         return @selection
 
       store: =>
-        lastSession =
+        lastExperiment =
           id: @id
           dataset: @dataset
           targetId: @targetId
           selection: @selection
-        localStorage.setItem Session.LAST_SESSION_KEY, angular.toJson(lastSession)
+        localStorage.setItem Experiment.LAST_EXPERIMENT_KEY, angular.toJson(lastExperiment)
 
       retrieveFeatures: =>
         $http.get API_URI + "datasets/#{@dataset.id}/features"
@@ -120,7 +120,7 @@ app.factory 'backendService', [
       setTarget: (targetFeatureId) =>
         @targetId = targetFeatureId
         # Notify server of new target
-        $http.put API_URI + "sessions/#{@id}/target", target: targetFeatureId
+        $http.put API_URI + "experiments/#{@id}/target", target: targetFeatureId
           .then (response) =>
             @targetId = targetFeatureId
             @store()
@@ -224,16 +224,16 @@ app.factory 'backendService', [
             localStorage.removeItem TOKEN_KEY
           .fail console.error
 
-      getSession: (dataset) ->
-        session = @session or Session.restore()
-        if session? and (not dataset? or session.dataset.id == dataset.id)
-          @session = session
-          return $q.resolve session
+      getExperiment: (dataset) ->
+        experiment = @experiment or Experiment.restore()
+        if experiment? and (not dataset? or experiment.dataset.id == dataset.id)
+          @experiment = experiment
+          return $q.resolve experiment
 
-        saveAndPersist = (session) =>
-          @session = session
-          session.store()
-          return session
+        saveAndPersist = (experiment) =>
+          @experiment = experiment
+          experiment.store()
+          return experiment
 
         if not dataset?
           return retrieveDatasets()
@@ -242,18 +242,18 @@ app.factory 'backendService', [
                 return datasets[0]
               else
                 return $q.reject 'No datasets available'
-            .then Session.create
+            .then Experiment.create
             .then saveAndPersist
             .fail console.error
 
-        return retrieveSessions()
-          .then (sessions) ->
-            matchingSessions = sessions.filter (sess) -> sess.dataset.id == dataset.id
-            if matchingSessions.length > 0
-              session = Session.fromJson matchingSessions[0]
-              session.dataset = dataset
-              return session
-            return Session.create dataset
+        return retrieveExperiments()
+          .then (experiments) ->
+            matchingExperiments = experiments.filter (sess) -> sess.dataset.id == dataset.id
+            if matchingExperiments.length > 0
+              experiment = Experiment.fromJson matchingExperiments[0]
+              experiment.dataset = dataset
+              return experiment
+            return Experiment.create dataset
           .then saveAndPersist
           .fail console.error
 

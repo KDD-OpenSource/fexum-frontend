@@ -22,8 +22,8 @@ app.controller 'AppCtrl', [
 
     # Retrieve features
     $scope.retrieveFeatures = ->
-      backendService.getSession()
-        .then (session) -> session.retrieveFeatures()
+      backendService.getExperiment()
+        .then (experiment) -> experiment.retrieveFeatures()
         .then (features) ->
           $scope.features = features
           buildFeatureIdMap()
@@ -43,8 +43,8 @@ app.controller 'AppCtrl', [
 
     $scope.redundanciesLoaded = false
     $scope.retrieveRedundancies = ->
-      backendService.getSession()
-        .then (session) -> session.retrieveRedundancies()
+      backendService.getExperiment()
+        .then (experiment) -> experiment.retrieveRedundancies()
         .then (redundancies) ->
           $scope.redundancies = {}
           redundancies.forEach updateRedundanciesFromItem
@@ -108,8 +108,8 @@ app.controller 'AppCtrl', [
 
     $scope.relevanciesLoaded = false
     $scope.retrieveRarResults = ->
-      backendService.getSession()
-        .then (session) -> session.retrieveRarResults()
+      backendService.getExperiment()
+        .then (experiment) -> experiment.retrieveRarResults()
         .then (rarResults) ->
           $scope.relevancies = {}
           rarResults.forEach updateFeatureFromFeatureSelection
@@ -160,18 +160,18 @@ app.controller 'AppCtrl', [
       ), true
 
     $scope.$watchCollection 'selectedFeatures', (newSelectedFeatures) ->
-      backendService.getSession()
-        .then (session) -> session.setSelection newSelectedFeatures
+      backendService.getExperiment()
+        .then (experiment) -> experiment.setSelection newSelectedFeatures
 
-    $scope.initializeFromSession = (session) ->
-      $scope.targetFeatureId = session.targetId
-      $scope.dataset = {id: session.dataset.id, name: session.dataset.name}
-      selection = session.getSelection()
+    $scope.initializeFromExperiment = (experiment) ->
+      $scope.targetFeatureId = experiment.targetId
+      $scope.dataset = {id: experiment.dataset.id, name: experiment.dataset.name}
+      selection = experiment.getSelection()
       if selection?
         $scope.selectedFeatures = selection
 
-    backendService.getSession()
-      .then $scope.initializeFromSession
+    backendService.getExperiment()
+      .then $scope.initializeFromExperiment
       .fail console.error
 
     $scope.onFeatureSearched = (searchedItem) ->
@@ -188,8 +188,8 @@ app.controller 'AppCtrl', [
       $scope.targetFeature = targetFeature
       rarTime[targetFeature.id] = Date.now()
 
-      backendService.getSession()
-        .then (session) -> session.setTarget targetFeature.id
+      backendService.getExperiment()
+        .then (experiment) -> experiment.setTarget targetFeature.id
         .then ->
           $scope.redundancies = {}
           $scope.relevancies = {}
