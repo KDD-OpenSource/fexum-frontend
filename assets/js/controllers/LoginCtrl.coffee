@@ -4,8 +4,7 @@ app.controller 'LoginCtrl', [
   '$location',
   ($scope, backendService, $location) ->
 
-    updateErrors = (response) ->
-      error = response.data
+    updateErrors = (error) ->
       if error.non_field_errors?
         $scope.errorMessage = error.non_field_errors.map((err) -> '  - ' + err + '\n').join ''
       if error.username?
@@ -20,19 +19,25 @@ app.controller 'LoginCtrl', [
 
 
     $scope.login = ->
-      backendService.login($scope.user)
+      backendService.login $scope.user
         .then ->
           resetErrors()
           $location.path '/'
         .fail (response) ->
-          updateErrors(response)
+          if response.data?
+            updateErrors response.data
+          else
+            console.error response
 
     $scope.register = ->
-      backendService.register($scope.user)
+      backendService.register $scope.user
         .then ->
           resetErrors()
           $location.path '/'
         .fail (response) ->
-          updateErrors(response)
+          if response.data?
+            updateErrors response.data
+          else
+            console.error response
 
 ]

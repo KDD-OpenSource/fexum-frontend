@@ -180,13 +180,18 @@ app.factory 'backendService', [
         return relevancy
 
       retrieveRedundancies: =>
-        return $http.get API_URI + "targets/#{@targetId}/redundancy_results"
-          .then (response) ->
-            redundancies = response.data
-            return redundancies
-          .fail console.error
+        if @targetId?
+          redundancies = $http.get API_URI + "targets/#{@targetId}/redundancy_results"
+            .then (response) ->
+              redundancies = response.data
+              return redundancies
+            .fail console.error
+        else
+          redundancies = $q.resolve []
+        return redundancies
 
-    service =
+    class Service
+
       retrieveDatasets: retrieveDatasets
       retrieveHistogramBuckets: retrieveHistogramBuckets
       retrieveSamples: retrieveSamples
@@ -195,14 +200,14 @@ app.factory 'backendService', [
       setAuthorizationHeader: (header) ->
         $http.defaults.headers.common['Authorization'] = header
 
-      isLoggedIn: ->
+      isLoggedIn: =>
         @loginToken = localStorage.getItem TOKEN_KEY
         if @loginToken?
           @setAuthorizationHeader "Token #{@loginToken}"
           return true
         return false
 
-      login: (user) ->
+      login: (user) =>
         return $http.post API_URI + 'auth/login', username: user.name, password: user.password
           .then (response) =>
             @loginToken = response.data.token
@@ -210,7 +215,7 @@ app.factory 'backendService', [
             localStorage.setItem TOKEN_KEY, @loginToken
             return response.data
 
-      register: (user) ->
+      register: (user) =>
         return $http.post API_URI + 'users/register', username: user.name, password: user.password
           .then =>
             @login user
@@ -224,7 +229,7 @@ app.factory 'backendService', [
             localStorage.removeItem TOKEN_KEY
           .fail console.error
 
-      getExperiment: (dataset) ->
+      getExperiment: (dataset) =>
         experiment = @experiment or Experiment.restore()
         if experiment? and (not dataset? or experiment.dataset.id == dataset.id)
           @experiment = experiment
@@ -257,5 +262,5 @@ app.factory 'backendService', [
           .then saveAndPersist
           .fail console.error
 
-    return service
+    return new Service()
 ]
