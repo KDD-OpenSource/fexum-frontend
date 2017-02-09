@@ -65,7 +65,7 @@ app.factory 'backendService', [
 
     class Experiment
 
-      @LAST_SESSION_KEY = 'lastExperiment'
+      @LAST_EXPERIMENT_KEY = 'lastExperiment'
 
       constructor: (@id, @dataset, @targetId) ->
 
@@ -77,7 +77,7 @@ app.factory 'backendService', [
             return experiment
 
       @restore: =>
-        lastExperimentJson = localStorage.getItem @LAST_SESSION_KEY
+        lastExperimentJson = localStorage.getItem @LAST_EXPERIMENT_KEY
         if lastExperimentJson?
           lastExperiment = angular.fromJson lastExperimentJson
           return @fromJson lastExperiment
@@ -104,7 +104,7 @@ app.factory 'backendService', [
           dataset: @dataset
           targetId: @targetId
           selection: @selection
-        localStorage.setItem Experiment.LAST_SESSION_KEY, angular.toJson(lastExperiment)
+        localStorage.setItem Experiment.LAST_EXPERIMENT_KEY, angular.toJson(lastExperiment)
 
       retrieveFeatures: =>
         $http.get API_URI + "datasets/#{@dataset.id}/features"
