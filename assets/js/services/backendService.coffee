@@ -199,14 +199,14 @@ app.factory 'backendService', [
       setAuthorizationHeader: (header) ->
         $http.defaults.headers.common['Authorization'] = header
 
-      isLoggedIn: ->
+      isLoggedIn: =>
         @loginToken = localStorage.getItem TOKEN_KEY
         if @loginToken?
           @setAuthorizationHeader "Token #{@loginToken}"
           return true
         return false
 
-      login: (user) ->
+      login: (user) =>
         return $http.post API_URI + 'auth/login', username: user.name, password: user.password
           .then (response) =>
             @loginToken = response.data.token
@@ -214,7 +214,7 @@ app.factory 'backendService', [
             localStorage.setItem TOKEN_KEY, @loginToken
             return response.data
 
-      register: (user) ->
+      register: (user) =>
         return $http.post API_URI + 'users/register', username: user.name, password: user.password
           .then =>
             @login user
@@ -228,7 +228,7 @@ app.factory 'backendService', [
             localStorage.removeItem TOKEN_KEY
           .fail console.error
 
-      getExperiment: (dataset) ->
+      getExperiment: (dataset) =>
         experiment = @experiment or Experiment.restore()
         if experiment? and (not dataset? or experiment.dataset.id == dataset.id)
           @experiment = experiment
