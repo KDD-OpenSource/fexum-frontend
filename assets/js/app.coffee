@@ -1,6 +1,5 @@
 app = angular.module 'predots', [
   'ngMaterial',
-  'ngRoute',
   'nvd3',
   'ngWebSocket',
   'ngFileUpload',
