@@ -17,27 +17,23 @@ app.controller 'LoginCtrl', [
       $scope.loginForm.userPassword.$error.custom = null
       $scope.errorMessage = null
 
+    successCallback = ->
+      resetErrors()
+      $location.path '/'
+
+    errorCallback = (response) ->
+      if response.data?
+        updateErrors response.data
+      else
+        console.error response
 
     $scope.login = ->
       backendService.login $scope.user
-        .then ->
-          resetErrors()
-          $location.path '/'
-        .fail (response) ->
-          if response.data?
-            updateErrors response.data
-          else
-            console.error response
+        .then successCallback
+        .fail errorCallback
 
     $scope.register = ->
       backendService.register $scope.user
-        .then ->
-          resetErrors()
-          $location.path '/'
-        .fail (response) ->
-          if response.data?
-            updateErrors response.data
-          else
-            console.error response
-
+        .then successCallback
+        .fail errorCallback
 ]
