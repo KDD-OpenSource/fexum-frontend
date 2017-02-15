@@ -13,7 +13,7 @@ app.directive 'featureMap', [
         redundancies: '='
         selectedFeatures: '='
         targetFeature: '='
-        zoomApi: '='
+        mapApi: '='
       link: (scope, element, attrs) ->
 
         svg = angular.element(document.createElementNS('http://www.w3.org/2000/svg', 'svg'))
@@ -192,6 +192,21 @@ app.directive 'featureMap', [
             setupSimulation()
             render()
             updateLinks()
+
+        scope.mapApi =
+          zoomIn: ->
+            scope.zoomApi.zoomIn()
+          zoomOut: ->
+            scope.zoomApi.zoomOut()
+          locateFeature: (feature) ->
+            node = scope.nodes.find (f) -> f.id == feature.id
+            sizes = scope.zoomApi.getSizes()
+            zoom = sizes.realZoom
+            position =
+              x: sizes.width / 2 - node.x * zoom
+              y: sizes.height / 2 - node.y * zoom
+            scope.zoomApi.pan position
+            scope.zoomApi.zoom 0.5
 
         areFeaturesSet = scopeUtils.waitForVariableSet scope, 'features'
         isTargetFeatureSet = scopeUtils.waitForVariableSet scope, 'targetFeature'

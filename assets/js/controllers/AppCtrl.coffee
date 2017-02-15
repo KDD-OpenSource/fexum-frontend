@@ -174,8 +174,7 @@ app.controller 'AppCtrl', [
       if searchedItem.isTargetChoice
         $scope.setTarget searchedItem.feature
       else
-        # TODO zoom to location of feature
-        console.log 'Zooming to location feature'
+        $scope.mapApi.locateFeature searchedItem.feature
       $scope.searchText = ''
 
     $scope.setTarget = (targetFeature) ->
