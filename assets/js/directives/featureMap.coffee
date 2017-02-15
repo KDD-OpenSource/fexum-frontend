@@ -36,9 +36,13 @@ app.directive 'featureMap', [
             # Enable feature map paning and zooming
             scope.zoomApi = svgPanZoom svg[0],
               fit: false
-              controlIconsEnabled: false,
-              onZoom: render,
-              minZoom: 0.00001,
+              controlIconsEnabled: false
+              onZoom: ->
+                $interval.cancel scope.autoZoomInterval
+                render()
+              onPan: ->
+                $interval.cancel scope.autoZoomInterval
+              minZoom: 0.00001
               zoomScaleSensitivity: 0.3
 
           renderLineLinks()
@@ -75,6 +79,7 @@ app.directive 'featureMap', [
                 .attr 'ry', 40
           newD3Links.append 'text'
           # Update elements
+          d3nodes = newD3nodes.merge d3nodes
           d3nodes.select 'a'
                 .attr 'xlink:href', getFeatureLink
                 .select 'text'
@@ -82,47 +87,59 @@ app.directive 'featureMap', [
           d3nodes.attr 'transform', getFeatureTranslationString
                 .classed 'is-target', (node) -> node.isTarget
                 .classed 'selected', (node) -> scope.selectedFeatures.includes node.feature
-                .on 'mouseover', (node) -> node.hovered = true
-                .on 'mouseout', (node) -> node.hovered = false
+                .on 'mouseover', (node) ->
+                  node.hovered = true
+                  renderLineLinks()
+                .on 'mouseout', (node) ->
+                  node.hovered = false
+                  renderLineLinks()
 
           scope.zoomApi.updateBBox()
 
           return
 
         renderLineLinks = ->
-            if scope.links?
-              filteredLinks = scope.links.filter (link) ->
-                return (link.source.hovered or link.target.hovered) \
-                  and (link.source.isTarget or link.target.isTarget) \
-                  and link.relevancy?
+          if not scope.links?
+            return
 
-              d3links = d4.select svg[0]
-                          .select 'g.svg-pan-zoom_viewport'
-                          .selectAll '.link'
-                          .data filteredLinks
-              d3links.exit().remove()
+          filteredLinks = scope.links.filter (link) ->
+            return (link.source.hovered or link.target.hovered) \
+              and (link.source.isTarget or link.target.isTarget) \
+              and link.relevancy?
 
-              g = d3links.enter().append 'g'
-                    .classed 'link', true
-              g.append 'line'
-              g.append 'text'
+          d3links = d4.select svg[0]
+                      .select 'g.svg-pan-zoom_viewport'
+                      .selectAll 'g.link'
+                      .data filteredLinks
 
-              d3links.select 'line'
-                .attr 'x1', (l) -> l.source.x
-                .attr 'y1', (l) -> l.source.y
-                .attr 'x2', (l) -> l.target.x
-                .attr 'y2', (l) -> l.target.y
+          # Remove
+          d3links.exit().remove()
 
-              d3links.select 'text'
-                .attr 'x', (l) -> (l.target.x - l.source.x) / 2
-                .attr 'y', (l) -> (l.target.y - l.source.y) / 2
-                .text (l) -> d4.format('.3g') l.relevancy
+          # Enter
+          newD3Links = d3links.enter()
+              .append 'g'
+              .classed 'link', true
+          newD3Links.append 'line'
+          newD3Links.append 'text'
 
-              # Move links to back
-              d3links.each ->
-                firstChild = @.parentNode.firstChild
-                if firstChild?
-                  @.parentNode.insertBefore @, firstChild
+          # Update
+          d3links = d3links.merge newD3Links
+          d3links.select 'line'
+            .attr 'x1', (l) -> l.source.x
+            .attr 'y1', (l) -> l.source.y
+            .attr 'x2', (l) -> l.target.x
+            .attr 'y2', (l) -> l.target.y
+
+          d3links.select 'text'
+            .attr 'x', (l) -> (l.target.x - l.source.x) / 2
+            .attr 'y', (l) -> (l.target.y - l.source.y) / 2
+            .text (l) -> d4.format('.3g') l.relevancy
+
+          # Move links to back
+          d3links.each ->
+            firstChild = @parentNode.firstChild
+            if firstChild?
+              @parentNode.insertBefore @, firstChild
 
         createNodes = ->
           scope.nodes = scope.features.map (feature) ->
@@ -138,6 +155,25 @@ app.directive 'featureMap', [
               node.fy = 0
             return node
 
+        stopSimulation = ->
+          if scope.simulation?
+            $timeout.cancel scope.simulationTimeout
+            scope.simulation.stop()
+
+        setupSimulationTimeout = ->
+          # Only setup once
+          if scope.simulationTimeout?
+            $timeout.cancel scope.simulationTimeout
+
+          scope.simulationTimeout = $timeout scope.simulation.stop, attrs.simulationTimeout * 1000
+          scope.simulationTimeout
+            .then ->
+              scope.simulationTimeout = null
+            .fail (error) ->
+              scope.simulationTimeout = null
+              if error != 'canceled'
+                console.error error
+
         setupSimulation = ->
           forceLinkDef = d4.forceLink []
             .id (d) -> d.id
@@ -150,13 +186,7 @@ app.directive 'featureMap', [
             .on 'tick', render
             .force 'link', forceLinkDef
 
-          scope.simulationTimeout = $timeout scope.simulation.stop, attrs.simulationTimeout * 1000
-          scope.simulationTimeout
-            .then ->
-              scope.simulationTimeout = $interval renderLineLinks, 30
-            .fail (error) ->
-              if error != 'canceled'
-                console.error error
+          setupSimulationTimeout()
 
         distanceFromCorrelation = (correlation, isRedundancy) ->
           minDistance = 500
@@ -178,15 +208,18 @@ app.directive 'featureMap', [
             distance: distanceFromCorrelation result.redundancy, true
             strength: 0.005 * Math.sqrt result.weight
           scope.links = relevancyLinks.concat redundancyLinks
+          # Update simulation
           scope.simulation
             .force 'link'
             .links scope.links
 
+          scope.simulation.restart()
+          setupSimulationTimeout()
+          # Zoom out for viewing all features after simulation has updated for a few iterations
+          scope.autoZoomInterval = $interval scope.zoomApi.fit, 100, 10 * 3
 
         initialize = (targetFeature) ->
-          if scope.simulation?
-            $timeout.cancel scope.simulationTimeout
-            scope.simulation.stop()
+          stopSimulation()
           if targetFeature?
             createNodes()
             setupSimulation()
