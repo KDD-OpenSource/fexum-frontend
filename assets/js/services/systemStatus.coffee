@@ -24,6 +24,7 @@ app.factory 'systemStatus', [
           if datasetInfo.status == 'processing'
             return waitForDatasetProcessed datasetInfo
           return
+        .fail console.error
 
     waitForDatasetProcessed = (dataset) ->
       datasetProcessed = $q (resolve, reject) ->
