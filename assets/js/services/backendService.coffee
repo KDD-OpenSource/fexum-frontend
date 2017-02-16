@@ -228,7 +228,6 @@ app.factory 'backendService', [
         return $http.post API_URI + 'users/register', username: user.name, password: user.password
           .then =>
             @login user
-          .fail console.error
 
       logout: =>
         return $http.delete API_URI + 'auth/logout'
