@@ -4,7 +4,7 @@ feature-map#feature-map(features='features',
                         selected-features='selectedFeatures',
                         target-feature='targetFeature',
                         simulation-timeout='30',
-                        zoom-api='zoomApi',
+                        map-api='mapApi',
                         def-transform='1')
 #map-overlay(layout='column', layout-fill)
   .md-padding.left-pane
@@ -32,8 +32,8 @@ feature-map#feature-map(features='features',
     md-progress-circular(md-mode='indeterminate', md-diameter='20')
 #zoom-controls.md-padding
   .md-whiteframe-1dp(layout='column')
-    md-button.md-icon-button(aria-label='Zoom in', ng-click='zoomApi.zoomIn()')
+    md-button.md-icon-button(aria-label='Zoom in', ng-click='mapApi.zoomIn()')
       md-icon add
     md-divider
-    md-button.md-icon-button(aria-label='Zoom out', ng-click='zoomApi.zoomOut()')
+    md-button.md-icon-button(aria-label='Zoom out', ng-click='mapApi.zoomOut()')
       md-icon remove
