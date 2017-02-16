@@ -253,11 +253,12 @@ app.factory 'backendService', [
             .then (datasets) ->
               if datasets.length > 0
                 return datasets[0]
-              else
-                return $q.reject 'No datasets available'
+              return $q.reject {
+                noDatasets: true
+                msg: 'No datasets available'
+              }
             .then Experiment.create
             .then saveAndPersist
-            .fail console.error
 
         return retrieveExperiments()
           .then (experiments) ->
@@ -268,7 +269,6 @@ app.factory 'backendService', [
               return experiment
             return Experiment.create dataset
           .then saveAndPersist
-          .fail console.error
 
     return new Service()
 ]

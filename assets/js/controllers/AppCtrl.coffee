@@ -19,7 +19,7 @@ app.controller 'AppCtrl', [
     $scope.logout = ->
       backendService.logout()
         .then ->
-          $location.path('/login')
+          $location.path '/login'
 
     # Retrieve features
     $scope.retrieveFeatures = ->
@@ -50,14 +50,15 @@ app.controller 'AppCtrl', [
         .fail console.error
 
     $scope.getSearchItems = ->
-      categoricalFeatures = $scope.features.filter (f) -> f.is_categorical
+      features = $scope.features or []
+      categoricalFeatures = features.filter (f) -> f.is_categorical
       targetChoices = categoricalFeatures.map (feature, i) ->
         return {
           feature: feature
           index: i
           isTargetChoice: true
         }
-      locatableFeatures = $scope.features.map (feature, i) ->
+      locatableFeatures = features.map (feature, i) ->
         return {
           feature: feature
           index: i
@@ -145,6 +146,7 @@ app.controller 'AppCtrl', [
           dataset = experiment.dataset
           if payload.data.status == 'done' and payload.pk == dataset.id
             $scope.reloadDataset()
+        .fail console.error
 
     $scope.$watch 'dataset', ((newValue, oldValue) ->
       if newValue?
@@ -154,6 +156,7 @@ app.controller 'AppCtrl', [
     $scope.$watchCollection 'selectedFeatures', (newSelectedFeatures) ->
       backendService.getExperiment()
         .then (experiment) -> experiment.setSelection newSelectedFeatures
+        .fail console.error
 
     $scope.initializeFromExperiment = (experiment) ->
       $scope.targetFeatureId = experiment.targetId
@@ -164,7 +167,11 @@ app.controller 'AppCtrl', [
 
     backendService.getExperiment()
       .then $scope.initializeFromExperiment
-      .fail console.error
+      .fail (error) ->
+        if error.noDatasets
+          $location.path '/change-dataset'
+        else
+          console.error error
 
     $scope.loadingQueue = systemStatus.loadingQueue
 
@@ -188,6 +195,7 @@ app.controller 'AppCtrl', [
           $scope.relevancies = {}
           for feature in $scope.features
             feature.relevancy = null
+        .fail console.error
 
       systemStatus.waitForFeatureSelection targetFeature
 
