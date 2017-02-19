@@ -58,3 +58,9 @@ Automatically compile, link and minify all assets and then deploy to the server
 ```
 grunt deploy --host HOSTNAME
 ```
+
+## Docker
+Docker automatically compiles all files and puts them behind a NGINX proxy. Build a new version using:
+```
+docker build -t TAG_NAME --build-arg HOST=http://example.com:8080 .
+```
