@@ -85,9 +85,16 @@ app.config ['$stateProvider', '$locationProvider', ($stateProvider, $locationPro
   return
 ]
 
-app.run ['$rootScope', 'backendService', '$state', ($rootScope, backendService, $state) ->
-  $rootScope.$on '$stateChangeStart', (event, toState, toParams, fromState, fromParams) ->
-    if toState.data.authenticate and not backendService.isLoggedIn()
-      $state.transitionTo 'login'
-      event.preventDefault()
+# Intercept any request, if user is not loggedin forward to login page
+app.factory 'loginInterceptor', ['$q', '$location', ($q, $location) ->
+    return {
+      responseError: (rejection) ->
+        if rejection.status == 403
+          $location.path '/login'
+        return $q.reject rejection
+    }
+]
+
+app.config ['$httpProvider', ($httpProvider) ->
+    $httpProvider.interceptors.push 'loginInterceptor'
 ]
