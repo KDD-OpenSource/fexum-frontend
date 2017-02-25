@@ -206,22 +206,9 @@ app.factory 'backendService', [
       retrieveSamples: retrieveSamples
       waitForWebsocketEvent: waitForWebsocketEvent
 
-      setAuthorizationHeader: (header) ->
-        $http.defaults.headers.common['Authorization'] = header
-
-      isLoggedIn: =>
-        @loginToken = localStorage.getItem TOKEN_KEY
-        if @loginToken?
-          @setAuthorizationHeader "Token #{@loginToken}"
-          return true
-        return false
-
-      login: (user) =>
+      login: (user) ->
         return $http.post API_URI + 'auth/login', username: user.name, password: user.password
-          .then (response) =>
-            @loginToken = response.data.token
-            @setAuthorizationHeader "Token #{@loginToken}"
-            localStorage.setItem TOKEN_KEY, @loginToken
+          .then (response) ->
             return response.data
 
       register: (user) =>
@@ -229,12 +216,8 @@ app.factory 'backendService', [
           .then =>
             @login user
 
-      logout: =>
+      logout: ->
         return $http.delete API_URI + 'auth/logout'
-          .then (response) =>
-            @setAuthorizationHeader null
-            @loginToken = null
-            localStorage.removeItem TOKEN_KEY
           .fail console.error
 
       getExperiment: (dataset) =>
