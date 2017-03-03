@@ -4,7 +4,7 @@
 			.md-toolbar-tools
 				md-button.md-icon-button(aria-label='Back', href='/')
 					md-icon keyboard_arrow_left
-				span Feature #[i {{feature.name}}]
+				span Feature #[i {{feature.name | characters:15 :true}}]
 				span(flex)
 				md-button.md-icon-button(aria-label='Add to analysis', href='/selections?select={{feature.name}}')
 					md-icon add
