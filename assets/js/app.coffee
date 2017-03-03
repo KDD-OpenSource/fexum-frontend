@@ -5,6 +5,7 @@ app = angular.module 'predots', [
   'ngFileUpload',
   'rzModule',
   'angulartics.google.analytics',
+  'truncate',
   'ui.router']
 
 # Define theme
