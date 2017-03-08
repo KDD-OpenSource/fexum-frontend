@@ -1,0 +1,21 @@
+.horizontal-padding
+  rzslider(rz-slider-model='getSlider().minValue',
+            rz-slider-high='getSlider().maxValue',
+            rz-slider-options='getSlider().options')
+.horizontal-padding
+  span
+    | [
+    input(type='number',
+      ng-model='getSlider().minValueFnc',
+      ng-model-options='{debounce:1000, getterSetter: true}',
+      step='any',
+      min='{{getSlider().options.floor}}',
+      max='{{getSlider().options.ceil}}')
+    | ,
+    input(type='number',
+      ng-model='getSlider().maxValueFnc',
+      ng-model-options='{debounce:1000, getterSetter: true}',
+      step='any',
+      min='{{getSlider().options.floor}}',
+      max='{{getSlider().options.ceil}}')
+    | ]

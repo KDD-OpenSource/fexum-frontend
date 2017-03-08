@@ -123,6 +123,12 @@ app.factory 'backendService', [
             features = response.data
             # Order does not matter and is preferred random for rendering => shuffle
             features.shuffle()
+
+            # TODO: DEBUG ONLY, REMOVE WHEN IMPLEMENTED IN BACKEND
+            features.forEach (f) ->
+              if f.is_categorical
+                f.categories = [1, 2, 3]
+
             return features
           .fail console.error
 
