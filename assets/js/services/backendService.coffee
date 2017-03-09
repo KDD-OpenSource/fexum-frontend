@@ -126,8 +126,8 @@ app.factory 'backendService', [
 
             # TODO: DEBUG ONLY, REMOVE WHEN IMPLEMENTED IN BACKEND
             features.forEach (f) ->
-              if f.is_categorical
-                f.categories = [1, 2, 3]
+              if f.is_categorical and not f.categories?
+                f.categories = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
             return features
           .fail console.error
