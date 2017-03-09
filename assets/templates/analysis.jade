@@ -14,7 +14,7 @@
           section
             md-subheader.md-primary Histogram
             histogram-plot(feature='feature')
-            selection-slider(ng-if='!feature.is_categorical', sliders='sliders', feature='feature')
+            selection-slider(ng-if='!feature.is_categorical', sliders='sliders', selected-ranges='selectedRanges', feature='feature')
             selection-checkboxes(ng-if='feature.is_categorical', selected-ranges='selectedRanges', feature='feature')
 
       md-content.horizontal-padding

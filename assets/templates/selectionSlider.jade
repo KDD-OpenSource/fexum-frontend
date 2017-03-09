@@ -1,21 +1,21 @@
 .horizontal-padding
-  rzslider(rz-slider-model='getSlider().minValue',
-            rz-slider-high='getSlider().maxValue',
-            rz-slider-options='getSlider().options')
+  rzslider(rz-slider-model='selectedRanges[feature.id][0]',
+            rz-slider-high='selectedRanges[feature.id][1]',
+            rz-slider-options='slider.options')
 .horizontal-padding
   span
     | [
-    input(type='number',
-      ng-model='getSlider().minValueFnc',
-      ng-model-options='{debounce:1000, getterSetter: true}',
+    input.sliderbox(type='number',
+      ng-model='selectedRanges[feature.id][0]',
+      ng-model-options='{debounce:1000, getterSetter: false}',
       step='any',
-      min='{{getSlider().options.floor}}',
-      max='{{getSlider().options.ceil}}')
+      min='{{feature.min}}',
+      max='{{feature.max}}')
     | ,
-    input(type='number',
-      ng-model='getSlider().maxValueFnc',
-      ng-model-options='{debounce:1000, getterSetter: true}',
+    input.sliderbox(type='number',
+      ng-model='selectedRanges[feature.id][1]',
+      ng-model-options='{debounce:1000, getterSetter: false}',
       step='any',
-      min='{{getSlider().options.floor}}',
-      max='{{getSlider().options.ceil}}')
+      min='{{feature.min}}',
+      max='{{feature.max}}')
     | ]

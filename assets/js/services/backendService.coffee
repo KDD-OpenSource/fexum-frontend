@@ -149,11 +149,17 @@ app.factory 'backendService', [
           .then (response) ->
             sortByValue = (a, b) -> a.value - b.value
             slices = response.data.map (slice) ->
-              features = slice.features.map (feature) ->
-                return {
-                  feature: feature.feature
-                  range: [feature.from_value, feature.to_value]
-                }
+              features = slice.features.map (sliceFeature) ->
+                if sliceFeature.categories?
+                  return {
+                    feature: sliceFeature.feature
+                    categories: sliceFeature.categories
+                  }
+                else
+                  return {
+                    feature: sliceFeature.feature
+                    range: [sliceFeature.from_value, sliceFeature.to_value]# [sliceFeature.range.from_value, sliceFeature.range.to_value]
+                  }
               return {
                 features: features
                 frequency: slice.frequency

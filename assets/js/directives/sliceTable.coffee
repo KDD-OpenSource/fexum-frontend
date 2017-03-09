@@ -23,7 +23,10 @@ app.directive 'sliceTable', [
               # Create feature range dictionary for participating features
               slice.rangeDict = {}
               slice.features.forEach (participatingItem) ->
-                slice.rangeDict[participatingItem.feature] = participatingItem.range
+                if participatingItem.range?
+                  slice.rangeDict[participatingItem.feature] = participatingItem.range
+                else
+                  slice.rangeDict[participatingItem.feature] = participatingItem.categories
               # Define function to obtain the range for a given feature
               slice.hasFeatureRange = (feature) ->
                 return slice.rangeDict[feature.id]?

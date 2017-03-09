@@ -1,7 +1,5 @@
-.horizontal-padding(layout='row', width='100%', layout-wrap)
-  div(ng-repeat='category in feature.categories', layout='row', layout-align='center center')
-    p {{category}}
-    input(type='checkbox',
-      ng-model='selectedRanges[feature.id][category]',
-      ng-checked='isChecked(category)',
+.horizontal-padding(layout='row', layout-wrap, flex)
+  div(ng-repeat='category in feature.categories', layout='row')
+    md-checkbox.md-primary.sliceCheckbox(ng-model='selectedRanges[feature.id][category]',
       ng-disabled='isDisabled(category)')
+      |{{category}}

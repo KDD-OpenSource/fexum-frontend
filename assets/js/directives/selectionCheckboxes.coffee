@@ -12,12 +12,9 @@ app.directive 'selectionCheckboxes', [
         selectedRanges: '='
         feature: '='
       link: (scope, element, attrs) ->
-
-        scope.isChecked = (category) ->
-          range = scope.selectedRanges[scope.feature.id]
-          if range? and range[category]?
-            return range[category]
-          return false
+        scope.selectedRanges[scope.feature.id] = {}
+        for c in scope.feature.categories
+          scope.selectedRanges[scope.feature.id][c] = true
 
         scope.isDisabled = (category) ->
           return not scope.selectedRanges[scope.feature.id]? or
