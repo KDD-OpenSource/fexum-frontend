@@ -7,32 +7,32 @@
 		font-size: 18pt;
 
 		&:hover {
-			ellipse {
-				fill: lighten(@featureColor, 26%);
+			text {
+				fill: lighten(#BDBDBD, 5%);
 			}
 			cursor: pointer;
 		}
 
-		ellipse {
-			stroke: #BDBDBD;
-			fill: lighten(@featureColor, 20%);
+		text {
+			fill: #BDBDBD;
 		}
 
 		text {
 			text-anchor: middle;
+
 		}
 
 		&.is-target {
-			ellipse {
+			text {
 				fill: @targetColor;
 			}
 
-			&:hover ellipse {
+			&:hover text {
 				fill: lighten(@targetColor, 10%);
 			}
 		}
 
-		&.selected ellipse {
+		&.selected text {
 			fill: @chartSelectionColor;
 		}
 	}

@@ -75,8 +75,8 @@ app.directive 'featureMap', [
                       .classed 'feature', true
           newD3Links = newD3nodes.append 'a'
           newD3Links.append 'ellipse'
-                .attr 'rx', 80
-                .attr 'ry', 40
+                .attr 'rx', 5
+                .attr 'ry', 5
           newD3Links.append 'text'
           # Update elements
           d3nodes = newD3nodes.merge d3nodes
@@ -84,6 +84,7 @@ app.directive 'featureMap', [
                 .attr 'xlink:href', getFeatureLink
                 .select 'text'
                 .text (node) -> node.feature.name
+                .attr 'y', -8
           d3nodes.attr 'transform', getFeatureTranslationString
                 .classed 'is-target', (node) -> node.isTarget
                 .classed 'selected', (node) -> scope.selectedFeatures.includes node.feature
