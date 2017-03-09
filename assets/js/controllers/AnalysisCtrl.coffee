@@ -29,10 +29,13 @@ app.controller 'AnalysisCtrl', [
           $scope.selectedRanges[feature.id] = {}
           for c in feature.categories
             $scope.selectedRanges[feature.id][c] = feature.categories
+
+          analyticsLabel.push feature.id + '=[' +
+            feature.categories.join(',') + ']'
         else
           $scope.selectedRanges[feature.id] = feature.range
 
-        analyticsLabel.push feature.id + '=[' +
+          analyticsLabel.push feature.id + '=[' +
             feature.range.join(',') + ']'
 
       $analytics.eventTrack 'recommendedSliceSelected', {
