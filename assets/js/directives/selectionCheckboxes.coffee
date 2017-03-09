@@ -13,18 +13,16 @@ app.directive 'selectionCheckboxes', [
         feature: '='
       link: (scope, element, attrs) ->
 
-        scope.toggleCategory = (category) ->
-          if category in scope.selectedRanges[scope.feature.id]
-            scope.selectedRanges[scope.feature.id] =
-              (c for c in scope.selectedRanges[scope.feature.id] when c isnt category)
-          else
-            scope.selectedRanges[scope.feature.id].push category
-          console.log scope.selectedRanges[scope.feature.id]
-          #console.log feature.categories
-
         scope.isChecked = (category) ->
-          if scope.selectedRanges? and scope.selectedRanges[scope.feature.id]?
-            return category in scope.selectedRanges[scope.feature.id]
+          range = scope.selectedRanges[scope.feature.id]
+          if range? and range[category]?
+            return range[category]
           return false
+
+        scope.isDisabled = (category) ->
+          return scope.selectedRanges[scope.feature.id]? and
+            (v for own k, v of scope.selectedRanges[scope.feature.id] when v).length <= 1 and
+            scope.selectedRanges[scope.feature.id][category] == true
+
     }
 ]

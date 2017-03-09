@@ -17,7 +17,8 @@ app.controller 'AnalysisCtrl', [
       # Rest all sliders first
       $scope.selectedFeatures.forEach (feature) ->
         if feature.is_categorical
-          $scope.selectedRanges[feature.id] = feature.categories
+          for c in feature.categories
+            $scope.selectedRanges[feature.id][c] = true
         else
           slider = $scope.sliders[feature.id]
           slider.minValue = slider.options.floor
@@ -27,7 +28,9 @@ app.controller 'AnalysisCtrl', [
       # Then set from slice
       slice.features.forEach (feature) ->
         if feature.is_categorical
-          $scope.selectedRanges[feature.id] = feature.range
+          $scope.selectedRanges[feature.id] = {}
+          for c in feature.range
+            $scope.selectedRanges[feature.id][c] = feature.range
         else
           analyticsLabel.push feature.feature + '=[' +
             feature.range[0] + ',' + feature.range[1] + ']'
@@ -65,7 +68,9 @@ app.controller 'AnalysisCtrl', [
         # Create sliders
         $scope.selectedFeatures.forEach (feature) ->
           if feature.is_categorical
-            $scope.selectedRanges[feature.id] = feature.categories ? []
+            $scope.selectedRanges[feature.id] = {}
+            for c in feature.categories
+              $scope.selectedRanges[feature.id][c] = true
           else
             $scope.sliders[feature.id] =
               minValue: feature.min

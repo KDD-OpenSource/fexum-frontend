@@ -1,6 +1,6 @@
 .horizontal-padding
   input(type='checkbox', 
-    ng-model='selectedRanges[feature.id]',
+    ng-model='selectedRanges[feature.id][category]',
     ng-repeat='category in feature.categories',
-    ng-checked='isChecked(category)',
-    ng-click="toggleCategory(category)")
+    ng-checked='isChecked(category)'
+    ng-disabled='isDisabled(category)')

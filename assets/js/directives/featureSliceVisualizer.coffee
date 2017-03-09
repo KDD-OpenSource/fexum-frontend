@@ -137,12 +137,14 @@ app.directive 'featureSliceVisualizer', [
           rangesQuery = objectMap scope.ranges, (featureId, range) ->
             feature = (f for f in scope.selectedFeatures when f.id == featureId)[0]
             if feature.is_categorical
+              # categories where checkbox is true
+              categories = (k for own k, v of range when v)
               return {
                 feature: featureId
                 # Add back as soon as backend is updated
                 # categories: range
-                from_value: Math.min(range...) - 1
-                to_value: Math.max(range...) + 1
+                from_value: Math.min(categories...) - 1
+                to_value: Math.max(categories...) + 1
               }
             else
               return {
