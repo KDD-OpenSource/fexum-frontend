@@ -6,15 +6,15 @@
   span
     | [
     input.sliderbox(type='number',
-      ng-model='selectedRanges[feature.id][0]',
-      ng-model-options='{debounce:1000, getterSetter: false}',
+      ng-model='slider.minValueFnc',
+      ng-model-options='{debounce:1000, getterSetter: true}',
       step='any',
       min='{{feature.min}}',
       max='{{feature.max}}')
     | ,
     input.sliderbox(type='number',
-      ng-model='selectedRanges[feature.id][1]',
-      ng-model-options='{debounce:1000, getterSetter: false}',
+      ng-model='slider.maxValueFnc',
+      ng-model-options='{debounce:1000, getterSetter: true}',
       step='any',
       min='{{feature.min}}',
       max='{{feature.max}}')

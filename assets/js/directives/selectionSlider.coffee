@@ -17,6 +17,18 @@ app.directive 'selectionSlider', [
             console.log obj
 
           scope.slider =
+              minValueFnc: (newValue) ->
+                if newValue?
+                  return scope.selectedRanges[scope.feature.id][0] =
+                    Math.max newValue, scope.feature.min
+                else
+                  return scope.selectedRanges[scope.feature.id][0]
+              maxValueFnc: (newValue) ->
+                if newValue?
+                  return scope.selectedRanges[scope.feature.id][1] =
+                    Math.min newValue, scope.feature.max
+                else
+                  return scope.selectedRanges[scope.feature.id][1]
               options:
                 floor: scope.feature.min
                 ceil: scope.feature.max
