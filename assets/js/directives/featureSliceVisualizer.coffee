@@ -139,19 +139,18 @@ app.directive 'featureSliceVisualizer', [
               feature = (f for f in scope.selectedFeatures when f.id == featureId)[0]
               if feature.is_categorical
                 # categories where checkbox is true
-                categories = (k for own k, v of range when v)
+                categories = (parseFloat(k) for own k, v of range when v)
                 return {
                   feature: featureId
-                  # Add back as soon as backend is updated
-                  # categories: range
-                  from_value: Math.min(categories...) - 1
-                  to_value: Math.max(categories...) + 1
+                  categories: categories
                 }
               else
                 return {
                   feature: featureId
-                  from_value: range[0]
-                  to_value: range[1]
+                  range: {
+                    from_value: range[0]
+                    to_value: range[1]
+                  }
                 }
 
           updateChartCounter += 1
