@@ -28,12 +28,12 @@ app.controller 'AnalysisCtrl', [
         if feature.is_categorical
           $scope.selectedRanges[feature.id] = {}
           for c in feature.categories
-            $scope.selectedRanges[feature.id][c] = feature.range
+            $scope.selectedRanges[feature.id][c] = feature.categories
         else
-          analyticsLabel.push feature.id + '=[' +
-            feature.range[0] + ',' + feature.range[1] + ']'
+          $scope.selectedRanges[feature.id] = feature.range
 
-          $scope.selectedRanges[feature.id] = [feature.range[0], feature.range[1]]
+        analyticsLabel.push feature.id + '=[' +
+            feature.range.join(',') + ']'
 
       $analytics.eventTrack 'recommendedSliceSelected', {
         category: 'd' + $scope.dataset.id + 't' + $scope.targetFeature.id

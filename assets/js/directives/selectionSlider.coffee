@@ -13,9 +13,6 @@ app.directive 'selectionSlider', [
         selectedRanges: '='
       link: {
         pre: (scope, element, attrs) ->
-          scope.log = (obj) ->
-            console.log obj
-
           scope.slider =
               minValueFnc: (newValue) ->
                 if newValue?

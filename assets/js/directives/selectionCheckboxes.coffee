@@ -17,9 +17,8 @@ app.directive 'selectionCheckboxes', [
           scope.selectedRanges[scope.feature.id][c] = true
 
         scope.isDisabled = (category) ->
-          return not scope.selectedRanges[scope.feature.id]? or
-            ((v for own k, v of scope.selectedRanges[scope.feature.id] when v).length <= 1 and
-            scope.selectedRanges[scope.feature.id][category] == true)
+          return (v for own k, v of scope.selectedRanges[scope.feature.id] when v).length <= 1 and
+            scope.selectedRanges[scope.feature.id][category] == true
 
     }
 ]

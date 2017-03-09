@@ -135,23 +135,22 @@ app.directive 'featureSliceVisualizer', [
             return
 
           rangesQuery = objectMap scope.ranges, (featureId, range) ->
-            if featureId?
-              feature = (f for f in scope.selectedFeatures when f.id == featureId)[0]
-              if feature.is_categorical
-                # categories where checkbox is true
-                categories = (parseFloat(k) for own k, v of range when v)
-                return {
-                  feature: featureId
-                  categories: categories
+            feature = (f for f in scope.selectedFeatures when f.id == featureId)[0]
+            if feature.is_categorical
+              # categories where checkbox is true
+              categories = (parseFloat(k) for own k, v of range when v)
+              return {
+                feature: featureId
+                categories: categories
+              }
+            else
+              return {
+                feature: featureId
+                range: {
+                  from_value: range[0]
+                  to_value: range[1]
                 }
-              else
-                return {
-                  feature: featureId
-                  range: {
-                    from_value: range[0]
-                    to_value: range[1]
-                  }
-                }
+              }
 
           updateChartCounter += 1
           currentRun = updateChartCounter
