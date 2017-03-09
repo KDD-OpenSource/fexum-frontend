@@ -150,7 +150,6 @@ app.factory 'backendService', [
             sortByValue = (a, b) -> a.value - b.value
             slices = response.data.map (slice) ->
               features = slice.features.map (sliceFeature) ->
-                console.log sliceFeature
                 if sliceFeature.categories?
                   return {
                     feature: sliceFeature.feature
