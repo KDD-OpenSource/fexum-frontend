@@ -123,6 +123,12 @@ app.factory 'backendService', [
             features = response.data
             # Order does not matter and is preferred random for rendering => shuffle
             features.shuffle()
+
+            # TODO: DEBUG ONLY, REMOVE WHEN IMPLEMENTED IN BACKEND
+            features.forEach (f) ->
+              if f.is_categorical and not f.categories?
+                f.categories = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
             return features
           .fail console.error
 
@@ -143,11 +149,17 @@ app.factory 'backendService', [
           .then (response) ->
             sortByValue = (a, b) -> a.value - b.value
             slices = response.data.map (slice) ->
-              features = slice.features.map (feature) ->
-                return {
-                  feature: feature.feature
-                  range: [feature.from_value, feature.to_value]
-                }
+              features = slice.features.map (sliceFeature) ->
+                if sliceFeature.categories?
+                  return {
+                    feature: sliceFeature.feature
+                    categories: sliceFeature.categories
+                  }
+                else
+                  return {
+                    feature: sliceFeature.feature
+                    range: [sliceFeature.range.from_value, sliceFeature.range.to_value]
+                  }
               return {
                 features: features
                 frequency: slice.frequency

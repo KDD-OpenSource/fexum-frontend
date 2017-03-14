@@ -111,8 +111,12 @@ app.directive 'featureSliceVisualizer', [
             for filterFeature in filterFeatures
               sampleValue = filterFeature.samples[index].y
               range = scope.ranges[filterFeature.id]
-              if sampleValue > range[1] or sampleValue < range[0]
-                return false
+              if filterFeature.is_categorical
+                if sampleValue not in range
+                  return false
+              else
+                if sampleValue > range[1] or sampleValue < range[0]
+                  return false
             return true
 
           return filteredIndices.map (index) ->
@@ -131,11 +135,22 @@ app.directive 'featureSliceVisualizer', [
             return
 
           rangesQuery = objectMap scope.ranges, (featureId, range) ->
-            return {
-              feature: featureId
-              from_value: range[0]
-              to_value: range[1]
-            }
+            feature = (f for f in scope.selectedFeatures when f.id == featureId)[0]
+            if feature.is_categorical
+              # categories where checkbox is true
+              categories = (parseFloat(k) for own k, v of range when v)
+              return {
+                feature: featureId
+                categories: categories
+              }
+            else
+              return {
+                feature: featureId
+                range: {
+                  from_value: range[0]
+                  to_value: range[1]
+                }
+              }
 
           updateChartCounter += 1
           currentRun = updateChartCounter

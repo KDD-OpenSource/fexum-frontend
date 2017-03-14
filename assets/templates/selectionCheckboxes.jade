@@ -1,0 +1,5 @@
+.horizontal-padding(layout='row', layout-wrap, flex)
+  div(ng-repeat='category in feature.categories', layout='row')
+    md-checkbox.md-primary.sliceCheckbox(ng-model='selectedRanges[feature.id][category]',
+      ng-disabled='isDisabled(category)')
+      |{{category}}
