@@ -1,8 +1,8 @@
 app.directive 'sliceTable', [
   'scopeUtils',
   'backendService',
-  '$q',
-  (scopeUtils, backendService, $q) ->
+  'defaultNumFormatter',
+  (scopeUtils, backendService, defaultNumFormatter) ->
     return {
       restrict: 'E'
       template: JST['assets/templates/sliceTable']
@@ -11,11 +11,9 @@ app.directive 'sliceTable', [
         onSliceClicked: '&sliceClick'
       link: (scope, element, attrs) ->
 
-        formatter = d3.format '.5g'
-
         scope.getSliceFeatureRangeString = (slice, feature) ->
           featureRange = slice.getFeatureRange feature
-          featureRange = featureRange.map formatter
+          featureRange = featureRange.map defaultNumFormatter
           return featureRange.join ', '
 
         scopeUtils.waitForVariableSet scope, 'features'

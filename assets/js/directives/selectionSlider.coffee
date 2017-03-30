@@ -1,9 +1,7 @@
 app.directive 'selectionSlider', [
   '$timeout',
-  '$q',
-  'backendService',
-  'scopeUtils',
-  ($timeout, $q, backendService, scopeUtils) ->
+  'defaultNumFormatter',
+  ($timeout, defaultNumFormatter) ->
 
     return {
       restrict: 'E'
@@ -13,8 +11,6 @@ app.directive 'selectionSlider', [
         selectedRanges: '='
       link: {
         pre: (scope, element, attrs) ->
-
-          formatter = d3.format '.5g'
 
           scope.slider =
               minValueFnc: (newValue) ->
@@ -36,7 +32,7 @@ app.directive 'selectionSlider', [
                 precision: 5
                 noSwitching: true
                 enforceStep: false
-                translate: (value, sliderId, label) -> formatter value
+                translate: (value, sliderId, label) -> defaultNumFormatter value
 
           initialRange = [scope.feature.min, scope.feature.max]
           scope.selectedRanges[scope.feature.id] = initialRange
