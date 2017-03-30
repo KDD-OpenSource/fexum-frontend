@@ -25,6 +25,13 @@ app.factory 'backendService', [
           return response.data
         .fail console.error
 
+    retrieveDensity = (featureId, targetFeatureId) ->
+      $http.get API_URI + "features/#{featureId}/density/#{targetFeatureId}"
+        .then (response) ->
+          densities = response.data
+          return densities
+        .fail console.error
+
     retrieveHistogramBuckets = (featureId) ->
       $http.get API_URI + "features/#{featureId}/histogram"
         .then (response) ->
@@ -216,6 +223,7 @@ app.factory 'backendService', [
       retrieveDatasets: retrieveDatasets
       retrieveHistogramBuckets: retrieveHistogramBuckets
       retrieveSamples: retrieveSamples
+      retrieveDensity: retrieveDensity
       waitForWebsocketEvent: waitForWebsocketEvent
 
       login: (user) ->
