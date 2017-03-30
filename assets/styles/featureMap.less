@@ -4,7 +4,14 @@
 	height: 100%;
 
 	g.feature {
-		font-size: 18pt;
+		font-size: 4em;
+
+		ellipse {
+			stroke: #000;
+			stroke-width:65px;
+  		stroke-opacity:0.0;
+  		fill: #000;
+		}
 
 		&:hover {
 			text {
@@ -29,7 +36,7 @@
 		}
 
 		&.selected text {
-			fill: @chartSelectionColor;
+			fill: orange;
 		}
 	}
 
@@ -42,6 +49,8 @@
   	text {
 	  		text-align: center;
 	  		font-size: 4em;
+	  		fill: blue;
+
   	}
   }
 }
