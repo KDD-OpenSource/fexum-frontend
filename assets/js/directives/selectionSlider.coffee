@@ -33,6 +33,7 @@ app.directive 'selectionSlider', [
                 precision: 4
                 noSwitching: true
                 enforceStep: false
+                draggableRange: true
           scope.selectedRanges[scope.feature.id] = [scope.feature.min, scope.feature.max]
 
           # Bugfix for rzslider, where initial values were not drawn
