@@ -13,6 +13,13 @@ Array.prototype.sum = ->
 Array.prototype.mean = ->
   return @sum() / @length
 
+Array.prototype.removeObject = (obj) ->
+  idx = @indexOf obj
+  if idx >= 0
+    @splice idx, 1
+    return true
+  return false
+
 objectMap = (object, callback) ->
   mappedValues = []
   for k, v of object

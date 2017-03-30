@@ -6,7 +6,7 @@
 					md-icon keyboard_arrow_left
 				span Feature #[i {{feature.name | characters:15 :true}}]
 				span(flex)
-				md-button.md-icon-button(aria-label='Add to analysis', href='/selections?select={{feature.name}}')
+				md-button.md-icon-button(ng-disabled='feature == targetFeature', aria-label='Add to analysis', href='/selections?select={{feature.name}}')
 					md-icon add
 
 		md-content(flex)

@@ -201,6 +201,9 @@ app.controller 'AppCtrl', [
 
     $scope.$watch 'targetFeature', (newTargetFeature) ->
       if newTargetFeature?
+        # Remove target from selection, if contained
+        $scope.selectedFeatures.removeObject newTargetFeature
+
         # Track setting the target in relation to dataset
         $analytics.eventTrack 'setTarget', {
           category: 'd' + $scope.dataset.id,
