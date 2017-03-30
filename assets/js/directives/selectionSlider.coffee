@@ -32,6 +32,7 @@ app.directive 'selectionSlider', [
                 precision: 5
                 noSwitching: true
                 enforceStep: false
+                draggableRange: true
                 translate: (value, sliderId, label) -> defaultNumFormatter value
 
           initialRange = [scope.feature.min, scope.feature.max]
