@@ -13,9 +13,19 @@ Array.prototype.sum = ->
 Array.prototype.mean = ->
   return @sum() / @length
 
+Array.prototype.removeObject = (obj) ->
+  idx = @indexOf obj
+  if idx >= 0
+    @splice idx, 1
+    return true
+  return false
+
 objectMap = (object, callback) ->
   mappedValues = []
   for k, v of object
     result = callback k, v
     mappedValues.push result
   return mappedValues
+
+Number.prototype.roundTo = (decimals) ->
+  return Number(Math.round(@ + 'e' + decimals) + 'e-' + decimals)

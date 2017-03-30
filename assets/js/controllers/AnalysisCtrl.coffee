@@ -28,12 +28,12 @@ app.controller 'AnalysisCtrl', [
         if feature.is_categorical
           $scope.selectedRanges[feature.id] = {}
           for c in feature.categories
-            $scope.selectedRanges[feature.id][c] = feature.categories
+            $scope.selectedRanges[feature.id][c] = angular.copy feature.categories
 
           analyticsLabel.push feature.id + '=[' +
             feature.categories.join(',') + ']'
         else
-          $scope.selectedRanges[feature.id] = feature.range
+          $scope.selectedRanges[feature.id] = angular.copy feature.range
 
           analyticsLabel.push feature.id + '=[' +
             feature.range.join(',') + ']'

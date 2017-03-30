@@ -22,6 +22,6 @@ app.controller 'FeatureSubsetCtrl', [
 
     $scope.select = (feature) ->
       index = $scope.selectedFeatures.indexOf feature
-      if index == -1
+      if index == -1 and feature != $scope.targetFeature
         $scope.selectedFeatures.push feature
 ]

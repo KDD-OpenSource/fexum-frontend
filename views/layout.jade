@@ -6,6 +6,9 @@ html(ng-app='predots')
     // Viewport mobile tag for sensible mobile support
     meta(name="viewport",content="width=device-width, initial-scale=1, maximum-scale=1")
 
+    // Define encoding
+    meta(charset='utf-8')
+
     base(href="/")
 
     // Google material design icons - no bower support
@@ -117,6 +120,7 @@ html(ng-app='predots')
     script(src="/js/controllers/FeatureSubsetCtrl.js")
     script(src="/js/controllers/LoginCtrl.js")
     script(src="/js/directives/cornerMenu.js")
+    script(src="/js/directives/densityPlot.js")
     script(src="/js/directives/featureMap.js")
     script(src="/js/directives/featureSliceVisualizer.js")
     script(src="/js/directives/histogramPlot.js")
@@ -125,6 +129,7 @@ html(ng-app='predots')
     script(src="/js/directives/sliceChart.js")
     script(src="/js/directives/sliceTable.js")
     script(src="/js/directives/timeSeriesPlot.js")
+    script(src="/js/filters.js")
     script(src="/js/services/backendService.js")
     script(src="/js/services/scopeUtils.js")
     script(src="/js/services/systemStatus.js")
