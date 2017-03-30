@@ -11,6 +11,13 @@ app.directive 'sliceTable', [
         onSliceClicked: '&sliceClick'
       link: (scope, element, attrs) ->
 
+        formatter = d3.format '.5g'
+
+        scope.getSliceFeatureRangeString = (slice, feature) ->
+          featureRange = slice.getFeatureRange feature
+          featureRange = featureRange.map formatter
+          return featureRange.join ', '
+
         scopeUtils.waitForVariableSet scope, 'features'
           .then -> backendService.getExperiment()
           .then (experiment) ->

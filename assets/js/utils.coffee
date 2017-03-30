@@ -19,3 +19,6 @@ objectMap = (object, callback) ->
     result = callback k, v
     mappedValues.push result
   return mappedValues
+
+Number.prototype.roundTo = (decimals) ->
+  return Number(Math.round(@ + 'e' + decimals) + 'e-' + decimals)
