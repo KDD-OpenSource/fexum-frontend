@@ -1,5 +1,6 @@
 app = angular.module 'predots', [
   'ngMaterial',
+  'material.components.expansionPanels',
   'nvd3',
   'ngWebSocket',
   'ngFileUpload',

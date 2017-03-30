@@ -18,7 +18,8 @@
     "angularjs-slider": "^6.0.0",
     "angulartics-google-analytics": "^0.4.0",
     "angular-ui-router": "^0.4.2",
-    "angular-truncate": "*"
+    "angular-truncate": "*",
+    "angular-material-expansion-panel": "^0.7.2"
   },
   "name": "predots-frontend",
   "version": "0.0.0",

@@ -6,25 +6,28 @@ feature-map#feature-map(features='features',
                         simulation-timeout='30',
                         map-api='mapApi',
                         def-transform='1')
-#map-overlay(layout='column', layout-fill)
-  .md-padding.left-pane
-    form.overlay-window(ng-submit='$event.preventDefault()',ng-cloak)
-      #search.md-whiteframe-z1(layout='row')
-        corner-menu
-        md-autocomplete(flex,
-                        md-selected-item='searchedItem',
-                        md-search-text='searchText',
-                        md-selected-item-change='onFeatureSearched(searchedItem)',
-                        md-items='item in getSearchItems() | filter:{feature:{name: searchText}}',
-                        md-item-text='item.feature.name',
-                        placeholder='Search for feature')
-          md-item-template
-            span.item-title
-              md-icon {{item.isTargetChoice ? 'flare' : 'search'}}
-              span(md-highlight-text='searchText', md-highlight-flags='^i').
-                {{item.isTargetChoice ? 'Set target ' : 'Locate feature '}}
-                {{item.feature.name}}
-          md-not-found No feature found
+#map-overlay(layout-fill)
+  .md-padding(layout='row' layout-align="space-between start")
+    .left-pane
+      form.overlay-window(ng-submit='$event.preventDefault()',ng-cloak)
+        #search.md-whiteframe-z1(layout='row')
+          corner-menu
+          md-autocomplete(flex,
+                          md-selected-item='searchedItem',
+                          md-search-text='searchText',
+                          md-selected-item-change='onFeatureSearched(searchedItem)',
+                          md-items='item in getSearchItems() | filter:{feature:{name: searchText}}',
+                          md-item-text='item.feature.name',
+                          placeholder='Search for feature')
+            md-item-template
+              span.item-title
+                md-icon {{item.isTargetChoice ? 'flare' : 'search'}}
+                span(md-highlight-text='searchText', md-highlight-flags='^i').
+                  {{item.isTargetChoice ? 'Set target ' : 'Locate feature '}}
+                  {{item.feature.name}}
+            md-not-found No feature found
+    .right-pane
+      filter-controls(features='features')
   #content(flex,layout='row', ui-view="predotsView")
 #control-bar(layout='row', layout-padding)
   #loading-state.md-whiteframe-1dp(layout='row', layout-align='center center', layout-padding, ng-show='loadingQueue.length', ng-cloak)
