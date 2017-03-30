@@ -19,6 +19,9 @@ app.config ['$mdThemingProvider', ($mdThemingProvider) ->
   return
 ]
 
+# Define formatter constant
+app.constant 'defaultNumFormatter', d3.format '.5g'
+
 # Define routes
 app.config ['$stateProvider', '$locationProvider', ($stateProvider, $locationProvider) ->
 

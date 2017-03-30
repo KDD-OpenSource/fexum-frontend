@@ -13,9 +13,9 @@
 			section
 				md-list
 					md-list-item
-						p Mean: {{feature.mean}}
+						p Mean: {{feature.mean | d3format}}
 					md-list-item
-						p Variance: {{feature.variance}}
+						p Variance: {{feature.variance | d3format}}
 			section
 				md-subheader.md-primary Time series preview
 				time-series-plot(feature='feature')
