@@ -13,10 +13,16 @@ app.directive 'histogramPlot', [
         feature: '='
       link: (scope, element, attrs) ->
 
+        if attrs.xaxisEnabled?
+          attrs.xaxisEnabled = attrs.xaxisEnabled == 'true'
+        else
+          attrs.xaxisEnabled = true
+
         scope.setupCharts = ->
           scope.histogram = angular.merge {}, chartTemplates.historicalBarChart,
             options:
               chart:
+                showXAxis: attrs.xaxisEnabled
                 xAxis:
                   axisLabel: scope.feature.name
                 dispatch:
@@ -65,6 +71,11 @@ app.directive 'histogramPlot', [
                 color: chartColors.defaultColor
               }
             ]
+
+          unless attrs.xaxisEnabled
+            margin = scope.histogram.options.chart.margin
+            margin.bottom = 5
+            margin.left = 50
 
         scope.$watch 'feature.buckets', (newBuckets) ->
           if newBuckets? and scope.histogram?

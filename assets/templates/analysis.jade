@@ -13,7 +13,7 @@
             //time-series-plot(feature='feature')
           section
             md-subheader.md-primary Histogram
-            histogram-plot(feature='feature')
+            histogram-plot(feature='feature', xaxis-enabled='false')
             selection-slider(ng-if='!feature.is_categorical', sliders='sliders', selected-ranges='selectedRanges', feature='feature')
             selection-checkboxes(ng-if='feature.is_categorical', selected-ranges='selectedRanges', feature='feature')
 
