@@ -4,15 +4,12 @@
       .md-toolbar-tools
         md-button.md-icon-button(aria-label='Back', href='/')
           md-icon keyboard_arrow_left
-        span Analyze features
+        span Pick feature ranges
     md-content(flex, layout='column')
       div(flex='noshrink', layout='row')
         md-content.feature-column(ng-repeat='feature in selectedFeatures')
           section
             md-subheader.md-primary Feature #[i {{feature.name}}]
-            //time-series-plot(feature='feature')
-          section
-            md-subheader.md-primary Histogram
             histogram-plot(feature='feature')
             selection-slider(ng-if='!feature.is_categorical', sliders='sliders', selected-ranges='selectedRanges', feature='feature')
             selection-checkboxes(ng-if='feature.is_categorical', selected-ranges='selectedRanges', feature='feature')
