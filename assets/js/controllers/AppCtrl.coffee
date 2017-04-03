@@ -27,6 +27,7 @@ app.controller 'AppCtrl', [
         .then (experiment) -> experiment.retrieveFeatures()
         .then (features) ->
           $scope.features = features
+          $scope.filteredFeatures = features
           buildFeatureIdMap()
 
           $scope.targetFeature = $scope.featureIdMap[$scope.targetFeatureId]
@@ -50,7 +51,7 @@ app.controller 'AppCtrl', [
         .fail console.error
 
     $scope.getSearchItems = ->
-      features = $scope.features or []
+      features = $scope.filteredFeatures or []
       categoricalFeatures = features.filter (f) -> f.is_categorical
       targetChoices = categoricalFeatures.map (feature, i) ->
         return {

@@ -196,18 +196,29 @@ app.directive 'featureMap', [
           return maxDistance - (difference * Math.sqrt(Math.sqrt(correlation)))
 
         updateLinks = ->
+          featureIds = scope.features.map (f) -> f.id
           relevancyLinks = objectMap scope.relevancies, (featureId, relevancy) ->
-            console.assert relevancy?
-            source: scope.targetFeature.id
-            target: featureId
-            distance: distanceFromCorrelation relevancy, false
-            relevancy: relevancy
-            strength: 1
+            if featureId in featureIds
+              console.assert relevancy?
+              return {
+                source: scope.targetFeature.id
+                target: featureId
+                distance: distanceFromCorrelation relevancy, false
+                relevancy: relevancy
+                strength: 1
+              }
+            return null
+          , true
           redundancyLinks = objectMap scope.redundancies, (key, result) ->
-            source: result.firstFeature
-            target: result.secondFeature
-            distance: distanceFromCorrelation result.redundancy, true
-            strength: 0.005 * Math.sqrt result.weight
+            if result.firstFeature in featureIds and result.secondFeature in featureIds
+              return {
+                source: result.firstFeature
+                target: result.secondFeature
+                distance: distanceFromCorrelation result.redundancy, true
+                strength: 0.005 * Math.sqrt result.weight
+              }
+            return null
+          , true
           scope.links = relevancyLinks.concat redundancyLinks
           # Update simulation
           scope.simulation
@@ -252,6 +263,7 @@ app.directive 'featureMap', [
             scope.$watch 'relevancies', updateLinks, true
             scope.$watch 'redundancies', updateLinks, true
             scope.$watch 'targetFeature', initialize
+            scope.$watch 'features', initialize, true
             scope.$watchCollection 'selectedFeatures', render
           .fail console.error
 

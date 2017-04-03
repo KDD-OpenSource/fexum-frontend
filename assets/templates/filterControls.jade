@@ -1,11 +1,26 @@
 md-expansion-panel
   md-expansion-panel-collapsed
-    //(ng-click='$panel.expand()')
-    md-title Collapsed
+    md-title(flex) Collapsed
+    md-icon arrow_drop_down
  
   md-expansion-panel-expanded 
     md-expansion-panel-header(ng-click='$panel.collapse()')
-      md-title Expanded
+      md-title(flex) Expanded
+      md-icon arrow_drop_up
  
     md-expansion-panel-content
-      h4 Content
+      h2 Content
+      section
+        p Text filter
+        md-autocomplete(md-search-text='filterControls.textFilter.searchText',
+          md-search-text-change="filterControls.textFilter.searchTextChange(filterControls.textFilter.searchText)",
+          md-items="item in features | filter:{name: filterControls.textFilter.searchText}",
+          md-item-text="item.name",
+          md-selected-item='selectedItem'
+          md-selected-item-change='filterControls.textFilter.onFeatureSelected(selectedItem)',
+          placeholder='Enter text to filter by')
+          md-item-template
+            span(md-highlight-text="filterControls.textFilter.searchText" md-highlight-flags="i") {{item.name}}
+      section
+        p k best features
+        md-slider(ng-disabled='true', md-discrete, ng-model="filterControls.bestLimit", step="1" min="1" max="100")

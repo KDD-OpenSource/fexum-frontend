@@ -20,11 +20,12 @@ Array.prototype.removeObject = (obj) ->
     return true
   return false
 
-objectMap = (object, callback) ->
+objectMap = (object, callback, flatten = false) ->
   mappedValues = []
   for k, v of object
     result = callback k, v
-    mappedValues.push result
+    if not flatten or result?
+      mappedValues.push result
   return mappedValues
 
 Number.prototype.roundTo = (decimals) ->
