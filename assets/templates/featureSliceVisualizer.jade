@@ -2,14 +2,14 @@
 	md-card#feature-slice-distributions.overlay-window(flex)
 		md-toolbar
 			.md-toolbar-tools
-				span Visualize selected ranges
+				span Visualization of selected ranges
 		md-content(layout='column')
 			section
-				md-subheader.md-primary Probability distributions
+				md-subheader.md-primary Deviation
 				.chart-holder
 					nvd3.chart.probability-distributions(options='probabilityDistributions.options', data='probabilityDistributions.data')
 			section(ng-if='selectedFeatures.length >= 2')
-				md-subheader.md-primary Scatter plot
+				md-subheader.md-primary Samples
 				.chart-holder(flex='noshrink')
 					nvd3.chart.scatterChart(options='scatterChart.options', data='scatterChart.data', api='scatterChartApi')
 				.horizontal-padding(layout='row', layout-margin)
