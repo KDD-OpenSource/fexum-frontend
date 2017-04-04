@@ -11,6 +11,7 @@ feature-map#feature-map(features='filteredFeatures',
       form.overlay-window(ng-submit='$event.preventDefault()',ng-cloak)
         #search.md-whiteframe-z1(layout='row')
           corner-menu
+          md-icon search
           md-autocomplete(flex,
                           md-selected-item='searchedItem',
                           md-search-text='searchText',
@@ -26,7 +27,7 @@ feature-map#feature-map(features='filteredFeatures',
                   {{item.feature.name}}
             md-not-found No feature found
   #content(flex,layout='row', ui-view="predotsView")
-#control-bar(layout='row', layout-padding)
+#control-bar(layout='column', layout-padding)
   #loading-state.md-whiteframe-1dp(layout='row', layout-align='center center', layout-padding, ng-show='loadingQueue.length', ng-cloak)
     span {{loadingQueue[loadingQueue.length - 1].message}}
     md-progress-circular(md-mode='indeterminate', md-diameter='20')

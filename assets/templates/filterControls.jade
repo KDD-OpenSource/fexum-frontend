@@ -1,39 +1,40 @@
-md-expansion-panel
-  md-expansion-panel-collapsed(ng-click='filterControls.onExpand()')
-    md-title(flex) Collapsed
-    md-icon arrow_drop_down
- 
-  md-expansion-panel-expanded 
-    md-expansion-panel-header(ng-click='$panel.collapse()')
-      md-title(flex) Expanded
-      md-icon arrow_drop_up
- 
-    md-expansion-panel-content
-      h2 Content
-      section
-        p Text filter
-        md-autocomplete(md-search-text='filterControls.textFilter.searchText',
+md-expansion-panel(md-component-id='filterPanel', ng-disabled='!filterControls.expandable', width='350')
+  md-expansion-panel-collapsed#header(layout-fill)
+    .md
+    md-icon#filter filter_list
+    md-autocomplete(flex, md-search-text='filterControls.textFilter.searchText',
           md-search-text-change="filterControls.textFilter.searchTextChange(filterControls.textFilter.searchText)",
           md-items="item in features | filter:{name: filterControls.textFilter.searchText}",
           md-item-text="item.name",
-          md-selected-item='filterControls.textFilter.selectedItem'
-          md-selected-item-change='filterControls.textFilter.onFeatureSelected(filterControls.textFilter.selectedItem)',
-          placeholder='Enter text to filter by')
+          placeholder='Filter features')
           md-item-template
             span(md-highlight-text="filterControls.textFilter.searchText" md-highlight-flags="i") {{item.name}}
+    md-icon#expand(ng-click='filterControls.onExpand()') expand_more
+ 
+  md-expansion-panel-expanded 
+    md-expansion-panel-header#header(layout-fill)
+      md-icon#filter filter_list
+      md-autocomplete(flex, md-search-text='filterControls.textFilter.searchText',
+          md-search-text-change="filterControls.textFilter.searchTextChange(filterControls.textFilter.searchText)",
+          md-items="item in features | filter:{name: filterControls.textFilter.searchText}",
+          md-item-text="item.name",
+          placeholder='Filter features')
+          md-item-template
+            span(md-highlight-text="filterControls.textFilter.searchText" md-highlight-flags="i") {{item.name}}
+      md-icon#expand(ng-click='filterControls.onCollapse()') expand_less
+ 
+    md-expansion-panel-content
       section
         p k best features
         rzslider(rz-slider-model='filterControls.bestLimit', rz-slider-options='filterControls.slider.options')
       section
         p Disabled features
-        md-autocomplete(md-search-text='filterControls.tagFilter.searchText',
-          md-items="item in features | filter:{name: filterControls.tagFilter.searchText}",
-          md-item-text="item.name",
-          md-selected-item='filterControls.tagFilter.selectedItem'
-          md-selected-item-change='filterControls.tagFilter.onFeatureSelected(filterControls.tagFilter.selectedItem)',
-          placeholder='Enter name of column to exclude')
-          md-item-template
-            span(md-highlight-text="filterControls.tagFilter.searchText" md-highlight-flags="i") {{item.name}}
-        div(ng-repeat="feature in filterControls.tagFilter.exclusions")
-          p {{feature.name}}
-          md-icon arrow_drop_up
+        md-chips(ng-model="filterControls.blacklist", md-autocomplete-snap)
+          md-autocomplete(md-search-text='filterControls.tagFilter.searchText',
+            md-items="item in features | filter:{name: filterControls.tagFilter.searchText}",
+            md-item-text="item.name",
+            placeholder='Enter name of column to exclude')
+            md-item-template
+              span(md-highlight-text="filterControls.tagFilter.searchText" md-highlight-flags="i") {{item.name}}
+          md-chip-template
+            span {{$chip.name}}
