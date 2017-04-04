@@ -25,15 +25,15 @@ md-expansion-panel(md-component-id='filterPanel', ng-disabled='!filterControls.e
  
     md-expansion-panel-content
       section
-        p k best features
+        p Best features
         rzslider(rz-slider-model='filterControls.bestLimit', rz-slider-options='filterControls.slider.options')
       section
-        p Disabled features
+        p Disable features
         md-chips(ng-model="filterControls.blacklist", md-autocomplete-snap)
           md-autocomplete(md-search-text='filterControls.tagFilter.searchText',
             md-items="item in features | filter:{name: filterControls.tagFilter.searchText}",
             md-item-text="item.name",
-            placeholder='Enter name of column to exclude')
+            placeholder='Column to exclude')
             md-item-template
               span(md-highlight-text="filterControls.tagFilter.searchText" md-highlight-flags="i") {{item.name}}
           md-chip-template
