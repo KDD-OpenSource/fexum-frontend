@@ -142,8 +142,14 @@ app.directive 'featureMap', [
             if firstChild?
               @parentNode.insertBefore @, firstChild
 
-        createNodes = ->
+        updateNodes = ->
+          oldNodeMap = {}
+          if scope.nodes?
+            for node in scope.nodes
+              oldNodeMap[node.id] = node
           scope.nodes = scope.features.map (feature) ->
+            if feature.id of oldNodeMap
+              return oldNodeMap[feature.id]
             node = {
               feature: feature
               isTarget: feature == scope.targetFeature
@@ -233,7 +239,7 @@ app.directive 'featureMap', [
         initialize = (targetFeature) ->
           stopSimulation()
           if targetFeature?
-            createNodes()
+            updateNodes()
             setupSimulation()
             render()
             updateLinks()

@@ -1,5 +1,5 @@
 md-expansion-panel
-  md-expansion-panel-collapsed
+  md-expansion-panel-collapsed(ng-click='filterControls.onExpand()')
     md-title(flex) Collapsed
     md-icon arrow_drop_down
  
@@ -16,11 +16,24 @@ md-expansion-panel
           md-search-text-change="filterControls.textFilter.searchTextChange(filterControls.textFilter.searchText)",
           md-items="item in features | filter:{name: filterControls.textFilter.searchText}",
           md-item-text="item.name",
-          md-selected-item='selectedItem'
-          md-selected-item-change='filterControls.textFilter.onFeatureSelected(selectedItem)',
+          md-selected-item='filterControls.textFilter.selectedItem'
+          md-selected-item-change='filterControls.textFilter.onFeatureSelected(filterControls.textFilter.selectedItem)',
           placeholder='Enter text to filter by')
           md-item-template
             span(md-highlight-text="filterControls.textFilter.searchText" md-highlight-flags="i") {{item.name}}
       section
         p k best features
-        md-slider(ng-disabled='true', md-discrete, ng-model="filterControls.bestLimit", step="1" min="1" max="100")
+        rzslider(rz-slider-model='filterControls.bestLimit', rz-slider-options='filterControls.slider.options')
+      section
+        p Disabled features
+        md-autocomplete(md-search-text='filterControls.tagFilter.searchText',
+          md-items="item in features | filter:{name: filterControls.tagFilter.searchText}",
+          md-item-text="item.name",
+          md-selected-item='filterControls.tagFilter.selectedItem'
+          md-selected-item-change='filterControls.tagFilter.onFeatureSelected(filterControls.tagFilter.selectedItem)',
+          placeholder='Enter name of column to exclude')
+          md-item-template
+            span(md-highlight-text="filterControls.tagFilter.searchText" md-highlight-flags="i") {{item.name}}
+        div(ng-repeat="feature in filterControls.tagFilter.exclusions")
+          p {{feature.name}}
+          md-icon arrow_drop_up
