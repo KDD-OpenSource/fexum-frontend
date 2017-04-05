@@ -234,7 +234,7 @@ app.directive 'featureMap', [
           scope.simulation.restart()
           setupSimulationTimeout()
           # Zoom out for viewing all features after simulation has updated for a few iterations
-          scope.autoZoomInterval = $interval scope.zoomApi.fit, 100, 10 * 3
+          # scope.autoZoomInterval = $interval scope.zoomApi.fit, 1000, 10 * 3
 
         initialize = (targetFeature) ->
           stopSimulation()

@@ -26,8 +26,9 @@ app.controller 'AppCtrl', [
       backendService.getExperiment()
         .then (experiment) -> experiment.retrieveFeatures()
         .then (features) ->
-          $scope.features = features
           $scope.filteredFeatures = features
+          $scope.semifilteredFeatures = features
+          $scope.features = features
           buildFeatureIdMap()
 
           $scope.targetFeature = $scope.featureIdMap[$scope.targetFeatureId]
@@ -49,24 +50,6 @@ app.controller 'AppCtrl', [
           $scope.redundancies = {}
           redundancies.forEach updateRedundanciesFromItem
         .fail console.error
-
-    $scope.getSearchItems = ->
-      features = $scope.filteredFeatures or []
-      categoricalFeatures = features.filter (f) -> f.is_categorical
-      targetChoices = categoricalFeatures.map (feature, i) ->
-        return {
-          feature: feature
-          index: i
-          isTargetChoice: true
-        }
-      locatableFeatures = features.map (feature, i) ->
-        return {
-          feature: feature
-          index: i
-          isTargetChoice: false
-        }
-      searchItems = locatableFeatures.concat targetChoices
-      return searchItems.sort (a, b) -> a.index - b.index
 
     rarTime = []
     $scope.relevancies = {}
@@ -176,15 +159,6 @@ app.controller 'AppCtrl', [
 
     $scope.loadingQueue = systemStatus.loadingQueue
 
-    $scope.onFeatureSearched = (searchedItem) ->
-      if not searchedItem?
-        return
-      if searchedItem.isTargetChoice
-        $scope.setTarget searchedItem.feature
-      else
-        $scope.mapApi.locateFeature searchedItem.feature
-      $scope.searchText = ''
-
     $scope.setTarget = (targetFeature) ->
       $scope.targetFeature = targetFeature
       rarTime[targetFeature.id] = Date.now()
@@ -210,5 +184,36 @@ app.controller 'AppCtrl', [
           category: 'd' + $scope.dataset.id,
           label: 't' + $scope.targetFeature.id
         }
+
+    $scope.filterParams =
+      bestLimit: null
+      blacklist: []
+      searchText: ''
+
+    $scope.refilter = ->
+      if $scope.features?
+        # Simple text filter
+        filtered = $scope.features.filter (feature) ->
+            (feature.name.search $scope.filterParams.searchText) != -1
+
+        # Blacklist filter
+        if $scope.filterParams.blacklist?
+          filtered = filtered.filter (feature) ->
+            feature not in $scope.filterParams.blacklist
+
+        $scope.semifilteredFeatures = filtered
+        # k-best filter
+        if $scope.filterParams.bestLimit?
+          filtered = filtered.sort (a, b) -> b.relevancy - a.relevancy
+          filtered = filtered.slice(0, $scope.filterParams.bestLimit)
+
+        # Target needs to be in there at all times for relevancy links
+        if $scope.targetFeature not in filtered
+          filtered.push $scope.targetFeature
+
+        $scope.filteredFeatures = filtered
+
+    $scope.$watch 'filterParams', $scope.refilter, true
+
 
 ]

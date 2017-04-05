@@ -49,18 +49,39 @@ md-card {
   }
 }
 
-#zoom-controls {
-	position: fixed;
-	bottom: 0;
-	right: 0;
+.bottom-right-controls {
+  position: fixed;
+  bottom: 0;
+  right: 0;
 
-	> div {
-		background-color: white;
-	}
+  slide-filter{
+    width: 350px;
 
-	.md-icon-button {
-		margin: 0;
-	}
+    #slider {
+      padding: 8px;
+      height: 80px;
+      box-sizing: border-box;
+
+      background-color: white;
+    }
+
+    .md-padding {
+      padding-right: 8px;
+    }
+  }
+
+  #zoom-controls {
+    padding-left: 8px;
+    
+  	> div {
+  		background-color: white;
+  	}
+
+  	.md-icon-button {
+  		margin: 0;
+  	}
+
+  }
 }
 
 #search {
@@ -73,5 +94,36 @@ md-card {
     input {
       padding-left: 4px;
     }
+  }
+}
+
+#filterInfo {
+  margin-top: 4px;
+  background-color: white;
+
+  md-chip {
+    background-color: #C16F6F;
+
+    md-icon {
+      color: white;
+    }
+  }
+
+  md-chips-wrap {
+    box-shadow: 0 0px !important;
+  }
+
+  md-chips-wrap:focus {
+    outline: none;
+    border: 0;
+  }
+
+  p {
+    font-size: 16px;
+  }
+
+  span {
+    font-size: 18px;
+    color: white;
   }
 }

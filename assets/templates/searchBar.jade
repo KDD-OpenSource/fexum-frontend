@@ -1,0 +1,29 @@
+form.overlay-window(ng-submit='$event.preventDefault()',ng-cloak)
+      #search.md-whiteframe-z1(layout='row')
+        corner-menu
+        md-autocomplete(flex,
+                        md-selected-item='searchedItem',
+                        md-search-text='searchText',
+                        md-selected-item-change='onFeatureSearched(searchedItem)',
+                        md-no-cache='true',
+                        md-items='item in getSearchItems() | filter:{feature:{name: searchText}}',
+                        placeholder='Search for feature')
+          md-item-template
+            span.item-title
+              md-icon {{item.isTextFilter ? 'filter_list' : 'search'}}
+              span
+                {{item.isTextFilter ? 'Filter features by \'' : 'Locate feature ' }}
+                span(md-highlight-text='searchText', md-highlight-flags='^i') {{item.feature.name}}
+                {{item.isTextFilter ? '\'' : ''}}
+          md-not-found No feature found
+      #filterInfo.md-whiteframe-z1
+        md-list(ng-show='filterParams.searchText.length > 0 || filterParams.blacklist.length > 0')
+          md-list-item(ng-show='filterParams.searchText.length > 0', layout-align='center center')
+            md-icon filter_list
+            p {{filterParams.searchText}}
+            span(flex)
+            md-icon(ng-click='resetTextFilter()') close
+          md-list-item(ng-show='filterParams.blacklist.length > 0')
+            md-chips(ng-model="filterParams.blacklist", readonly='true', md-removable='true')
+              md-chip-template
+                span {{$chip.name}}

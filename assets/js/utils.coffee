@@ -30,3 +30,6 @@ objectMap = (object, callback, flatten = false) ->
 
 Number.prototype.roundTo = (decimals) ->
   return Number(Math.round(@ + 'e' + decimals) + 'e-' + decimals)
+
+Array.prototype.contains = (element) ->
+  return @indexOf(element) != -1
