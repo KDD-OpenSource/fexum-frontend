@@ -7,7 +7,8 @@ app.directive 'spectrogram', [
       scope:
         feature: '='
       link: (scope, element, attrs) ->
-
-        return
+        backendService.retrieveSpectrogram featureId
+          .then (spectrogram) ->
+            scope.image_url = spectrogram.image_url
     }
 ]
