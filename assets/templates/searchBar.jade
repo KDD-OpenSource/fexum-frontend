@@ -18,7 +18,7 @@ form.overlay-window(ng-submit='$event.preventDefault()',ng-cloak)
           md-not-found No feature found
       #filter-info.md-whiteframe-z1
         md-list(ng-show='filterParams.searchText.length > 0 || filterParams.blacklist.length > 0')
-          md-list-item(ng-show='filterParams.searchText.length > 0', layout-align='center center')
+          md-list-item(ng-show='filterParams.searchText.length > 0')
             md-icon#filter-icon filter_list
             p {{filterParams.searchText}}
             span(flex)
@@ -28,7 +28,7 @@ form.overlay-window(ng-submit='$event.preventDefault()',ng-cloak)
             div(layout='column')
               md-chips(md-removable='true')
                 md-chip(ng-repeat='item in filterParams.blacklist', ng-show='shouldDisplayChip(item)')         
-                  div(layout='row', layout-wrap, layout-align='begin begin')
+                  div(layout='row')
                     span {{item.name}}
                     md-icon(ng-click='filterParams.blacklist.removeObject(item)') close
               md-button.md-primary(ng-show='filterParams.blacklist.length > 2', ng-click='toggleChips()')
