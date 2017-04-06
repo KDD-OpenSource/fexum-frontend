@@ -1,14 +1,17 @@
 app.directive 'spectrogram', [
   'backendService',
-  (backendService) ->
+  'scopeUtils',
+  (backendService, scopeUtils) ->
     return {
       restrict: 'E'
       template: JST['assets/templates/spectrogram']
       scope:
         feature: '='
       link: (scope, element, attrs) ->
-        backendService.retrieveSpectrogram featureId
-          .then (spectrogram) ->
-            scope.image_url = spectrogram.image_url
+        featureAvailable = scopeUtils.waitForVariableSet scope, 'feature.id'
+        featureAvailable.then ->
+          return backendService.retrieveSpectrogram scope.feature.id
+        .then (spectrogram) ->
+          scope.image_url = spectrogram.image_url
     }
 ]

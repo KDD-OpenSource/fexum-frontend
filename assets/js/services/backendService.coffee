@@ -43,8 +43,8 @@ app.factory 'backendService', [
           return buckets
         .fail console.error
 
-    retrieveSpectogram = (featureId) ->
-      $http.get API_URI + "features/#{featureId}/spectogram"
+    retrieveSpectrogram = (featureId) ->
+      $http.get API_URI + "features/#{featureId}/spectrogram"
         .then (response) ->
           return response.data
         .fail console.error
@@ -229,7 +229,7 @@ app.factory 'backendService', [
       retrieveDatasets: retrieveDatasets
       retrieveHistogramBuckets: retrieveHistogramBuckets
       retrieveSamples: retrieveSamples
-      retrieveSpectogram: retrieveSpectogram
+      retrieveSpectrogram: retrieveSpectrogram
       retrieveDensity: retrieveDensity
       waitForWebsocketEvent: waitForWebsocketEvent
 
