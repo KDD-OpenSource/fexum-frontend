@@ -20,11 +20,11 @@ Array.prototype.removeObject = (obj) ->
     return true
   return false
 
-objectMap = (object, callback, flatten = false) ->
+objectMap = (object, callback, discardUndefined = false) ->
   mappedValues = []
   for k, v of object
     result = callback k, v
-    if not flatten or result?
+    if not discardUndefined or result?
       mappedValues.push result
   return mappedValues
 

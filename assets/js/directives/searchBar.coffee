@@ -22,7 +22,7 @@ app.directive 'searchBar', [
 
         scope.getSearchItems = ->
           searchItems = []
-          # Dummy feature so that filtering works as intended
+          # Dummy feature so that filter always matches search item, even for "Filter by [text]"
           searchItems.push
             isTextFilter: true
             feature:
@@ -37,6 +37,13 @@ app.directive 'searchBar', [
 
         scope.resetTextFilter = ->
           scope.filterParams.searchText = ''
+
+        scope.chipsExpanded = false
+        scope.toggleChips = ->
+          scope.chipsExpanded = !scope.chipsExpanded
+        scope.shouldDisplayChip = (item) ->
+            index = scope.filterParams.blacklist.indexOf item
+            return scope.chipsExpanded or index < 2
 
     }
 ]

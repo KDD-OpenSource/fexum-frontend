@@ -143,10 +143,13 @@ app.directive 'featureMap', [
               @parentNode.insertBefore @, firstChild
 
         updateNodes = ->
+
+          # Keeps old node positions so that transition looks smooth
           oldNodeMap = {}
           if scope.nodes?
             for node in scope.nodes
               oldNodeMap[node.id] = node
+
           scope.nodes = scope.features.map (feature) ->
             if feature.id of oldNodeMap
               return oldNodeMap[feature.id]
@@ -233,8 +236,6 @@ app.directive 'featureMap', [
 
           scope.simulation.restart()
           setupSimulationTimeout()
-          # Zoom out for viewing all features after simulation has updated for a few iterations
-          # scope.autoZoomInterval = $interval scope.zoomApi.fit, 1000, 10 * 3
 
         initialize = (targetFeature) ->
           stopSimulation()
@@ -269,7 +270,7 @@ app.directive 'featureMap', [
             scope.$watch 'relevancies', updateLinks, true
             scope.$watch 'redundancies', updateLinks, true
             scope.$watch 'targetFeature', initialize
-            scope.$watch 'features', initialize, true
+            scope.$watchCollection 'features', initialize
             scope.$watchCollection 'selectedFeatures', render
           .fail console.error
 

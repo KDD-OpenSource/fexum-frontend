@@ -27,7 +27,8 @@ app.controller 'AppCtrl', [
         .then (experiment) -> experiment.retrieveFeatures()
         .then (features) ->
           $scope.filteredFeatures = features
-          $scope.semifilteredFeatures = features
+          # All filters applied except slider, that way the ceiling is always correct on the slider
+          $scope.intermediateFilteredFeatures = features
           $scope.features = features
           buildFeatureIdMap()
 
@@ -201,6 +202,10 @@ app.controller 'AppCtrl', [
           filtered = filtered.filter (feature) ->
             feature not in $scope.filterParams.blacklist
 
+          for feature in $scope.filterParams.blacklist
+            $scope.selectedFeatures.removeObject feature
+
+        # All filters applied except slider, that way the ceiling is always correct on the slider
         $scope.semifilteredFeatures = filtered
         # k-best filter
         if $scope.filterParams.bestLimit?

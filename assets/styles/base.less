@@ -20,12 +20,7 @@
 .left-pane {
 	width: 320px;
 	box-sizing: border-box;
-}
-
-.right-pane {
-  width: 320px;
-  box-sizing: border-box;
-  pointer-events: auto;
+  padding-bottom: 0px;
 }
 
 md-card {
@@ -42,7 +37,6 @@ md-card {
   position: fixed;
   top: 0;
   right: 0;
-  width: 400px;
 
   #loading-state {
     background-color: white;
@@ -96,13 +90,21 @@ md-card {
     }
   }
 }
+// Completions are not appended as children within #search
+span.highlight {
+    background-color: yellow;
+}
 
-#filterInfo {
+#filter-info {
   margin-top: 4px;
   background-color: white;
 
   md-chip {
     background-color: #C16F6F;
+
+    span {
+      color: white;
+    }
 
     md-icon {
       color: white;
@@ -118,12 +120,17 @@ md-card {
     border: 0;
   }
 
+  md-icon#filter-icon {
+    margin: 0;
+    margin-right: 16px;
+  }
+
+  .md-button#filter-reset {
+    min-width: 1%;
+  }
+
   p {
     font-size: 16px;
   }
 
-  span {
-    font-size: 18px;
-    color: white;
-  }
 }

@@ -6,16 +6,12 @@ feature-map#feature-map(features='filteredFeatures',
                         simulation-timeout='30',
                         map-api='mapApi',
                         def-transform='1')
-#map-overlay(layout-fill)
-  .md-padding.left-pane
-    search-bar(filter-params='filterParams', filtered-features='filteredFeatures', map-api='mapApi')
-  #content(flex,layout='row', ui-view="predotsView")
-#control-bar(layout='column', layout-padding)
+#control-bar(layout-padding)
   #loading-state.md-whiteframe-1dp(layout='row', layout-align='center center', layout-padding, ng-show='loadingQueue.length', ng-cloak)
     span {{loadingQueue[loadingQueue.length - 1].message}}
     md-progress-circular(md-mode='indeterminate', md-diameter='20')
 .bottom-right-controls(layout='col', layout-align='end end')
-  slide-filter(filter-params='filterParams', features='semifilteredFeatures')
+  slide-filter(filter-params='filterParams', features='intermediateFilteredFeatures')
   #zoom-controls.md-padding
     .md-whiteframe-1dp(layout='column')
       md-button.md-icon-button(aria-label='Zoom in', ng-click='mapApi.zoomIn()')
@@ -23,3 +19,7 @@ feature-map#feature-map(features='filteredFeatures',
       md-divider
       md-button.md-icon-button(aria-label='Zoom out', ng-click='mapApi.zoomOut()')
         md-icon remove
+#map-overlay(layout='column', layout-fill)
+  .md-padding.left-pane
+    search-bar(filter-params='filterParams', filtered-features='filteredFeatures', map-api='mapApi')
+  #content(flex,layout='row', ui-view="predotsView")
