@@ -39,11 +39,12 @@ app.directive 'searchBar', [
           scope.filterParams.searchText = ''
 
         scope.chipsExpanded = false
+        scope.maxChipsPreviewed = 2
         scope.toggleChips = ->
           scope.chipsExpanded = !scope.chipsExpanded
         scope.shouldDisplayChip = (item) ->
             index = scope.filterParams.blacklist.indexOf item
-            return scope.chipsExpanded or index < 2
+            return scope.chipsExpanded or index < scope.maxChipsPreviewed
 
     }
 ]

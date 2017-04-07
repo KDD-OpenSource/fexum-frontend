@@ -38,10 +38,7 @@ app.directive 'featureMap', [
               fit: false
               controlIconsEnabled: false
               onZoom: ->
-                $interval.cancel scope.autoZoomInterval
                 render()
-              onPan: ->
-                $interval.cancel scope.autoZoomInterval
               minZoom: 0.00001
               zoomScaleSensitivity: 0.3
 

@@ -206,7 +206,7 @@ app.controller 'AppCtrl', [
             $scope.selectedFeatures.removeObject feature
 
         # All filters applied except slider, that way the ceiling is always correct on the slider
-        $scope.semifilteredFeatures = filtered
+        $scope.intermediateFilteredFeatures = filtered
         # k-best filter
         if $scope.filterParams.bestLimit?
           filtered = filtered.sort (a, b) -> b.relevancy - a.relevancy

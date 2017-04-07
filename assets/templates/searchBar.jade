@@ -31,6 +31,6 @@ form.overlay-window(ng-submit='$event.preventDefault()',ng-cloak)
                   div(layout='row')
                     span {{item.name}}
                     md-icon(ng-click='filterParams.blacklist.removeObject(item)') close
-              md-button.md-primary(ng-show='filterParams.blacklist.length > 2', ng-click='toggleChips()')
+              md-button.md-primary(ng-show='filterParams.blacklist.length > maxChipsPreviewed', ng-click='toggleChips()')
                 {{chipsExpanded ? 'Show less' : 'Show more'}}
 
