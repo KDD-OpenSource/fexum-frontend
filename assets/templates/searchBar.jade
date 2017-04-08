@@ -16,22 +16,20 @@ form.overlay-window(ng-submit='$event.preventDefault()',ng-cloak)
                 span(md-highlight-text='searchText', md-highlight-flags='^i') {{item.feature.name}}
                 {{item.isTextFilter ? '\'' : ''}}
           md-not-found No feature found
-      #filter-info.md-whiteframe-z1
-        md-list(ng-show='filterParams.searchText.length > 0 || filterParams.blacklist.length > 0')
-          md-list-item(ng-show='filterParams.searchText.length > 0')
-            md-icon#filter-icon filter_list
-            p {{filterParams.searchText}}
-            span(flex)
-            md-button#filter-reset
-              md-icon(ng-click='resetTextFilter()') close
-          md-list-item(ng-show='filterParams.blacklist.length > 0')
-            div(layout='column')
-              md-chips
-                md-chip(ng-repeat='item in filterParams.blacklist', ng-show='shouldDisplayChip(item)')         
-                  div(layout='row')
-                    span {{item.name}}
-                    button.md-chip-remove(ng-click='filterParams.blacklist.removeObject(item)')
-                      md-icon close
-              md-button.md-primary(ng-show='filterParams.blacklist.length > maxChipsPreviewed', ng-click='toggleChips()')
-                {{chipsExpanded ? 'Show less' : 'Show more'}}
+      #filter-info.md-whiteframe-z1(layout='column', ng-show='filterParams.searchText.length > 0 || filterParams.blacklist.length > 0')
+        div(layout='row', ng-show='filterParams.searchText.length > 0')
+          md-icon.filter-icon filter_list
+          p {{filterParams.searchText}}
+          span(flex)
+          md-button.md-icon-button.reset-filter-button(ng-click='resetTextFilter()')
+            md-icon close
+        div(layout='row', ng-show='filterParams.blacklist.length > 0')
+          md-chips(flex)
+            md-chip(ng-repeat='item in filterParams.blacklist', ng-show='shouldDisplayChip(item)')         
+              div(layout='row')
+                span {{item.name}}
+                button.md-chip-remove(ng-click='filterParams.blacklist.removeObject(item)')
+                  md-icon close
+          md-button.md-icon-button(ng-show='filterParams.blacklist.length > maxChipsPreviewed', ng-click='toggleChips()')
+            md-icon {{chipsExpanded ? 'expand_less' : 'expand_more' }}
 
