@@ -1,32 +1,32 @@
 .md-padding.left-pane(ng-cloak, layout)
-    md-card#feature-info.overlay-window(flex)
-        md-toolbar
-            .md-toolbar-tools
-                md-button.md-icon-button(aria-label='Back', href='/')
-                    md-icon keyboard_arrow_left
-                span Feature #[i {{feature.name | characters:15 :true}}]
-                span(flex)
-                md-button.md-icon-button(ng-disabled='feature === targetFeature', aria-label='Add to analysis', href='/selections?select={{feature.name}}')
-                    md-icon add
+  md-card#feature-info.overlay-window(flex)
+    md-toolbar
+      .md-toolbar-tools
+        md-button.md-icon-button(aria-label='Back', href='/')
+          md-icon keyboard_arrow_left
+        span Feature #[i {{feature.name | characters:15 :true}}]
+        span(flex)
+        md-button.md-icon-button(ng-disabled='feature === targetFeature', aria-label='Add to analysis', href='/selections?select={{feature.name}}')
+          md-icon add
 
-        md-content(flex)
-            section
-                md-list
-                    md-list-item
-                        p Mean: {{feature.mean | d3format}}
-                    md-list-item
-                        p Variance: {{feature.variance | d3format}}
-            section
-                md-subheader.md-primary Time series preview
-                time-series-plot(feature='feature')
-            section
-                md-subheader.md-primary Target classes densities
-                density-plot(feature='feature', target-feature='targetFeature')
-            section
-                md-subheader.md-primary
-                  div(layout='row')
-                    | Spectrogram preview
-                    span(flex)
-                    a(href='https://en.wikipedia.org/wiki/Spectrogram') ?
-                      md-tooltip X-Axis: Time, Y-Axis: Frequency, Color: Amplitude
-                spectrogram(feature='feature')
+    md-content(flex)
+      section
+        md-list
+          md-list-item
+            p Mean: {{feature.mean | d3format}}
+          md-list-item
+            p Variance: {{feature.variance | d3format}}
+      section
+        md-subheader.md-primary Time series preview
+        time-series-plot(feature='feature')
+      section
+        md-subheader.md-primary Target classes densities
+        density-plot(feature='feature', target-feature='targetFeature')
+      section
+        md-subheader.md-primary
+          div(layout='row')
+            | Spectrogram preview
+            span(flex)
+            a(href='https://en.wikipedia.org/wiki/Spectrogram') ?
+              md-tooltip X-Axis: Time, Y-Axis: Frequency, Color: Amplitude
+        spectrogram(feature='feature')
