@@ -47,6 +47,13 @@ module.exports = function(grunt) {
         ws: false,
         https: false,
         xforward: false
+      }, {
+        context: ['/media'],
+        host: grunt.option('api-host') || '172.16.18.127',
+        port: grunt.option('api-port') || 80,
+        ws: false,
+        https: false,
+        xforward: false
       }]
     }
   });

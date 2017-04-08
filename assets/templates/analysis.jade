@@ -10,7 +10,7 @@
         md-content.feature-column(ng-repeat='feature in selectedFeatures')
           section
             md-subheader.md-primary Feature #[i {{feature.name}}]
-            histogram-plot(feature='feature')
+            histogram-plot(feature='feature', xaxis-enabled='false')
             selection-slider(ng-if='!feature.is_categorical', sliders='sliders', selected-ranges='selectedRanges', feature='feature')
             selection-checkboxes(ng-if='feature.is_categorical', selected-ranges='selectedRanges', feature='feature')
 
