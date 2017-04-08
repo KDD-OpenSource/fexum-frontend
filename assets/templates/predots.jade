@@ -20,6 +20,6 @@ feature-map#feature-map(features='filteredFeatures',
       md-button.md-icon-button(aria-label='Zoom out', ng-click='mapApi.zoomOut()')
         md-icon remove
 #map-overlay(layout='column', layout-fill)
-  .md-padding.left-pane
+  .md-padding.left-pane.bottom-no-padding
     search-bar(filter-params='filterParams', filtered-features='filteredFeatures', map-api='mapApi')
   #content(flex,layout='row', ui-view="predotsView")
