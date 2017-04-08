@@ -21,6 +21,16 @@ app.controller 'AppCtrl', [
         .then ->
           $location.path '/login'
 
+    restoreFeatureListByOldList = (oldList) ->
+      if oldList.length > 0
+        newList = []
+        oldList.forEach (feature) ->
+          newFeature = $scope.featureIdMap[feature.id]
+          if newFeature?
+            newList.push newFeature
+        return newList
+      return []
+
     # Retrieve features
     $scope.retrieveFeatures = ->
       backendService.getExperiment()
@@ -32,16 +42,12 @@ app.controller 'AppCtrl', [
           $scope.features = features
           buildFeatureIdMap()
 
+          # Restore targetFeature
           $scope.targetFeature = $scope.featureIdMap[$scope.targetFeatureId]
-
           # Restore selected states
-          if $scope.selectedFeatures.length > 0
-            newSelectedFeatures = []
-            $scope.selectedFeatures.forEach (feature) ->
-              newFeature = $scope.featureIdMap[feature.id]
-              if newFeature?
-                newSelectedFeatures.push newFeature
-            $scope.selectedFeatures = newSelectedFeatures
+          $scope.selectedFeatures = restoreFeatureListByOldList $scope.selectedFeatures
+          # Restore filterParams blacklist
+          $scope.filterParams.blacklist = restoreFeatureListByOldList $scope.filterParams.blacklist
         .fail console.error
 
     $scope.retrieveRedundancies = ->
@@ -149,6 +155,9 @@ app.controller 'AppCtrl', [
       selection = experiment.getSelection()
       if selection?
         $scope.selectedFeatures = selection
+      filterParams = experiment.getFilterParams()
+      if filterParams?
+        $scope.filterParams = filterParams
 
     backendService.getExperiment()
       .then $scope.initializeFromExperiment
@@ -218,7 +227,13 @@ app.controller 'AppCtrl', [
 
         $scope.filteredFeatures = filtered
 
-    $scope.$watch 'filterParams', $scope.refilter, true
+    onFilterParamsChanged = ->
+      $scope.refilter()
+      backendService.getExperiment()
+        .then (experiment) -> experiment.setFilterParams $scope.filterParams
+        .fail console.error
+      
+    $scope.$watch 'filterParams', onFilterParamsChanged, true
 
 
 ]
