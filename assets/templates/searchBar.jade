@@ -26,11 +26,12 @@ form.overlay-window(ng-submit='$event.preventDefault()',ng-cloak)
               md-icon(ng-click='resetTextFilter()') close
           md-list-item(ng-show='filterParams.blacklist.length > 0')
             div(layout='column')
-              md-chips(md-removable='true')
+              md-chips
                 md-chip(ng-repeat='item in filterParams.blacklist', ng-show='shouldDisplayChip(item)')         
                   div(layout='row')
                     span {{item.name}}
-                    md-icon(ng-click='filterParams.blacklist.removeObject(item)') close
+                    button.md-chip-remove(ng-click='filterParams.blacklist.removeObject(item)')
+                      md-icon close
               md-button.md-primary(ng-show='filterParams.blacklist.length > maxChipsPreviewed', ng-click='toggleChips()')
                 {{chipsExpanded ? 'Show less' : 'Show more'}}
 
