@@ -38,10 +38,7 @@ app.directive 'featureMap', [
               fit: false
               controlIconsEnabled: false
               onZoom: ->
-                $interval.cancel scope.autoZoomInterval
                 render()
-              onPan: ->
-                $interval.cancel scope.autoZoomInterval
               minZoom: 0.00001
               zoomScaleSensitivity: 0.3
 
@@ -142,8 +139,17 @@ app.directive 'featureMap', [
             if firstChild?
               @parentNode.insertBefore @, firstChild
 
-        createNodes = ->
+        updateNodes = ->
+
+          # Keeps old node positions so that transition looks smooth
+          oldNodeMap = {}
+          if scope.nodes?
+            for node in scope.nodes
+              oldNodeMap[node.id] = node
+
           scope.nodes = scope.features.map (feature) ->
+            if feature.id of oldNodeMap
+              return oldNodeMap[feature.id]
             node = {
               feature: feature
               isTarget: feature == scope.targetFeature
@@ -196,18 +202,29 @@ app.directive 'featureMap', [
           return maxDistance - (difference * Math.sqrt(Math.sqrt(correlation)))
 
         updateLinks = ->
+          featureIds = scope.features.map (f) -> f.id
           relevancyLinks = objectMap scope.relevancies, (featureId, relevancy) ->
-            console.assert relevancy?
-            source: scope.targetFeature.id
-            target: featureId
-            distance: distanceFromCorrelation relevancy, false
-            relevancy: relevancy
-            strength: 1
+            if featureId in featureIds
+              console.assert relevancy?
+              return {
+                source: scope.targetFeature.id
+                target: featureId
+                distance: distanceFromCorrelation relevancy, false
+                relevancy: relevancy
+                strength: 1
+              }
+            return null
+          , true
           redundancyLinks = objectMap scope.redundancies, (key, result) ->
-            source: result.firstFeature
-            target: result.secondFeature
-            distance: distanceFromCorrelation result.redundancy, true
-            strength: 0.005 * Math.sqrt result.weight
+            if result.firstFeature in featureIds and result.secondFeature in featureIds
+              return {
+                source: result.firstFeature
+                target: result.secondFeature
+                distance: distanceFromCorrelation result.redundancy, true
+                strength: 0.005 * Math.sqrt result.weight
+              }
+            return null
+          , true
           scope.links = relevancyLinks.concat redundancyLinks
           # Update simulation
           scope.simulation
@@ -216,13 +233,11 @@ app.directive 'featureMap', [
 
           scope.simulation.restart()
           setupSimulationTimeout()
-          # Zoom out for viewing all features after simulation has updated for a few iterations
-          scope.autoZoomInterval = $interval scope.zoomApi.fit, 100, 10 * 3
 
         initialize = (targetFeature) ->
           stopSimulation()
           if targetFeature?
-            createNodes()
+            updateNodes()
             setupSimulation()
             render()
             updateLinks()
@@ -252,6 +267,7 @@ app.directive 'featureMap', [
             scope.$watch 'relevancies', updateLinks, true
             scope.$watch 'redundancies', updateLinks, true
             scope.$watch 'targetFeature', initialize
+            scope.$watchCollection 'features', initialize
             scope.$watchCollection 'selectedFeatures', render
           .fail console.error
 

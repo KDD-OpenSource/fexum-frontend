@@ -20,7 +20,11 @@
 .left-pane {
 	width: 320px;
 	box-sizing: border-box;
+  &.bottom-no-padding {
+    padding-bottom: 0px;
+  }
 }
+
 md-card {
 	&.overlay-window {
 		margin: 0px;
@@ -41,18 +45,39 @@ md-card {
   }
 }
 
-#zoom-controls {
-	position: fixed;
-	bottom: 0;
-	right: 0;
+.bottom-right-controls {
+  position: fixed;
+  bottom: 0;
+  right: 0;
 
-	> div {
-		background-color: white;
-	}
+  slide-filter{
+    width: 350px;
 
-	.md-icon-button {
-		margin: 0;
-	}
+    #slider {
+      padding: 8px;
+      height: 80px;
+      box-sizing: border-box;
+
+      background-color: white;
+    }
+
+    .md-padding {
+      padding-right: 8px;
+    }
+  }
+
+  #zoom-controls {
+    padding-left: 8px;
+    
+  	> div {
+  		background-color: white;
+  	}
+
+  	.md-icon-button {
+  		margin: 0;
+  	}
+
+  }
 }
 
 #search {
@@ -61,5 +86,14 @@ md-card {
   md-autocomplete-wrap {
     // we display our own drop shadow, remove this one
     box-shadow: none;
+
+    input {
+      padding-left: 4px;
+    }
   }
 }
+// Completions are not appended as children within #search
+span.highlight {
+    background-color: yellow;
+}
+

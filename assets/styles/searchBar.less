@@ -1,0 +1,64 @@
+search-bar {
+  #filter-info {
+    padding-left: 5px;
+    padding-bottom: 5px;
+    padding-top: 5px;
+    margin-top: 4px;
+    background-color: white;
+
+    md-chips {
+      max-height: 150px;
+      overflow-y: scroll;
+
+      md-chips-wrap {
+        box-shadow: 0 0px !important;
+
+        &:focus {
+          outline: none;
+          border: 0;
+        }
+      }
+
+      .md-chips {
+        font-size: 12px;
+      }
+
+      md-chip {
+        background-color: #C16F6F;
+        height: 25px;
+        line-height: 25px;
+
+        span {
+          color: white;
+        }
+
+        .md-chip-remove {
+          width: 25px;
+          height: 25px;
+          // Looks better if icon image padding and normal padding is reduced
+          margin-right: -5px;
+
+          md-icon {
+            color: white;
+            // Bugfix for icon not perfectly being aligned with text
+            margin-top: -1px;
+          }
+        }
+      }
+    }
+
+    .filter-icon {
+      margin-right: 16px;
+      margin-left: 10px;
+    }
+
+    .reset-filter-button {
+      margin: 6px 8px;
+    }
+
+    p {
+      font-size: 16px;
+    }
+
+    }
+}

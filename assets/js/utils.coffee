@@ -20,12 +20,16 @@ Array.prototype.removeObject = (obj) ->
     return true
   return false
 
-objectMap = (object, callback) ->
+objectMap = (object, callback, discardUndefined = false) ->
   mappedValues = []
   for k, v of object
     result = callback k, v
-    mappedValues.push result
+    if not discardUndefined or result?
+      mappedValues.push result
   return mappedValues
 
 Number.prototype.roundTo = (decimals) ->
   return Number(Math.round(@ + 'e' + decimals) + 'e-' + decimals)
+
+Array.prototype.contains = (element) ->
+  return @indexOf(element) != -1

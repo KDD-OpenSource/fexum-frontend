@@ -21,24 +21,33 @@ app.controller 'AppCtrl', [
         .then ->
           $location.path '/login'
 
+    restoreFeatureListByOldList = (oldList) ->
+      if oldList.length > 0
+        newList = []
+        oldList.forEach (feature) ->
+          newFeature = $scope.featureIdMap[feature.id]
+          if newFeature?
+            newList.push newFeature
+        return newList
+      return []
+
     # Retrieve features
     $scope.retrieveFeatures = ->
       backendService.getExperiment()
         .then (experiment) -> experiment.retrieveFeatures()
         .then (features) ->
+          $scope.filteredFeatures = features
+          # All filters applied except slider, that way the ceiling is always correct on the slider
+          $scope.intermediateFilteredFeatures = features
           $scope.features = features
           buildFeatureIdMap()
 
+          # Restore targetFeature
           $scope.targetFeature = $scope.featureIdMap[$scope.targetFeatureId]
-
           # Restore selected states
-          if $scope.selectedFeatures.length > 0
-            newSelectedFeatures = []
-            $scope.selectedFeatures.forEach (feature) ->
-              newFeature = $scope.featureIdMap[feature.id]
-              if newFeature?
-                newSelectedFeatures.push newFeature
-            $scope.selectedFeatures = newSelectedFeatures
+          $scope.selectedFeatures = restoreFeatureListByOldList $scope.selectedFeatures
+          # Restore filterParams blacklist
+          $scope.filterParams.blacklist = restoreFeatureListByOldList $scope.filterParams.blacklist
         .fail console.error
 
     $scope.retrieveRedundancies = ->
@@ -48,24 +57,6 @@ app.controller 'AppCtrl', [
           $scope.redundancies = {}
           redundancies.forEach updateRedundanciesFromItem
         .fail console.error
-
-    $scope.getSearchItems = ->
-      features = $scope.features or []
-      categoricalFeatures = features.filter (f) -> f.is_categorical
-      targetChoices = categoricalFeatures.map (feature, i) ->
-        return {
-          feature: feature
-          index: i
-          isTargetChoice: true
-        }
-      locatableFeatures = features.map (feature, i) ->
-        return {
-          feature: feature
-          index: i
-          isTargetChoice: false
-        }
-      searchItems = locatableFeatures.concat targetChoices
-      return searchItems.sort (a, b) -> a.index - b.index
 
     rarTime = []
     $scope.relevancies = {}
@@ -164,6 +155,9 @@ app.controller 'AppCtrl', [
       selection = experiment.getSelection()
       if selection?
         $scope.selectedFeatures = selection
+      filterParams = experiment.getFilterParams()
+      if filterParams?
+        $scope.filterParams = filterParams
 
     backendService.getExperiment()
       .then $scope.initializeFromExperiment
@@ -174,15 +168,6 @@ app.controller 'AppCtrl', [
           console.error error
 
     $scope.loadingQueue = systemStatus.loadingQueue
-
-    $scope.onFeatureSearched = (searchedItem) ->
-      if not searchedItem?
-        return
-      if searchedItem.isTargetChoice
-        $scope.setTarget searchedItem.feature
-      else
-        $scope.mapApi.locateFeature searchedItem.feature
-      $scope.searchText = ''
 
     $scope.setTarget = (targetFeature) ->
       $scope.targetFeature = targetFeature
@@ -209,5 +194,46 @@ app.controller 'AppCtrl', [
           category: 'd' + $scope.dataset.id,
           label: 't' + $scope.targetFeature.id
         }
+
+    $scope.filterParams =
+      bestLimit: null
+      blacklist: []
+      searchText: ''
+
+    $scope.refilter = ->
+      if $scope.features?
+        # Simple text filter
+        filtered = $scope.features.filter (feature) ->
+            (feature.name.search $scope.filterParams.searchText) != -1
+
+        # Blacklist filter
+        if $scope.filterParams.blacklist?
+          filtered = filtered.filter (feature) ->
+            feature not in $scope.filterParams.blacklist
+
+          for feature in $scope.filterParams.blacklist
+            $scope.selectedFeatures.removeObject feature
+
+        # All filters applied except slider, that way the ceiling is always correct on the slider
+        $scope.intermediateFilteredFeatures = filtered
+        # k-best filter
+        if $scope.filterParams.bestLimit?
+          filtered = filtered.sort (a, b) -> b.relevancy - a.relevancy
+          filtered = filtered.slice(0, $scope.filterParams.bestLimit)
+
+        # Target needs to be in there at all times for relevancy links
+        if $scope.targetFeature not in filtered
+          filtered.push $scope.targetFeature
+
+        $scope.filteredFeatures = filtered
+
+    onFilterParamsChanged = ->
+      $scope.refilter()
+      backendService.getExperiment()
+        .then (experiment) -> experiment.setFilterParams $scope.filterParams
+        .fail console.error
+      
+    $scope.$watch 'filterParams', onFilterParamsChanged, true
+
 
 ]

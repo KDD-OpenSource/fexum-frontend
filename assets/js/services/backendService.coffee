@@ -7,7 +7,6 @@ app.factory 'backendService', [
 
     API_URI = '/api/'
     SOCKET_URI = "ws://#{window.location.host}/bindings"
-    TOKEN_KEY = 'loginToken'
 
     # coffeescript doesn't like functions called catch...
     $q.prototype.fail = $q.prototype.catch
@@ -102,7 +101,15 @@ app.factory 'backendService', [
           json.targetId
         )
         experiment.selection = json.selection
+        experiment.filterParams = json.filterParams
         return experiment
+
+      setFilterParams: (filterParams) =>
+        @filterParams = filterParams
+        @store()
+
+      getFilterParams: =>
+        return @filterParams
 
       setSelection: (selection) =>
         @selection = selection
@@ -117,6 +124,7 @@ app.factory 'backendService', [
           dataset: @dataset
           targetId: @targetId
           selection: @selection
+          filterParams: @filterParams
         localStorage.setItem Experiment.LAST_EXPERIMENT_KEY, angular.toJson(lastExperiment)
 
       retrieveDatasetInfo: =>
