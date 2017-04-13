@@ -1,10 +1,16 @@
-app.directive 'cornerMenu', ->
-  return {
-    restrict: 'E'
-    scope:
-      logout: '&logout'
-    template: JST['assets/templates/cornerMenu']
-    link: (scope, element, attrs) ->
+app.directive 'cornerMenu', [
+  'backendService', '$location',
+  (backendService, $location) ->
+    return {
+      restrict: 'E'
+      template: JST['assets/templates/cornerMenu']
+      link: (scope, element, attrs) ->
 
-      return
-  }
+        scope.logout = ->
+        backendService.logout()
+          .then ->
+            $location.path '/login'
+
+        return
+    }
+]

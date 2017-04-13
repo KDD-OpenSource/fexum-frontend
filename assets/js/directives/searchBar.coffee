@@ -1,5 +1,5 @@
 app.directive 'searchBar', [
-  'scopeUtils', '$location'
+  'scopeUtils', '$location',
   (scopeUtils, $location) ->
     return {
       template: JST['assets/templates/searchBar']
@@ -8,7 +8,6 @@ app.directive 'searchBar', [
         filterParams: '='
         filteredFeatures: '='
         mapApi: '='
-        logout: '&logout'
       link: (scope, element, attrs) ->
 
         scope.onFeatureSearched = (searchedItem) ->
