@@ -7,9 +7,9 @@ app.directive 'cornerMenu', [
       link: (scope, element, attrs) ->
 
         scope.logout = ->
-        backendService.logout()
-          .then ->
-            $location.path '/login'
+          backendService.logout()
+            .then ->
+              $location.path '/login'
 
         return
     }
