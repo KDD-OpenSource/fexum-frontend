@@ -16,11 +16,6 @@ app.controller 'AppCtrl', [
 
     $scope.selectedFeatures = []
 
-    $scope.logout = ->
-      backendService.logout()
-        .then ->
-          $location.path '/login'
-
     restoreFeatureListByOldList = (oldList) ->
       if oldList.length > 0
         newList = []

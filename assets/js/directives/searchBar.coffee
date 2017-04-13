@@ -1,5 +1,5 @@
 app.directive 'searchBar', [
-  'scopeUtils', '$location'
+  'scopeUtils', '$location',
   (scopeUtils, $location) ->
     return {
       template: JST['assets/templates/searchBar']
