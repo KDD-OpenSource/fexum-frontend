@@ -8,6 +8,7 @@ app.directive 'searchBar', [
         filterParams: '='
         filteredFeatures: '='
         mapApi: '='
+        logout: '&logout'
       link: (scope, element, attrs) ->
 
         scope.onFeatureSearched = (searchedItem) ->

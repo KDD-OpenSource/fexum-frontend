@@ -1,6 +1,6 @@
 form.overlay-window(ng-submit='$event.preventDefault()',ng-cloak)
   #search.md-whiteframe-z1(layout='row')
-    corner-menu
+    corner-menu(logout='logout()')
     md-autocomplete(flex,
                     md-selected-item='searchedItem',
                     md-search-text='searchText',
