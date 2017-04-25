@@ -4,10 +4,9 @@ app.controller 'AppCtrl', [
   'systemStatus',
   '$timeout',
   '$q',
-  'scopeUtils',
   '$analytics',
   '$location',
-  ($scope, backendService, systemStatus, $timeout, $q, scopeUtils, $analytics, $location) ->
+  ($scope, backendService, systemStatus, $timeout, $q, $analytics, $location) ->
 
     buildFeatureIdMap = ->
       $scope.featureIdMap = {}
@@ -68,13 +67,13 @@ app.controller 'AppCtrl', [
               timingValue: delta
         }
 
-      feature = $scope.featureIdMap[featureData.feature]
+      # features only contains one element because only bivariates are retrieved
+      feature = $scope.featureIdMap[featureData.features[0]]
       if not feature?
         console.warn 'Got relevancy result that is not for this client'
         return
       $scope.relevancies[feature.id] = featureData.relevancy
       feature.relevancy = featureData.relevancy
-      feature.rank = featureData.rank
 
     $scope.redundancies = {}
     updateRedundanciesFromItem = (redundancyItem) ->
@@ -121,8 +120,12 @@ app.controller 'AppCtrl', [
         .then $scope.retrieveRarResults
         .then $scope.retrieveRedundancies
 
-    $scope.$on 'ws/rar_result', (event, payload) ->
-      if payload.data.status == 'done'
+    $scope.$on 'ws/calculation', (event, payload) ->
+      # Status is one of ['error', 'processing', 'done']
+      status = payload.data.status
+      # Type is one of ['default_hics', 'fixed_feature_set_hics']
+      type = payload.data.type
+      if status == 'done' and type == 'default_hics'
         $scope.retrieveRarResults()
         $scope.retrieveRedundancies()
 

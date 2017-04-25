@@ -1,14 +1,24 @@
 app.controller 'AnalysisCtrl', [
   '$scope',
   '$timeout',
-  '$analytics'
-  ($scope, $timeout, $analytics) ->
+  '$analytics',
+  'scopeUtils',
+  'backendService',
+  ($scope, $timeout, $analytics, scopeUtils, backendService) ->
 
-    if $scope.dataset? and $scope.targetFeature?
+    logAnalytics = ->
       $analytics.eventTrack 'analyzeFeatures', {
-        category: 'd' + $scope.dataset.id + 't' + $scope.targetFeature.id
+        category: 'd' + $scope.dataset.id + 't' + $scope.targetFeatureId
         label: $scope.selectedFeatures.map((f) -> f.id).join '|'
       }
+
+    scopeUtils.waitForVariableSet $scope, 'selectedFeatures'
+      .then ->
+        logAnalytics()
+        return backendService.getExperiment()
+      .then (experiment) ->
+        selectedFeatureIds = $scope.selectedFeatures.map (feature) -> feature.id
+        experiment.requestFeatureSelectionForSubset selectedFeatureIds
 
     $scope.selectedRanges = {}
 
@@ -20,23 +30,26 @@ app.controller 'AnalysisCtrl', [
             $scope.selectedRanges[feature.id][c] = true
         else
           $scope.selectedRanges[feature.id] = [feature.min, feature.max]
+        return
 
       analyticsLabel = []
       # Then set from slice
-      slice.features.forEach (feature) ->
-        feature.id = feature.feature
-        if feature.is_categorical
+      slice.features.forEach (filter) ->
+        feature = $scope.featureIdMap[filter.feature]
+        if filter.categories?
           $scope.selectedRanges[feature.id] = {}
-          for c in feature.categories
-            $scope.selectedRanges[feature.id][c] = angular.copy feature.categories
+
+          for category in feature.categories
+            isCategoryContained = category in filter.categories
+            $scope.selectedRanges[feature.id][category] = isCategoryContained
 
           analyticsLabel.push feature.id + '=[' +
-            feature.categories.join(',') + ']'
+            filter.categories.join(',') + ']'
         else
-          $scope.selectedRanges[feature.id] = angular.copy feature.range
+          $scope.selectedRanges[feature.id] = angular.copy filter.range
 
           analyticsLabel.push feature.id + '=[' +
-            feature.range.join(',') + ']'
+            filter.range.join(',') + ']'
 
       $analytics.eventTrack 'recommendedSliceSelected', {
         category: 'd' + $scope.dataset.id + 't' + $scope.targetFeature.id
