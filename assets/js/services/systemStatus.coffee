@@ -37,8 +37,9 @@ app.factory 'systemStatus', [
 
     waitForFeatureSelection = (targetFeature) ->
       # Create promise that waits for updated relevancies
-      relevancyUpdate = backendService.waitForWebsocketEvent 'rar_result'
-      addLoadingQueueItem relevancyUpdate, "Running feature selection for #{targetFeature.name}"
+      # TODO show user current iteration and wait until HiCS is completely terminated
+      relevancyUpdate = backendService.waitForWebsocketEvent 'NOT_YET_IMPLEMENTED'
+      addLoadingQueueItem relevancyUpdate, "Running iterative feature selection for #{targetFeature.name}"
       return relevancyUpdate
 
     # Initialize system status
