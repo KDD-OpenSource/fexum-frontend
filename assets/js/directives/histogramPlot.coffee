@@ -37,7 +37,11 @@ app.directive 'histogramPlot', [
                           return sliceDesc.range[0] < bucket.range[1] and
                                   sliceDesc.range[1] > bucket.range[0]
                         else
-                          return bucket in sliceDesc.categories
+                          for category in sliceDesc.categories
+                            if bucket.range[0] <= category and
+                              category <= bucket.range[1]
+                                return true
+                          return false
 
                     buckets = scope.histogram.data[0].values
                     bucketSignificances = buckets.map (bucket) ->
