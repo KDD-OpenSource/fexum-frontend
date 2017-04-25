@@ -13,7 +13,8 @@ app.directive 'sliceTable', [
 
         scope.getSliceFeatureRangeString = (slice, feature) ->
           featureRange = slice.getFeatureRange feature
-          featureRange = featureRange.map defaultNumFormatter
+          unless feature.is_categorical
+            featureRange = featureRange.map defaultNumFormatter
           return featureRange.join ', '
 
         updateTable = ->
