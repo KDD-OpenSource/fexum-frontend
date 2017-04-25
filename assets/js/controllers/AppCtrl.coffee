@@ -220,7 +220,7 @@ app.controller 'AppCtrl', [
           filtered = filtered.slice(0, $scope.filterParams.bestLimit)
 
         # Target needs to be in there at all times for relevancy links
-        if $scope.targetFeature not in filtered
+        if $scope.targetFeature? and $scope.targetFeature not in filtered
           filtered.push $scope.targetFeature
 
         $scope.filteredFeatures = filtered

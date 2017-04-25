@@ -234,9 +234,9 @@ app.directive 'featureMap', [
           scope.simulation.restart()
           setupSimulationTimeout()
 
-        initialize = (targetFeature) ->
+        initialize = ->
           stopSimulation()
-          if targetFeature?
+          if scope.targetFeature?
             updateNodes()
             setupSimulation()
             render()
