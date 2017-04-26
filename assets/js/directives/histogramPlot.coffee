@@ -30,10 +30,18 @@ app.directive 'histogramPlot', [
                     element = scope.histogramApi.getElement()
                     svg = d3.select element[0]
 
-                    slicesContained = (d) ->
+                    slicesContained = (bucket) ->
                       return scope.feature.slices.filter (slice) ->
-                        return slice.range[0] < d.range[1] and
-                                slice.range[1] > d.range[0]
+                        sliceDesc = slice.features[0]
+                        if sliceDesc.range?
+                          return sliceDesc.range[0] < bucket.range[1] and
+                                  sliceDesc.range[1] > bucket.range[0]
+                        else
+                          for category in sliceDesc.categories
+                            if bucket.range[0] <= category and
+                              category <= bucket.range[1]
+                                return true
+                          return false
 
                     buckets = scope.histogram.data[0].values
                     bucketSignificances = buckets.map (bucket) ->
@@ -90,7 +98,8 @@ app.directive 'histogramPlot', [
         slicesAvailable = featureAvailable
           .then (featuredId) ->
             return backendService.getExperiment()
-          .then (experiment) -> experiment.retrieveSlices scope.feature.id
+          # TODO also take multivariates into account?
+          .then (experiment) -> experiment.retrieveSlicesForSubset [scope.feature.id]
           .then (slices) -> scope.feature.slices = slices
           .fail console.error
         $q.all [bucketsAvailable, slicesAvailable]

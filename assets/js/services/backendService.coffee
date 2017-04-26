@@ -165,41 +165,26 @@ app.factory 'backendService', [
       retrieveSlicesForSubset: (featureSubset) =>
         if featureSubset.length == 0
           return $q.resolve []
-        paramsString = featureSubset.join ','
-        $http.get API_URI + "targets/#{@targetId}/slices?feature__in=#{paramsString}"
+        params =
+          features: featureSubset
+        $http.post API_URI + "targets/#{@targetId}/slices", params
           .then (response) ->
             sortByValue = (a, b) -> a.value - b.value
             slices = response.data.map (slice) ->
-              features = slice.features.map (sliceFeature) ->
-                if sliceFeature.categories?
-                  return {
-                    feature: sliceFeature.feature
-                    categories: sliceFeature.categories
-                  }
+              features = []
+              for feature, sliceDesc of slice.features
+                isCategorical = not sliceDesc.from_value?
+                if isCategorical
+                  features.push
+                    feature: feature
+                    categories: sliceDesc
                 else
-                  return {
-                    feature: sliceFeature.feature
-                    range: [sliceFeature.range.from_value, sliceFeature.range.to_value]
-                  }
+                  features.push
+                    feature: feature
+                    range: [sliceDesc.from_value, sliceDesc.to_value]
               return {
                 features: features
-                frequency: slice.frequency
                 deviation: slice.deviation
-              }
-            return slices
-          .fail console.error
-
-      retrieveSlices: (featureId) =>
-        $http.get API_URI + "targets/#{@targetId}/features/#{featureId}/slices"
-          .then (response) ->
-            sortByValue = (a, b) -> a.value - b.value
-            slices = response.data.map (slice) ->
-              return {
-                range: [slice.from_value, slice.to_value]
-                frequency: slice.frequency
-                deviation: slice.deviation
-                marginal: slice.marginal_distribution.sort sortByValue
-                conditional: slice.conditional_distribution.sort sortByValue
               }
             return slices
           .fail console.error
@@ -209,6 +194,14 @@ app.factory 'backendService', [
           .then (response) ->
             distribution = response.data
             return distribution
+          .fail console.error
+
+      requestFeatureSelectionForSubset: (featureSubset) =>
+        params =
+          features: featureSubset
+        $http.post API_URI + "targets/#{@targetId}/hics", params
+          .then (response) ->
+            return response.data
           .fail console.error
 
       retrieveRarResults: =>
