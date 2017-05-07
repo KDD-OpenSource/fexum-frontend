@@ -4,36 +4,40 @@ app.controller 'LoginCtrl', [
   '$location',
   ($scope, backendService, $location) ->
 
-    updateErrors = (error) ->
+    updateErrors = (form, error) ->
       if error.non_field_errors?
-        $scope.errorMessage = error.non_field_errors.map((err) -> '  - ' + err + '\n').join ''
+        form.nonFieldError = error.non_field_errors.map((err) -> '  - ' + err + '\n').join ''
       if error.username?
-        $scope.loginForm.userName.$error.custom = ' ' + error.username[0]
+        form.userName.$error.custom = ' ' + error.username[0]
       if error.password?
-        $scope.loginForm.userPassword.$error.custom = ' ' + error.password[0]
+        form.userPassword.$error.custom = ' ' + error.password[0]
 
-    resetErrors = ->
-      $scope.loginForm.userName.$error.custom = null
-      $scope.loginForm.userPassword.$error.custom = null
-      $scope.errorMessage = null
+    resetErrors = (form) ->
+      form.userName.$error.custom = null
+      form.userPassword.$error.custom = null
+      form.nonFieldError = null
 
-    successCallback = ->
-      resetErrors()
+    successCallback = (form) ->
+      resetErrors form
       $location.path '/'
 
-    errorCallback = (response) ->
+    errorCallback = (form, response) ->
       if response.data?
-        updateErrors response.data
+        updateErrors form, response.data
       else
         console.error response
 
     $scope.login = ->
-      backendService.login $scope.user
-        .then successCallback
-        .fail errorCallback
+      backendService.login $scope.login.user
+        .then (response) ->
+          successCallback $scope.loginForm
+        .fail (response) ->
+          errorCallback $scope.loginForm, response
 
     $scope.register = ->
-      backendService.register $scope.user
-        .then successCallback
-        .fail errorCallback
+      backendService.register $scope.register.user
+        .then (response) ->
+          successCallback $scope.registerForm
+        .fail (response) ->
+          errorCallback $scope.registerForm, response
 ]

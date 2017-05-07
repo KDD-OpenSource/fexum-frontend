@@ -1,19 +1,31 @@
 
 div(background-image='')
   #content.login(layout="row" layout-align="center center" layout-fill)
-    form(name='loginForm' layout='column')
-      h2 Login
-      p.errorField(ng-if='errorMessage') {{errorMessage}}
+    form(name='loginForm' layout='column', ng-submit='login()')
+      h2 Have an account?
+      p.errorField(ng-if='loginForm.nonFieldError') {{loginForm.nonFieldError}}
       md-input-container
-        input(ng-model='user.name', name='userName', type='text', placeholder='Username', ng-required='true' md-no-asterisk)
+        input(ng-model='login.user.name', name='userName', type='text', placeholder='Username', ng-required='true', md-no-asterisk)
         div(ng-messages='loginForm.userName.$error')
           small(ng-show='loginForm.userName.$error.required') Your username is required.
           small(ng-show='loginForm.userName.$error.custom') {{loginForm.userName.$error.custom}}
       md-input-container
-        input(ng-model='user.password', type='password', placeholder='Password', ng-required='true', name='userPassword' md-no-asterisk)
+        input(ng-model='login.user.password', type='password', placeholder='Password', ng-required='true', name='userPassword', md-no-asterisk)
         div(ng-messages='loginForm.userPassword.$error')
           small(ng-show='loginForm.userPassword.$error.required') Your password is required.
           small(ng-show='loginForm.userPassword.$error.custom') {{loginForm.userPassword.$error.custom}}
-      div(layout='row')
-        md-button.md-raised.md-primary#loginbutton(type='submit', ng-click='login()') Login
-        md-button.md-raised.md-primary#registerbutton(type='submit' ng-click='register()') Register
+      md-button.md-raised.md-primary(type='submit') Login
+    form(name='registerForm' layout='column', ng-submit='register()')
+      h2 Need an account?
+      p.errorField(ng-if='registerForm.nonFieldError') {{registerForm.nonFieldError}}
+      md-input-container
+        input(ng-model='register.user.name', name='userName', type='text', placeholder='Username', ng-required='true', md-no-asterisk)
+        div(ng-messages='registerForm.userName.$error')
+          small(ng-show='registerForm.userName.$error.required') A new username is required.
+          small(ng-show='registerForm.userName.$error.custom') {{registerForm.userName.$error.custom}}
+      md-input-container
+        input(ng-model='register.user.password', type='password', placeholder='Password', ng-required='true', name='userPassword', md-no-asterisk)
+        div(ng-messages='registerForm.userPassword.$error')
+          small(ng-show='registerForm.userPassword.$error.required') A new password is required.
+          small(ng-show='registerForm.userPassword.$error.custom') {{registerForm.userPassword.$error.custom}}
+      md-button.md-raised.md-primary(type='submit') Register
