@@ -1,6 +1,8 @@
 # predots-frontend
 
-The frontend for predots
+This is the frontend implementation of *framework_name*, a tool to explain relationships in Feature Selection. It allows the user to upload and explore datasets on an interactive feature map. Individual features may also be selected and their distributions inspected, explaining the correlations between them and enabling the user to select a good feature subset.   
+
+The web app is built on AngularJS, D3.js, and implemented in CoffeeScript. All calculations are done by a Python Django backend (implementation [here](https://github.com/KDD-OpenSource/predots)), which uses a [Python implementation](https://github.com/KDD-OpenSource/python-hics) of the HiCS algorithm, described in [this paper](http://ieeexplore.ieee.org/abstract/document/6228154/), for relevance and redundancy estimation.
 
 ## Installation
 
