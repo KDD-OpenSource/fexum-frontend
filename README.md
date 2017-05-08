@@ -1,4 +1,4 @@
-# predots-frontend
+# *framework_name*-frontend
 
 This is the frontend implementation of *framework_name*, a tool to explain relationships in Feature Selection. It allows the user to upload and explore datasets on an interactive feature map. Individual features may also be selected and their distributions inspected, explaining the correlations between them and enabling the user to select a good feature subset.   
 
