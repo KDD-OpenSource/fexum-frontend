@@ -1,7 +1,7 @@
 # PreDOTS frontend
 
 This repository contains the web frontend of [PreDOTS](https://github.com/KDD-OpenSource/predots) and
-is built on AngularJS, D3.js, and CoffeeScript.
+is built on [AngularJS](https://angularjs.org), [D3.js](https://d3js.org), and [CoffeeScript](http://coffeescript.org).
 
 It allows the user to upload and explore datasets on an interactive feature map. Individual features may also be selected and their distributions inspected, explaining the correlations between them and enabling the user to select a good feature subset.
 
