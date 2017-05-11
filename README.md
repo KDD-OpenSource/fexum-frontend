@@ -8,6 +8,15 @@ It allows the user to upload and explore datasets on an interactive feature map.
 *Nice screenshot here*
 
 
+## Contributors
+* [Louis Kirsch](https://github.com/timediv)
+* [Niklas Riekenbrauck](https://github.com/nikriek)
+* [Daniel Thevessen](https://github.com/danthe96)
+* [Marcus Pappik](https://github.com/marcuspappik)
+* [Axel Stebner](https://github.com/xasetl)
+* [Julius Kunze](https://github.com/JuliusKunze)
+* [Alexander Meißner](https://github.com/Lichtso)
+
 
 ## Installation
 ```
