@@ -16,4 +16,4 @@ after_success:
   - if [ ($TRAVIS_BRANCH = 'develop') && ($TRAVIS_PULL_REQUEST == 'false')];
     docker tag -f $DOCKER_REPO:latest;
     docker push $DOCKER_REPO:latest;
-  fi;
+    fi;
