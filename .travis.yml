@@ -12,7 +12,7 @@ before_install:
   - grunt buildProd --out=build > /dev/null
 script: docker build -t $DOCKER_REPO:latest .;
 after_success:
-  - if [ ($TRAVIS_BRANCH = 'develop') && ($TRAVIS_PULL_REQUEST == 'false')];
+  - if [ ($TRAVIS_BRANCH = 'develop') && ($TRAVIS_PULL_REQUEST == 'false')]; then
     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
     docker tag -f $DOCKER_REPO:latest;
     docker push $DOCKER_REPO:latest;
