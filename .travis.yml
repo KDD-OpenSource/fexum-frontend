@@ -7,7 +7,6 @@ services:
 before_install: 
   - npm install -g grunt-cli bower
   - npm install
-  - "echo '{ \"allow_root\": true }' > /root/.bowerrc"
   - bower install --quiet --silent
   - mkdir -p build
   - grunt buildProd --out=build > /dev/null
