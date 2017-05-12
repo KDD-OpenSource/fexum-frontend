@@ -1,5 +1,5 @@
 # FEXUM frontend
-_Framework for Exploring and Understanding Multivariate Correlations Edit_
+_Framework for Exploring and Understanding Multivariate Correlations_
 
 This repository contains the web frontend of [FEXUM](https://github.com/KDD-OpenSource/fexum) and
 is built on [AngularJS](https://angularjs.org), [D3.js](https://d3js.org), and [CoffeeScript](http://coffeescript.org).
