@@ -140,6 +140,8 @@ app.controller 'AppCtrl', [
     $scope.$watch 'dataset', ((newValue, oldValue) ->
       if newValue?
         $scope.reloadDataset()
+        systemStatus.waitForDatasetProcessed()
+      return
       ), true
 
     $scope.$watchCollection 'selectedFeatures', (newSelectedFeatures) ->
@@ -180,8 +182,6 @@ app.controller 'AppCtrl', [
             feature.relevancy = null
         .fail console.error
 
-      systemStatus.waitForFeatureSelection targetFeature
-
     $scope.$watch 'targetFeature', (newTargetFeature) ->
       if newTargetFeature?
         # Remove target from selection, if contained
@@ -192,6 +192,9 @@ app.controller 'AppCtrl', [
           category: 'd' + $scope.dataset.id,
           label: 't' + $scope.targetFeature.id
         }
+
+        systemStatus.waitForFeatureSelection newTargetFeature
+      return
 
     $scope.filterParams =
       bestLimit: null

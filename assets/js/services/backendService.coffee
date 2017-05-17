@@ -59,6 +59,12 @@ app.factory 'backendService', [
           return samples
         .fail console.error
 
+    getFeatureSelectionStatus = ->
+      $http.get API_URI + 'calculations'
+        .then (response) ->
+          return response.data
+        .fail console.error
+
     wsStream = $websocket SOCKET_URI
     wsStream.reconnectIfNotNormalClose = true
 
@@ -69,11 +75,12 @@ app.factory 'backendService', [
     wsStream.onClose ->
       $rootScope.$broadcast 'ws/closed'
 
-    waitForWebsocketEvent = (eventName) ->
+    waitForWebsocketEvent = (eventName, conditionCallback) ->
       return $q (resolve, reject) ->
         removeListener = $rootScope.$on 'ws/' + eventName, ->
-          resolve.apply @, arguments
-          removeListener()
+          if not conditionCallback or conditionCallback.apply @, arguments
+            resolve.apply @, arguments
+            removeListener()
 
     class Experiment
 
@@ -233,6 +240,7 @@ app.factory 'backendService', [
       retrieveSpectrogram: retrieveSpectrogram
       retrieveDensity: retrieveDensity
       waitForWebsocketEvent: waitForWebsocketEvent
+      getFeatureSelectionStatus: getFeatureSelectionStatus
 
       login: (user) ->
         return $http.post API_URI + 'auth/login', username: user.name, password: user.password

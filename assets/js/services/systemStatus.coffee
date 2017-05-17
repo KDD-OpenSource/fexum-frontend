@@ -15,41 +15,37 @@ app.factory 'systemStatus', [
         itemIndex = loadingQueue.indexOf item
         loadingQueue.splice itemIndex, 1
 
-    # TODO backend does not support status whether feature selection is still running yet
-
-    checkIfDatasetIsProcessing = ->
+    waitForDatasetProcessed = ->
       return backendService.getExperiment()
         .then (experiment) -> experiment.retrieveDatasetInfo()
         .then (datasetInfo) ->
           if datasetInfo.status == 'processing'
-            return waitForDatasetProcessed datasetInfo
+            datasetProcessed = backendService.waitForWebsocketEvent 'dataset', (event, payload) ->
+              return payload.data.status == 'done' and payload.pk == datasetInfo.id
+            addLoadingQueueItem datasetProcessed, "Processing dataset #{datasetInfo.name}"
+            return datasetProcessed
           return
         .fail console.error
 
-    waitForDatasetProcessed = (dataset) ->
-      datasetProcessed = $q (resolve, reject) ->
-        unregister = $rootScope.$on 'ws/dataset', (event, payload) ->
-          if payload.data.status == 'done' and payload.pk == dataset.id
-            resolve payload.data
-            unregister()
-      addLoadingQueueItem datasetProcessed, "Processing dataset #{dataset.name}"
-      return datasetProcessed
-
     waitForFeatureSelection = (targetFeature) ->
-      # Create promise that waits for updated relevancies
-      # TODO show user current iteration and wait until HiCS is completely terminated
-      relevancyUpdate = backendService.waitForWebsocketEvent 'NOT_YET_IMPLEMENTED'
-      message = "Running iterative feature selection for #{targetFeature.name}"
-      addLoadingQueueItem relevancyUpdate, message
-      return relevancyUpdate
-
-    # Initialize system status
-    checkIfDatasetIsProcessing()
+      backendService.getFeatureSelectionStatus()
+        .then (statusList) ->
+          targetStatus = statusList.find (s) -> s.target == targetFeature.id
+          unless targetStatus
+            return
+          curIter = targetStatus.current_iteration
+          maxIter = targetStatus.max_iteration
+          updateCondition = (event, payload) ->
+            return data.type == 'default_hics' and data.target == targetFeature.id
+          update = backendService.waitForWebsocketEvent 'calculation', updateCondition
+          message = "Running iteration #{curIter} of #{maxIter} for #{targetFeature.name}"
+          addLoadingQueueItem update, message
+          # Recursively wait until all iterations are done
+          return update.then -> waitForFeatureSelection targetFeature
 
     return {
       loadingQueue: loadingQueue
       waitForFeatureSelection: waitForFeatureSelection
       waitForDatasetProcessed: waitForDatasetProcessed
-      checkIfDatasetIsProcessing: checkIfDatasetIsProcessing
     }
 ]

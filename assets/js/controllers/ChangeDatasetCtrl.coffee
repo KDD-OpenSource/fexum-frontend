@@ -57,7 +57,7 @@ app.controller 'ChangeDatasetCtrl', [
       backendService.getExperiment dataset
         .then setCurrentDatasetFromExperiment
         .then $scope.initializeFromExperiment
-        .then systemStatus.checkIfDatasetIsProcessing
+        .then systemStatus.waitForDatasetProcessed
         .fail console.error
       
       # Change back to overview
