@@ -36,6 +36,7 @@ app.factory 'systemStatus', [
           curIter = targetStatus.current_iteration
           maxIter = targetStatus.max_iteration
           updateCondition = (event, payload) ->
+            data = payload.data
             return data.type == 'default_hics' and data.target == targetFeature.id
           update = backendService.waitForWebsocketEvent 'calculation', updateCondition
           message = "Running iteration #{curIter} of #{maxIter} for #{targetFeature.name}"
