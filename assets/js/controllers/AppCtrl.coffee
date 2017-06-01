@@ -15,21 +15,14 @@ app.controller 'AppCtrl', [
 
     $scope.selectedFeatures = []
 
-    restoreFeatureListByOldList = (oldList) ->
-      if oldList.length > 0
-        newList = []
-        oldList.forEach (feature) ->
-          newFeature = $scope.featureIdMap[feature.id]
-          if newFeature?
-            newList.push newFeature
-        return newList
-      return []
+    findFeaturesFromIds = (featureIds) ->
+      return featureIds.map (fid) -> $scope.featureIdMap[fid]
 
     # Retrieve features
     $scope.retrieveFeatures = ->
       backendService.getExperiment()
-        .then (experiment) -> experiment.retrieveFeatures()
-        .then (features) ->
+        .then (experiment) -> return $q.all [experiment, experiment.retrieveFeatures()]
+        .then ([experiment, features]) ->
           $scope.filteredFeatures = features
           # All filters applied except slider, that way the ceiling is always correct on the slider
           $scope.intermediateFilteredFeatures = features
@@ -39,9 +32,9 @@ app.controller 'AppCtrl', [
           # Restore targetFeature
           $scope.targetFeature = $scope.featureIdMap[$scope.targetFeatureId]
           # Restore selected states
-          $scope.selectedFeatures = restoreFeatureListByOldList $scope.selectedFeatures
+          $scope.selectedFeatures = findFeaturesFromIds experiment.getSelection()
           # Restore filterParams blacklist
-          $scope.filterParams.blacklist = restoreFeatureListByOldList $scope.filterParams.blacklist
+          $scope.filterParams.blacklist = findFeaturesFromIds experiment.getFilterParams().blacklist
         .fail console.error
 
     $scope.retrieveRedundancies = ->
@@ -61,7 +54,7 @@ app.controller 'AppCtrl', [
         rarTime[$scope.targetFeature.id] = null
 
         $analytics.userTimings {
-              timingCategory: 'd' + $scope.dataset.id + '|t' + $scope.targetFeature.id,
+              timingCategory: 'd' + $scope.datasetId + '|t' + $scope.targetFeature.id,
               timingVar: 'rarFinished',
               timingLabel: 'ElapsedTimeMs',
               timingValue: delta
@@ -119,6 +112,10 @@ app.controller 'AppCtrl', [
       $scope.retrieveFeatures()
         .then $scope.retrieveRarResults
         .then $scope.retrieveRedundancies
+        .then ->
+          unless $scope.filterParamWatch?
+            $scope.filterParamWatch =
+              $scope.$watch 'filterParams', onFilterParamsChanged, true
 
     $scope.$on 'ws/calculation', (event, payload) ->
       # Status is one of ['error', 'processing', 'done']
@@ -132,12 +129,12 @@ app.controller 'AppCtrl', [
     $scope.$on 'ws/dataset', (event, payload) ->
       backendService.getExperiment()
         .then (experiment) ->
-          dataset = experiment.dataset
-          if payload.data.status == 'done' and payload.pk == dataset.id
+          datasetId = experiment.datasetId
+          if payload.data.status == 'done' and payload.pk == datasetId
             $scope.reloadDataset()
         .fail console.error
 
-    $scope.$watch 'dataset', ((newValue, oldValue) ->
+    $scope.$watch 'datasetId', ((newValue, oldValue) ->
       if newValue?
         $scope.reloadDataset()
         systemStatus.waitForDatasetProcessed()
@@ -145,19 +142,18 @@ app.controller 'AppCtrl', [
       ), true
 
     $scope.$watchCollection 'selectedFeatures', (newSelectedFeatures) ->
+      newSelectedFeatureIds = newSelectedFeatures.map (f) -> f.id
       backendService.getExperiment()
-        .then (experiment) -> experiment.setSelection newSelectedFeatures
+        .then (experiment) -> experiment.setSelection newSelectedFeatureIds
         .fail console.error
 
     $scope.initializeFromExperiment = (experiment) ->
       $scope.targetFeatureId = experiment.targetId
-      $scope.dataset = {id: experiment.dataset.id, name: experiment.dataset.name}
-      selection = experiment.getSelection()
-      if selection?
-        $scope.selectedFeatures = selection
+      $scope.datasetId = experiment.datasetId
       filterParams = experiment.getFilterParams()
-      if filterParams?
-        $scope.filterParams = filterParams
+      $scope.filterParams.bestLimit = filterParams.bestLimit
+      $scope.filterParams.searchText = filterParams.searchText
+      return
 
     backendService.getExperiment()
       .then $scope.initializeFromExperiment
@@ -165,7 +161,7 @@ app.controller 'AppCtrl', [
         if error.noDatasets
           $location.path '/change-dataset'
         else
-          console.error error
+          console.error 'Could not load experiment', error
 
     $scope.loadingQueue = systemStatus.loadingQueue
 
@@ -189,7 +185,7 @@ app.controller 'AppCtrl', [
 
         # Track setting the target in relation to dataset
         $analytics.eventTrack 'setTarget', {
-          category: 'd' + $scope.dataset.id,
+          category: 'd' + $scope.datasetId,
           label: 't' + $scope.targetFeature.id
         }
 
@@ -228,13 +224,16 @@ app.controller 'AppCtrl', [
 
         $scope.filteredFeatures = filtered
 
-    onFilterParamsChanged = ->
+    onFilterParamsChanged = (newValue, oldValue) ->
+      return if angular.equals newValue, oldValue
       $scope.refilter()
+      serialized =
+        bestLimit: newValue.bestLimit
+        blacklist: newValue.blacklist.map (f) -> f.id
+        searchText: newValue.searchText
       backendService.getExperiment()
-        .then (experiment) -> experiment.setFilterParams $scope.filterParams
+        .then (experiment) -> experiment.setFilterParams serialized
         .fail console.error
-      
-    $scope.$watch 'filterParams', onFilterParamsChanged, true
 
 
 ]
