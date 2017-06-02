@@ -192,7 +192,7 @@ app.directive 'featureSliceVisualizer', [
 
           backendService.getExperiment().then (experiment) ->
             $analytics.eventTrack 'scatterAxisChanged', {
-              category: "d#{experiment.dataset.id}t#{scope.targetFeature.id}" +
+              category: "d#{experiment.datasetId}t#{scope.targetFeature.id}" +
                         "f#{scope.selectedFeatures.map((f) -> f.id).join '|'}"
               label: 'x=' + scope.xFeature.id + '|y=' + newFeature.id
             }
@@ -203,7 +203,7 @@ app.directive 'featureSliceVisualizer', [
 
           backendService.getExperiment().then (experiment) ->
             $analytics.eventTrack 'scatterAxisChanged', {
-              category: "d#{experiment.dataset.id}t#{scope.targetFeature.id}" +
+              category: "d#{experiment.datasetId}t#{scope.targetFeature.id}" +
                         "f#{scope.selectedFeatures.map((f) -> f.id).join '|'}"
               label: 'x=' + newFeature.id + '|y=' + scope.yFeature.id
             }

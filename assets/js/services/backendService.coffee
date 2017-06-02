@@ -84,67 +84,73 @@ app.factory 'backendService', [
 
     class Experiment
 
-      @LAST_EXPERIMENT_KEY = 'lastExperiment'
+      constructor: (@id, @datasetId, @targetId) ->
 
-      constructor: (@id, @dataset, @targetId) ->
-
-      @create: (dataset) =>
-        return $http.post API_URI + 'experiments', dataset: dataset.id
+      @create: (datasetId) =>
+        return $http.post API_URI + 'experiments', dataset: datasetId
           .then (response) =>
             experiment = @fromJson response.data
-            experiment.dataset = dataset
             return experiment
 
-      @restore: =>
-        lastExperimentJson = localStorage.getItem @LAST_EXPERIMENT_KEY
-        if lastExperimentJson?
-          lastExperiment = angular.fromJson lastExperimentJson
-          return @fromJson lastExperiment
+      @current: =>
+        return $http.get API_URI + 'experiments/current'
+          .then (response) =>
+            experiment = @fromJson response.data
+            return experiment
+          .fail (response) ->
+            if response.status == 404
+              return null
+            return $q.reject response
+
 
       @fromJson: (json) ->
         experiment = new Experiment(
           json.id,
           json.dataset,
-          json.targetId
+          json.target
         )
-        experiment.selection = json.selection
-        experiment.filterParams = json.filterParams
+        experiment.selection = json.analysis_selection
+        experiment.filterParams =
+          bestLimit: json.visibility_rank_filter
+          blacklist: json.visibility_blacklist
+          searchText: json.visibility_text_filter
         return experiment
+
+      makeCurrent: =>
+        return $http.put API_URI + "experiments/current/#{@id}"
+          .fail console.error
 
       setFilterParams: (filterParams) =>
         @filterParams = filterParams
-        @store()
+        $http.patch API_URI + "experiments/#{@id}",
+            visibility_text_filter: filterParams.searchText
+            visibility_rank_filter: filterParams.bestLimit
+            visibility_blacklist: filterParams.blacklist
+          .fail console.error
 
       getFilterParams: =>
         return @filterParams
 
       setSelection: (selection) =>
         @selection = selection
-        @store()
+        $http.patch API_URI + "experiments/#{@id}",
+            analysis_selection: selection
+          .fail console.error
 
       getSelection: =>
         return @selection
-
-      store: =>
-        lastExperiment =
-          id: @id
-          dataset: @dataset
-          targetId: @targetId
-          selection: @selection
-          filterParams: @filterParams
-        localStorage.setItem Experiment.LAST_EXPERIMENT_KEY, angular.toJson(lastExperiment)
 
       retrieveDatasetInfo: =>
         # TODO for backend, have endpoint for single dataset
         return retrieveDatasets()
           .then (datasets) =>
             filtered = datasets.filter (dataset) =>
-              return dataset.id == @dataset.id
+              return dataset.id == @datasetId
             return filtered[0]
           .fail console.error
 
       retrieveFeatures: =>
-        $http.get API_URI + "datasets/#{@dataset.id}/features"
+        $http.get API_URI + "datasets/#{@datasetId}/features"
           .then (response) ->
             # Response is in the form
             # [{name, rank, mean, variance, min, max}, ...]
@@ -166,7 +172,6 @@ app.factory 'backendService', [
         $http.put API_URI + "experiments/#{@id}/target", target: targetFeatureId
           .then (response) =>
             @targetId = targetFeatureId
-            @store()
           .fail console.error
 
       retrieveSlicesForSubset: (featureSubset) =>
@@ -256,38 +261,41 @@ app.factory 'backendService', [
         return $http.delete API_URI + 'auth/logout'
           .fail console.error
 
-      getExperiment: (dataset) =>
-        experiment = @experiment or Experiment.restore()
-        if experiment? and (not dataset? or experiment.dataset.id == dataset.id)
-          @experiment = experiment
-          return $q.resolve experiment
+      getExperiment: (datasetId) =>
+        if @experiment?
+          p_experiment = $q.resolve @experiment
+        else
+          p_experiment = Experiment.current().then (e) => @experiment = e
 
-        saveAndPersist = (experiment) =>
-          @experiment = experiment
-          experiment.store()
-          return experiment
+        return p_experiment.then (experiment) =>
+          if experiment? and (not datasetId? or experiment.datasetId == datasetId)
+            return experiment
 
-        if not dataset?
-          return retrieveDatasets()
-            .then (datasets) ->
-              if datasets.length > 0
-                return datasets[0]
-              return $q.reject {
-                noDatasets: true
-                msg: 'No datasets available'
-              }
-            .then Experiment.create
-            .then saveAndPersist
+          setExperiment = (experiment) =>
+            @experiment = experiment
+            experiment.makeCurrent()
+            return experiment
 
-        return retrieveExperiments()
-          .then (experiments) ->
-            matchingExperiments = experiments.filter (sess) -> sess.dataset.id == dataset.id
-            if matchingExperiments.length > 0
-              experiment = Experiment.fromJson matchingExperiments[0]
-              experiment.dataset = dataset
-              return experiment
-            return Experiment.create dataset
-          .then saveAndPersist
+          if not datasetId?
+            return retrieveDatasets()
+              .then (datasets) ->
+                if datasets.length > 0
+                  return datasets[0].id
+                return $q.reject {
+                  noDatasets: true
+                  msg: 'No datasets available'
+                }
+              .then Experiment.create
+              .then setExperiment
+
+          return retrieveExperiments()
+            .then (experiments) ->
+              matchingExperiments = experiments.filter (e) -> e.dataset == datasetId
+              if matchingExperiments.length > 0
+                experiment = Experiment.fromJson matchingExperiments[0]
+                return experiment
+              return Experiment.create datasetId
+            .then setExperiment
 
     return new Service()
 ]

@@ -16,7 +16,9 @@ app.directive 'slideFilter', [
                 floor: 1
                 ceil: scope.features.length
                 step: 1
-            scope.filterParams.bestLimit = scope.features.length
+            # Only set bestLimit if it wasn't set by the experiment
+            unless scope.filterParams.bestLimit?
+              scope.filterParams.bestLimit = scope.features.length
 
             scope.$watch 'features', ->
               sliderAtMax = scope.slider.options.ceil == scope.filterParams.bestLimit

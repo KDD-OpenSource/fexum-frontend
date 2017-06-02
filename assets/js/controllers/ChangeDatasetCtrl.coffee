@@ -11,7 +11,7 @@ app.controller 'ChangeDatasetCtrl', [
     $scope.progress = 0
 
     setCurrentDatasetFromExperiment = (experiment) ->
-      filter = (d) -> d.id == experiment.dataset.id
+      filter = (d) -> d.id == experiment.datasetId
       $scope.currentDataset = $scope.datasets.filter(filter)[0]
       return experiment
 
@@ -54,7 +54,7 @@ app.controller 'ChangeDatasetCtrl', [
             label: 'datasetInit'
       }
 
-      backendService.getExperiment dataset
+      backendService.getExperiment dataset.id
         .then setCurrentDatasetFromExperiment
         .then $scope.initializeFromExperiment
         .then systemStatus.waitForDatasetProcessed
