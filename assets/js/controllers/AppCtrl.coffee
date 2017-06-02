@@ -13,7 +13,14 @@ app.controller 'AppCtrl', [
       $scope.features.forEach (feature) ->
         $scope.featureIdMap[feature.id] = feature
 
-    $scope.selectedFeatures = []
+    resetExperimentData = ->
+      $scope.featuresLoaded = false
+      $scope.selectedFeatures = []
+      $scope.filterParams =
+        bestLimit: null
+        blacklist: []
+        searchText: ''
+    resetExperimentData()
 
     findFeaturesFromIds = (featureIds) ->
       return featureIds.map (fid) -> $scope.featureIdMap[fid]
@@ -35,6 +42,8 @@ app.controller 'AppCtrl', [
           $scope.selectedFeatures = findFeaturesFromIds experiment.getSelection()
           # Restore filterParams blacklist
           $scope.filterParams.blacklist = findFeaturesFromIds experiment.getFilterParams().blacklist
+
+          $scope.featuresLoaded = true
         .fail console.error
 
     $scope.retrieveRedundancies = ->
@@ -112,10 +121,6 @@ app.controller 'AppCtrl', [
       $scope.retrieveFeatures()
         .then $scope.retrieveRarResults
         .then $scope.retrieveRedundancies
-        .then ->
-          unless $scope.filterParamWatch?
-            $scope.filterParamWatch =
-              $scope.$watch 'filterParams', onFilterParamsChanged, true
 
     $scope.$on 'ws/calculation', (event, payload) ->
       # Status is one of ['error', 'processing', 'done']
@@ -142,6 +147,7 @@ app.controller 'AppCtrl', [
       ), true
 
     $scope.$watchCollection 'selectedFeatures', (newSelectedFeatures) ->
+      return unless $scope.featuresLoaded
       newSelectedFeatureIds = newSelectedFeatures.map (f) -> f.id
       backendService.getExperiment()
         .then (experiment) -> experiment.setSelection newSelectedFeatureIds
@@ -150,6 +156,7 @@ app.controller 'AppCtrl', [
     $scope.initializeFromExperiment = (experiment) ->
       $scope.targetFeatureId = experiment.targetId
       $scope.datasetId = experiment.datasetId
+      resetExperimentData()
       filterParams = experiment.getFilterParams()
       $scope.filterParams.bestLimit = filterParams.bestLimit
       $scope.filterParams.searchText = filterParams.searchText
@@ -192,40 +199,35 @@ app.controller 'AppCtrl', [
         systemStatus.waitForFeatureSelection newTargetFeature
       return
 
-    $scope.filterParams =
-      bestLimit: null
-      blacklist: []
-      searchText: ''
-
     $scope.refilter = ->
-      if $scope.features?
-        # Simple text filter
-        filtered = $scope.features.filter (feature) ->
-            (feature.name.search $scope.filterParams.searchText) != -1
+      # Simple text filter
+      filtered = $scope.features.filter (feature) ->
+          (feature.name.search $scope.filterParams.searchText) != -1
 
-        # Blacklist filter
-        if $scope.filterParams.blacklist?
-          filtered = filtered.filter (feature) ->
-            feature not in $scope.filterParams.blacklist
+      # Blacklist filter
+      if $scope.filterParams.blacklist?
+        filtered = filtered.filter (feature) ->
+          feature not in $scope.filterParams.blacklist
 
-          for feature in $scope.filterParams.blacklist
-            $scope.selectedFeatures.removeObject feature
+        for feature in $scope.filterParams.blacklist
+          $scope.selectedFeatures.removeObject feature
 
-        # All filters applied except slider, that way the ceiling is always correct on the slider
-        $scope.intermediateFilteredFeatures = filtered
-        # k-best filter
-        if $scope.filterParams.bestLimit?
-          filtered = filtered.sort (a, b) -> b.relevancy - a.relevancy
-          filtered = filtered.slice(0, $scope.filterParams.bestLimit)
+      # All filters applied except slider, that way the ceiling is always correct on the slider
+      $scope.intermediateFilteredFeatures = filtered
+      # k-best filter
+      if $scope.filterParams.bestLimit?
+        filtered = filtered.sort (a, b) -> b.relevancy - a.relevancy
+        filtered = filtered.slice(0, $scope.filterParams.bestLimit)
 
-        # Target needs to be in there at all times for relevancy links
-        if $scope.targetFeature? and $scope.targetFeature not in filtered
-          filtered.push $scope.targetFeature
+      # Target needs to be in there at all times for relevancy links
+      if $scope.targetFeature? and $scope.targetFeature not in filtered
+        filtered.push $scope.targetFeature
 
-        $scope.filteredFeatures = filtered
+      $scope.filteredFeatures = filtered
 
     onFilterParamsChanged = (newValue, oldValue) ->
       return if angular.equals newValue, oldValue
+      return unless $scope.featuresLoaded
       $scope.refilter()
       serialized =
         bestLimit: newValue.bestLimit
@@ -235,5 +237,6 @@ app.controller 'AppCtrl', [
         .then (experiment) -> experiment.setFilterParams serialized
         .fail console.error
 
+    $scope.$watch 'filterParams', onFilterParamsChanged, true
 
 ]
