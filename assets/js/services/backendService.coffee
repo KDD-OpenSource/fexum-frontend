@@ -290,7 +290,7 @@ app.factory 'backendService', [
 
           return retrieveExperiments()
             .then (experiments) ->
-              matchingExperiments = experiments.filter (sess) -> sess.dataset.id == datasetId
+              matchingExperiments = experiments.filter (e) -> e.dataset == datasetId
               if matchingExperiments.length > 0
                 experiment = Experiment.fromJson matchingExperiments[0]
                 return experiment
