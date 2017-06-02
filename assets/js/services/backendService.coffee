@@ -280,7 +280,7 @@ app.factory 'backendService', [
             return retrieveDatasets()
               .then (datasets) ->
                 if datasets.length > 0
-                  return datasets[0]
+                  return datasets[0].id
                 return $q.reject {
                   noDatasets: true
                   msg: 'No datasets available'
