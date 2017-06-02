@@ -13,23 +13,23 @@ app.controller 'AppCtrl', [
       $scope.features.forEach (feature) ->
         $scope.featureIdMap[feature.id] = feature
 
-    $scope.selectedFeatures = []
+    resetExperimentData = ->
+      $scope.featuresLoaded = false
+      $scope.selectedFeatures = []
+      $scope.filterParams =
+        bestLimit: null
+        blacklist: []
+        searchText: ''
+    resetExperimentData()
 
-    restoreFeatureListByOldList = (oldList) ->
-      if oldList.length > 0
-        newList = []
-        oldList.forEach (feature) ->
-          newFeature = $scope.featureIdMap[feature.id]
-          if newFeature?
-            newList.push newFeature
-        return newList
-      return []
+    findFeaturesFromIds = (featureIds) ->
+      return featureIds.map (fid) -> $scope.featureIdMap[fid]
 
     # Retrieve features
     $scope.retrieveFeatures = ->
       backendService.getExperiment()
-        .then (experiment) -> experiment.retrieveFeatures()
-        .then (features) ->
+        .then (experiment) -> return $q.all [experiment, experiment.retrieveFeatures()]
+        .then ([experiment, features]) ->
           $scope.filteredFeatures = features
           # All filters applied except slider, that way the ceiling is always correct on the slider
           $scope.intermediateFilteredFeatures = features
@@ -39,9 +39,11 @@ app.controller 'AppCtrl', [
           # Restore targetFeature
           $scope.targetFeature = $scope.featureIdMap[$scope.targetFeatureId]
           # Restore selected states
-          $scope.selectedFeatures = restoreFeatureListByOldList $scope.selectedFeatures
+          $scope.selectedFeatures = findFeaturesFromIds experiment.getSelection()
           # Restore filterParams blacklist
-          $scope.filterParams.blacklist = restoreFeatureListByOldList $scope.filterParams.blacklist
+          $scope.filterParams.blacklist = findFeaturesFromIds experiment.getFilterParams().blacklist
+
+          $scope.featuresLoaded = true
         .fail console.error
 
     $scope.retrieveRedundancies = ->
@@ -61,7 +63,7 @@ app.controller 'AppCtrl', [
         rarTime[$scope.targetFeature.id] = null
 
         $analytics.userTimings {
-              timingCategory: 'd' + $scope.dataset.id + '|t' + $scope.targetFeature.id,
+              timingCategory: 'd' + $scope.datasetId + '|t' + $scope.targetFeature.id,
               timingVar: 'rarFinished',
               timingLabel: 'ElapsedTimeMs',
               timingValue: delta
@@ -132,12 +134,12 @@ app.controller 'AppCtrl', [
     $scope.$on 'ws/dataset', (event, payload) ->
       backendService.getExperiment()
         .then (experiment) ->
-          dataset = experiment.dataset
-          if payload.data.status == 'done' and payload.pk == dataset.id
+          datasetId = experiment.datasetId
+          if payload.data.status == 'done' and payload.pk == datasetId
             $scope.reloadDataset()
         .fail console.error
 
-    $scope.$watch 'dataset', ((newValue, oldValue) ->
+    $scope.$watch 'datasetId', ((newValue, oldValue) ->
       if newValue?
         $scope.reloadDataset()
         systemStatus.waitForDatasetProcessed()
@@ -145,19 +147,20 @@ app.controller 'AppCtrl', [
       ), true
 
     $scope.$watchCollection 'selectedFeatures', (newSelectedFeatures) ->
+      return unless $scope.featuresLoaded
+      newSelectedFeatureIds = newSelectedFeatures.map (f) -> f.id
       backendService.getExperiment()
-        .then (experiment) -> experiment.setSelection newSelectedFeatures
+        .then (experiment) -> experiment.setSelection newSelectedFeatureIds
         .fail console.error
 
     $scope.initializeFromExperiment = (experiment) ->
       $scope.targetFeatureId = experiment.targetId
-      $scope.dataset = {id: experiment.dataset.id, name: experiment.dataset.name}
-      selection = experiment.getSelection()
-      if selection?
-        $scope.selectedFeatures = selection
+      $scope.datasetId = experiment.datasetId
+      resetExperimentData()
       filterParams = experiment.getFilterParams()
-      if filterParams?
-        $scope.filterParams = filterParams
+      $scope.filterParams.bestLimit = filterParams.bestLimit
+      $scope.filterParams.searchText = filterParams.searchText
+      return
 
     backendService.getExperiment()
       .then $scope.initializeFromExperiment
@@ -165,7 +168,7 @@ app.controller 'AppCtrl', [
         if error.noDatasets
           $location.path '/change-dataset'
         else
-          console.error error
+          console.error 'Could not load experiment', error
 
     $scope.loadingQueue = systemStatus.loadingQueue
 
@@ -189,52 +192,51 @@ app.controller 'AppCtrl', [
 
         # Track setting the target in relation to dataset
         $analytics.eventTrack 'setTarget', {
-          category: 'd' + $scope.dataset.id,
+          category: 'd' + $scope.datasetId,
           label: 't' + $scope.targetFeature.id
         }
 
         systemStatus.waitForFeatureSelection newTargetFeature
       return
 
-    $scope.filterParams =
-      bestLimit: null
-      blacklist: []
-      searchText: ''
-
     $scope.refilter = ->
-      if $scope.features?
-        # Simple text filter
-        filtered = $scope.features.filter (feature) ->
-            (feature.name.search $scope.filterParams.searchText) != -1
+      # Simple text filter
+      filtered = $scope.features.filter (feature) ->
+          (feature.name.search $scope.filterParams.searchText) != -1
 
-        # Blacklist filter
-        if $scope.filterParams.blacklist?
-          filtered = filtered.filter (feature) ->
-            feature not in $scope.filterParams.blacklist
+      # Blacklist filter
+      if $scope.filterParams.blacklist?
+        filtered = filtered.filter (feature) ->
+          feature not in $scope.filterParams.blacklist
 
-          for feature in $scope.filterParams.blacklist
-            $scope.selectedFeatures.removeObject feature
+        for feature in $scope.filterParams.blacklist
+          $scope.selectedFeatures.removeObject feature
 
-        # All filters applied except slider, that way the ceiling is always correct on the slider
-        $scope.intermediateFilteredFeatures = filtered
-        # k-best filter
-        if $scope.filterParams.bestLimit?
-          filtered = filtered.sort (a, b) -> b.relevancy - a.relevancy
-          filtered = filtered.slice(0, $scope.filterParams.bestLimit)
+      # All filters applied except slider, that way the ceiling is always correct on the slider
+      $scope.intermediateFilteredFeatures = filtered
+      # k-best filter
+      if $scope.filterParams.bestLimit?
+        filtered = filtered.sort (a, b) -> b.relevancy - a.relevancy
+        filtered = filtered.slice(0, $scope.filterParams.bestLimit)
 
-        # Target needs to be in there at all times for relevancy links
-        if $scope.targetFeature? and $scope.targetFeature not in filtered
-          filtered.push $scope.targetFeature
+      # Target needs to be in there at all times for relevancy links
+      if $scope.targetFeature? and $scope.targetFeature not in filtered
+        filtered.push $scope.targetFeature
 
-        $scope.filteredFeatures = filtered
+      $scope.filteredFeatures = filtered
 
-    onFilterParamsChanged = ->
+    onFilterParamsChanged = (newValue, oldValue) ->
+      return if angular.equals newValue, oldValue
+      return unless $scope.featuresLoaded
       $scope.refilter()
+      serialized =
+        bestLimit: newValue.bestLimit
+        blacklist: newValue.blacklist.map (f) -> f.id
+        searchText: newValue.searchText
       backendService.getExperiment()
-        .then (experiment) -> experiment.setFilterParams $scope.filterParams
+        .then (experiment) -> experiment.setFilterParams serialized
         .fail console.error
-      
-    $scope.$watch 'filterParams', onFilterParamsChanged, true
 
+    $scope.$watch 'filterParams', onFilterParamsChanged, true
 
 ]
