@@ -203,6 +203,10 @@ app.controller 'AppCtrl', [
       # Simple text filter
       filtered = $scope.features.filter (feature) ->
           (feature.name.search $scope.filterParams.searchText) != -1
+      # Text filter that excludes features
+      if $scope.filterParams.excludeText? and $scope.filterParams.excludeText.length > 0
+        filtered = filtered.filter (feature) ->
+            (feature.name.search $scope.filterParams.excludeText) == -1
 
       # Blacklist filter
       if $scope.filterParams.blacklist?
@@ -233,6 +237,7 @@ app.controller 'AppCtrl', [
         bestLimit: newValue.bestLimit
         blacklist: newValue.blacklist.map (f) -> f.id
         searchText: newValue.searchText
+        excludeText: newValue.excludeText
       backendService.getExperiment()
         .then (experiment) -> experiment.setFilterParams serialized
         .fail console.error

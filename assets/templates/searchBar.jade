@@ -10,18 +10,24 @@ form.overlay-window(ng-submit='$event.preventDefault()',ng-cloak)
                     placeholder='Search for feature')
       md-item-template
         span.item-title
-          md-icon {{item.isTextFilter ? 'filter_list' : 'search'}}
+          md-icon {{item.isTextFilter || item.isExcludeFilter ? 'filter_list' : 'search'}}
           span
-            {{item.isTextFilter ? 'Filter features by \'' : 'Locate feature '}}
+            {{ item.isTextFilter ? 'Show \'' : item.isExcludeFilter ? 'Exclude \'' : 'Locate feature ' }}
             span(md-highlight-text='searchText', md-highlight-flags='^i') {{item.feature.name}}
-            {{item.isTextFilter ? '\'' : ''}}
+            {{item.isTextFilter || item.isExcludeFilter ? '\'' : ''}}
       md-not-found No feature found
-  #filter-info.md-whiteframe-z1(layout='column', ng-show='filterParams.searchText.length > 0 || filterParams.blacklist.length > 0')
+  #filter-info.md-whiteframe-z1(layout='column', ng-show='filterParams.searchText.length > 0 || filterParams.blacklist.length > 0 || filterParams.excludeText.length > 0')
     div(layout='row', ng-show='filterParams.searchText.length > 0')
       md-icon.filter-icon filter_list
-      p {{filterParams.searchText}}
+      p '{{filterParams.searchText}}' in name
       span(flex)
       md-button.md-icon-button.reset-filter-button(ng-click='resetTextFilter()')
+        md-icon close
+    div(layout='row', ng-show='filterParams.excludeText.length > 0')
+      md-icon.filter-icon filter_list
+      p '{{filterParams.excludeText}}' not in name
+      span(flex)
+      md-button.md-icon-button.reset-filter-button(ng-click='resetExcludeFilter()')
         md-icon close
     div(layout='row', ng-show='filterParams.blacklist.length > 0')
       md-chips(flex)

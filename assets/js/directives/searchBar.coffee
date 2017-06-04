@@ -15,6 +15,8 @@ app.directive 'searchBar', [
             return
           if searchedItem.isTextFilter
             scope.filterParams.searchText = searchedItem.feature.name
+          else if searchedItem.isExcludeFilter
+            scope.filterParams.excludeText = searchedItem.feature.name
           else
             $location.path "/feature/#{searchedItem.feature.name}"
             scope.mapApi.locateFeature searchedItem.feature
@@ -27,16 +29,22 @@ app.directive 'searchBar', [
             isTextFilter: true
             feature:
               name: scope.searchText
+          searchItems.push
+            isExcludeFilter: true
+            feature:
+              name: scope.searchText
 
           searchItems = searchItems.concat scope.filteredFeatures.map (feature) ->
             return {
               feature: feature
-              isTextFilter: false
             }
           return searchItems
 
         scope.resetTextFilter = ->
           scope.filterParams.searchText = ''
+
+        scope.resetExcludeFilter = ->
+          scope.filterParams.excludeText = ''
 
         scope.chipsExpanded = false
         scope.maxChipsPreviewed = 2
