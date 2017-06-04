@@ -20,6 +20,7 @@ app.controller 'AppCtrl', [
         bestLimit: null
         blacklist: []
         searchText: ''
+        excludeText: ''
     resetExperimentData()
 
     findFeaturesFromIds = (featureIds) ->
