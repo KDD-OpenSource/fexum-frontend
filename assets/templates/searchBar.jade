@@ -9,12 +9,14 @@ form.overlay-window(ng-submit='$event.preventDefault()',ng-cloak)
                     md-items='item in getSearchItems() | filter:{feature:{name: searchText}}',
                     placeholder='Search for feature')
       md-item-template
-        span.item-title
+        span.search-item(layout='row')
           md-icon {{item.isTextFilter || item.isExcludeFilter ? 'filter_list' : 'search'}}
-          span
-            {{ item.isTextFilter ? 'Show only matching \'' : item.isExcludeFilter ? 'Exclude matching \'' : 'Locate feature ' }}
-            span(md-highlight-text='searchText', md-highlight-flags='^i') {{item.feature.name}}
-            {{item.isTextFilter || item.isExcludeFilter ? '\'' : ''}}
+          div.search-text
+            p
+              {{ item.isTextFilter ? 'Show only matching \'' : item.isExcludeFilter ? 'Exclude matching \'' : 'Locate feature ' }}
+              span(md-highlight-text='searchText', md-highlight-flags='^i') {{item.feature.name}}
+              {{item.isTextFilter || item.isExcludeFilter ? '\'' : ''}}
+          span(flex)
       md-not-found No feature found
   #filter-info.md-whiteframe-z1(layout='column', ng-show='filterParams.searchText.length > 0 || filterParams.blacklist.length > 0 || filterParams.excludeText.length > 0')
     div.text-filter(layout='row', ng-show='filterParams.searchText.length > 0')
