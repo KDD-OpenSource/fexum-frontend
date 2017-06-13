@@ -161,6 +161,7 @@ app.controller 'AppCtrl', [
       filterParams = experiment.getFilterParams()
       $scope.filterParams.bestLimit = filterParams.bestLimit
       $scope.filterParams.searchText = filterParams.searchText
+      $scope.filterParams.excludeText = filterParams.excludeText
       return
 
     backendService.getExperiment()

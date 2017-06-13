@@ -127,7 +127,7 @@ app.factory 'backendService', [
             visibility_text_filter: filterParams.searchText
             visibility_rank_filter: filterParams.bestLimit
             visibility_blacklist: filterParams.blacklist
-            visibilty_exclude_filter: filterParams.excludeText
+            visibility_exclude_filter: filterParams.excludeText
           .fail console.error
 
       getFilterParams: =>
