@@ -114,6 +114,7 @@ app.factory 'backendService', [
           bestLimit: json.visibility_rank_filter
           blacklist: json.visibility_blacklist
           searchText: json.visibility_text_filter
+          excludeText: json.visibility_exclude_filter
         return experiment
 
       makeCurrent: =>
@@ -126,6 +127,7 @@ app.factory 'backendService', [
             visibility_text_filter: filterParams.searchText
             visibility_rank_filter: filterParams.bestLimit
             visibility_blacklist: filterParams.blacklist
+            visibility_exclude_filter: filterParams.excludeText
           .fail console.error
 
       getFilterParams: =>
