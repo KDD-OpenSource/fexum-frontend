@@ -128,7 +128,7 @@ app.controller 'AppCtrl', [
       status = payload.data.status
       # Type is one of ['default_hics', 'fixed_feature_set_hics']
       type = payload.data.type
-      if status == 'done' and type == 'default_hics'
+      if status != 'error' and type == 'default_hics'
         $scope.retrieveRarResults()
         $scope.retrieveRedundancies()
 
@@ -175,6 +175,7 @@ app.controller 'AppCtrl', [
     $scope.loadingQueue = systemStatus.loadingQueue
 
     $scope.setTarget = (targetFeature) ->
+      return if $scope.targetFeature == targetFeature
       $scope.targetFeature = targetFeature
       rarTime[targetFeature.id] = Date.now()
 
@@ -185,6 +186,8 @@ app.controller 'AppCtrl', [
           $scope.relevancies = {}
           for feature in $scope.features
             feature.relevancy = null
+          $scope.retrieveRarResults()
+          $scope.retrieveRedundancies()
         .fail console.error
 
     $scope.$watch 'targetFeature', (newTargetFeature) ->
