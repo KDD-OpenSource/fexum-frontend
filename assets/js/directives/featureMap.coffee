@@ -218,12 +218,12 @@ app.directive 'featureMap', [
           redundancyLinks = objectMap scope.redundancies, (key, result) ->
             if result.firstFeature in featureIds and result.secondFeature in featureIds
               # Because relevancy has priority over redundancy:
-              weighComparedToRelevancy = 0.0003
+              weightComparedToRelevancy = 0.0003
               return {
                 source: result.firstFeature
                 target: result.secondFeature
                 distance: distanceFromCorrelation result.redundancy, true
-                strength: weighComparedToRelevancy * Math.sqrt result.weight
+                strength: weightComparedToRelevancy * Math.sqrt result.weight
               }
             return null
           , true
