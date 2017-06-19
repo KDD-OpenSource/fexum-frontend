@@ -196,10 +196,10 @@ app.directive 'featureMap', [
           setupSimulationTimeout()
 
         distanceFromCorrelation = (correlation, isRedundancy) ->
-          minDistance = 500
-          maxDistance = 10 * minDistance * (if isRedundancy then 2 else 1)
-          difference = maxDistance - minDistance
-          return maxDistance - (difference * Math.sqrt(Math.sqrt(correlation)))
+          base = 10
+          maxDistance = 5000 * (if isRedundancy then 2 else 1)
+          # Goal: Distance converges to 0 for strong correlations + uncorrelated features have specific maximum distance
+          return Math.pow(base, -Math.sqrt(correlation)) * maxDistance
 
         updateLinks = ->
           featureIds = scope.features.map (f) -> f.id
@@ -217,11 +217,13 @@ app.directive 'featureMap', [
           , true
           redundancyLinks = objectMap scope.redundancies, (key, result) ->
             if result.firstFeature in featureIds and result.secondFeature in featureIds
+              # Because relevancy has priority over redundancy:
+              weightComparedToRelevancy = 0.0003
               return {
                 source: result.firstFeature
                 target: result.secondFeature
                 distance: distanceFromCorrelation result.redundancy, true
-                strength: 0.005 * Math.sqrt result.weight
+                strength: weightComparedToRelevancy * Math.sqrt result.weight
               }
             return null
           , true
