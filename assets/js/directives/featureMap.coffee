@@ -148,8 +148,6 @@ app.directive 'featureMap', [
               oldNodeMap[node.id] = node
 
           scope.nodes = scope.features.map (feature) ->
-            if feature.id of oldNodeMap
-              return oldNodeMap[feature.id]
             node = {
               feature: feature
               isTarget: feature == scope.targetFeature
@@ -157,6 +155,10 @@ app.directive 'featureMap', [
               x: 0
               y: 0
             }
+            if feature.id of oldNodeMap
+              oldNode = oldNodeMap[feature.id]
+              node.x = oldNode.x
+              node.y = oldNode.y
             if node.isTarget
               node.fx = 0
               node.fy = 0
