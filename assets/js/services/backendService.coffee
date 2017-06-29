@@ -48,13 +48,13 @@ app.factory 'backendService', [
           return response.data
         .fail console.error
 
-    retrieveSamples = (featureId) ->
-      $http.get API_URI + "features/#{featureId}/samples"
+    retrieveSamples = (featureId, maxSamples = 1000) ->
+      $http.get API_URI + "features/#{featureId}/samples/#{maxSamples}"
         .then (response) ->
-          samples = response.data.map (sample, idx) ->
+          samples = response.data[featureId].map (sample, idx) ->
             return {
               x: idx
-              y: sample.value
+              y: sample
             }
           return samples
         .fail console.error
@@ -203,8 +203,11 @@ app.factory 'backendService', [
             return slices
           .fail console.error
 
-      getProbabilityDistribution: (rangesSpecification) =>
-        $http.post API_URI + "targets/#{@targetId}/distributions", rangesSpecification
+      getProbabilityDistribution: (rangesSpecification, maxSamples) =>
+        url = "targets/#{@targetId}/distributions"
+        if maxSamples?
+          url += "/#{maxSamples}"
+        $http.post API_URI + url, rangesSpecification
           .then (response) ->
             distribution = response.data
             return distribution

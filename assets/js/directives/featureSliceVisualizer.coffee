@@ -15,6 +15,7 @@ app.directive 'featureSliceVisualizer', [
         ranges: '='
         selectedFeatures: '='
         targetFeature: '='
+        scatterPlotSampleCount: '='
       link: (scope, element, attrs) ->
 
         scope.setupCharts = ->
@@ -64,14 +65,6 @@ app.directive 'featureSliceVisualizer', [
               data: []
           return
 
-        retrieveSamples = (feature) ->
-          if not feature.samples?
-            return backendService.retrieveSamples feature.id
-              .then (samples) -> feature.samples = samples
-              .fail console.error
-          else
-            return $q.resolve feature.samples
-
         retrieveMarginalDistribution = ->
           return backendService.getExperiment()
             .then (experiment) -> experiment.getProbabilityDistribution []
@@ -80,16 +73,12 @@ app.directive 'featureSliceVisualizer', [
 
         scopeUtils.waitForVariableSet scope, 'targetFeature'
           .then ->
-
             # Set defaults for xFeature and yFeature
             if scope.selectedFeatures.length >= 2
               scope.xFeature = scope.selectedFeatures[0]
               scope.yFeature = scope.selectedFeatures[1]
             
-            promises = scope.selectedFeatures.map retrieveSamples
-            promises.push retrieveSamples scope.targetFeature
-            promises.push retrieveMarginalDistribution()
-            $q.all promises
+            retrieveMarginalDistribution()
               # TODO remove this annoying timeout
               .then -> $timeout null, 1500
               .then -> scope.setupCharts()
@@ -102,32 +91,22 @@ app.directive 'featureSliceVisualizer', [
           return scope.targetFeature.marginalProbDistr.map (distrBucket) ->
             return distrBucket.value
 
-        createSamples = (xFeature, yFeature, filterFeatures, targetClass) ->
-          sampleCount = scope.targetFeature.samples.length
+        createSamples = (samples, xFeature, yFeature, targetClass) ->
+          sampleCount = samples[targetFeature.id].length
 
           filteredIndices = [0...sampleCount].filter (index) ->
-            if scope.targetFeature.samples[index].y != targetClass
+            if samples[targetFeature.id][index] != targetClass
               return false
-            for filterFeature in filterFeatures
-              sampleValue = filterFeature.samples[index].y
-              range = scope.ranges[filterFeature.id]
-              if filterFeature.is_categorical
-                if sampleValue not in range
-                  return false
-              else
-                if sampleValue > range[1] or sampleValue < range[0]
-                  return false
             return true
 
           return filteredIndices.map (index) ->
             return {
-              x: xFeature.samples[index].y
-              y: yFeature.samples[index].y
+              x: samples[xFeature.id][index]
+              y: samples[yFeature.id][index]
             }
           
-        createSamplesForState = (targetClass) ->
-          filterFeatures = scope.selectedFeatures
-          return createSamples scope.xFeature, scope.yFeature, filterFeatures, targetClass
+        filterSamplesByClass = (samples, targetClass) ->
+          return createSamples samples, scope.xFeature, scope.yFeature, targetClass
 
         updateChartCounter = 0
         scope.updateCharts = ->
@@ -157,11 +136,20 @@ app.directive 'featureSliceVisualizer', [
           updateConditionalProbDistrChart = ->
             backendService.getExperiment()
               .then (experiment) ->
-                return experiment.getProbabilityDistribution rangesQuery
-              .then (conditionalProbDistr) ->
+                sampleCount = scope.scatterPlotSampleCount
+                return experiment.getProbabilityDistribution rangesQuery, sampleCount
+              .then (response) ->
+                {distribution, samples} = response
                 # Only update if there was no update to the charts since last time
                 if currentRun == updateChartCounter
-                  scope.conditionalProbDistr.values = conditionalProbDistr
+                  scope.conditionalProbDistr.values = distribution
+
+                getTargetClasses().forEach (targetClass, i) ->
+                  scope.scatterChart.data.push
+                    key: targetClass
+                    values: filterSamplesByClass samples, targetClass
+                    color: chartColors.targetClassColors[i]
+
               .fail console.error
           if scope.promiseCDP?
             $timeout.cancel scope.promiseCDP
@@ -173,12 +161,8 @@ app.directive 'featureSliceVisualizer', [
             scatterChart.yAxis.axisLabel = scope.yFeature.name
             scatterChart.forceY = [scope.yFeature.min, scope.yFeature.max]
             scatterChart.forceX = [scope.xFeature.min, scope.xFeature.max]
+            # Clear current data
             scope.scatterChart.data.length = 0
-            getTargetClasses().forEach (targetClass, i) ->
-              scope.scatterChart.data.push
-                key: targetClass
-                values: createSamplesForState targetClass
-                color: chartColors.targetClassColors[i]
 
         updateChartsIfInitialized = ->
           if scope.initialized
