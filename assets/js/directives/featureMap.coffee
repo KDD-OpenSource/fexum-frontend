@@ -200,7 +200,7 @@ app.directive 'featureMap', [
         distanceFromCorrelation = (correlation, isRedundancy) ->
           base = 10
           maxDistance = 5000 * (if isRedundancy then 2 else 1)
-          # Goal: Distance converges to 0 for strong correlations +
+          # Goal: Distance converges to 0 for strong correlations and
           # uncorrelated features have specific maximum distance
           return Math.pow(base, -Math.sqrt(correlation)) * maxDistance
 
