@@ -8,7 +8,7 @@ app.controller 'AnalysisCtrl', [
 
     logAnalytics = ->
       $analytics.eventTrack 'analyzeFeatures', {
-        category: 'd' + $scope.dataset.id + 't' + $scope.targetFeatureId
+        category: 'd' + $scope.datasetId + 't' + $scope.targetFeatureId
         label: $scope.selectedFeatures.map((f) -> f.id).join '|'
       }
 

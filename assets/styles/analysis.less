@@ -1,41 +1,56 @@
-#analysis {
-	.chart-holder {
-		padding-left: 8px;
-		padding-right: 8px;
-		height: 150px;
-		width: 250px;
-	}
-	.feature-column {
-		width: 266px;
-	}
-	.horizontal-padding {
-		padding-left: 8px;
-		padding-right: 8px;
-	}
-  selection-slider {
-    > * {
-      // Diagram margin left 50px minus 4px slider bubble offset
-      margin-left: 46px;
-      // Diagram margin right 20px minus 4px slider bubble offset
-      margin-right: 16px;
+.md-padding{
+  max-width: 80%;
+
+  #analysis {
+
+    md-content {
+      overflow-x: auto;
     }
 
-    .rzslider {
-      margin-top: 15px;
+  	.chart-holder {
+  		padding-left: 8px;
+  		padding-right: 8px;
+  		height: 150px;
+  		width: 250px;
+  	}
+
+  	.feature-column {
+  		width: 266px;
+      overflow: initial;
+  	}
+
+  	.horizontal-padding {
+  		padding-left: 8px;
+  		padding-right: 8px;
+  	}
+
+    selection-slider {
+      > * {
+        // Diagram margin left 50px minus 4px slider bubble offset
+        margin-left: 46px;
+        // Diagram margin right 20px minus 4px slider bubble offset
+        margin-right: 16px;
+      }
+
+      .rzslider {
+        margin-top: 15px;
+      }
+
+      input.sliderbox {
+        width: 79px;
+      }
     }
 
-    input.sliderbox {
-      width: 79px;
+    selection-checkboxes {
+      md-checkbox.sliceCheckbox {
+        padding-right: 8px;
+      }
+      > div {
+        margin-top: 37px;
+        margin-left: 10px;
+      }
     }
   }
-  selection-checkboxes {
-    md-checkbox.sliceCheckbox {
-      padding-right: 8px;
-    }
-    > div {
-      margin-top: 37px;
-      margin-left: 10px;
-    }
-  }
+
 }
 
