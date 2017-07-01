@@ -1,20 +1,19 @@
-.md-padding(ng-cloak, layout)
-  md-card#analysis.overlay-window(flex)
+.md-padding#analysis(ng-cloak, layout)
+  md-card.overlay-window(flex)
     md-toolbar
       .md-toolbar-tools
         md-button.md-icon-button(aria-label='Back', href='/')
           md-icon keyboard_arrow_left
         span Pick feature ranges
     md-content(flex, layout='column')
-      div(flex='noshrink', layout='row')
+      div(layout='row')
         md-content.feature-column(ng-repeat='feature in selectedFeatures')
           section
             md-subheader.md-primary Feature #[i {{feature.name}}]
             histogram-plot(feature='feature', xaxis-enabled='false')
             selection-slider(ng-if='!feature.is_categorical', sliders='sliders', selected-ranges='selectedRanges', feature='feature')
             selection-checkboxes(ng-if='feature.is_categorical', selected-ranges='selectedRanges', feature='feature')
-
-      md-content.horizontal-padding
+      div.horizontal-padding(flex)
         slice-table(features='selectedFeatures', slice-click='updateFromSlice(slice)')
 feature-slice-visualizer(target-feature='targetFeature',
   selected-features='selectedFeatures',

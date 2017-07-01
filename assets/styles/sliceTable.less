@@ -1,12 +1,15 @@
 slice-table {
   table {
     td, th {
-      width: 255px;
+      min-width: 255px;
+      max-width: 255px;
       &:first-child {
-        width: 40px;
+        min-width: 40px;
+        max-width: 40px;
       }
       &:nth-child(2) {
-        width: 230px;
+        min-width: 230px;
+        max-width: 230px;
       }
       &:last-child {
         width: auto;
@@ -32,8 +35,7 @@ table, th, td {
    border: none;
 }
 
-table {
-  width:100%;
+table { 
   display: table;
 
   &.bordered > thead > tr,

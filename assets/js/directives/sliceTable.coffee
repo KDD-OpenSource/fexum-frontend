@@ -48,8 +48,7 @@ app.directive 'sliceTable', [
             # TODO only update if it was for this subset
             updateTable()
 
-        scopeUtils.waitForVariableSet scope, 'features'
-          .then updateTable
+        scope.$watch 'features', updateTable
 
         return
     }
