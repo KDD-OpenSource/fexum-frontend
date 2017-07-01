@@ -8,11 +8,11 @@ app.controller 'AnalysisCtrl', [
 
     logAnalytics = ->
       $analytics.eventTrack 'analyzeFeatures', {
-        category: 'd' + $scope.dataset.id + 't' + $scope.targetFeatureId
+        category: 'd' + $scope.datasetId + 't' + $scope.targetFeatureId
         label: $scope.selectedFeatures.map((f) -> f.id).join '|'
       }
 
-    scopeUtils.waitForVariableSet $scope, 'selectedFeatures'
+    scopeUtils.waitForVariableSet $scope, 'features'
       .then ->
         logAnalytics()
         return backendService.getExperiment()
@@ -52,7 +52,7 @@ app.controller 'AnalysisCtrl', [
             filter.range.join(',') + ']'
 
       $analytics.eventTrack 'recommendedSliceSelected', {
-        category: 'd' + $scope.dataset.id + 't' + $scope.targetFeature.id
+        category: 'd' + $scope.datasetId + 't' + $scope.targetFeature.id
         label: analyticsLabel.join '|'
       }
 

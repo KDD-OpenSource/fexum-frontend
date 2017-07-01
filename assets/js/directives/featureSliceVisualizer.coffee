@@ -66,9 +66,12 @@ app.directive 'featureSliceVisualizer', [
           return
 
         retrieveMarginalDistribution = ->
+          if scope.targetFeature.marginalProbDistr
+            return $q.resolve scope.targetFeature.marginalProbDistr
           return backendService.getExperiment()
             .then (experiment) -> experiment.getProbabilityDistribution []
-            .then (distr) -> scope.targetFeature.marginalProbDistr = distr
+            .then (response) ->
+              scope.targetFeature.marginalProbDistr = response.distribution
             .fail console.error
 
         scopeUtils.waitForVariableSet scope, 'targetFeature'
@@ -79,7 +82,7 @@ app.directive 'featureSliceVisualizer', [
               scope.yFeature = scope.selectedFeatures[1]
             
             retrieveMarginalDistribution()
-              # TODO remove this annoying timeout
+              # TODO remove timeout, it waits until layouting is done
               .then -> $timeout null, 1500
               .then -> scope.setupCharts()
               .then -> scope.updateCharts()
@@ -92,10 +95,10 @@ app.directive 'featureSliceVisualizer', [
             return distrBucket.value
 
         createSamples = (samples, xFeature, yFeature, targetClass) ->
-          sampleCount = samples[targetFeature.id].length
+          sampleCount = samples[scope.targetFeature.id].length
 
           filteredIndices = [0...sampleCount].filter (index) ->
-            if samples[targetFeature.id][index] != targetClass
+            if samples[scope.targetFeature.id][index] != targetClass
               return false
             return true
 
@@ -133,6 +136,7 @@ app.directive 'featureSliceVisualizer', [
 
           updateChartCounter += 1
           currentRun = updateChartCounter
+
           updateConditionalProbDistrChart = ->
             backendService.getExperiment()
               .then (experiment) ->
@@ -140,17 +144,24 @@ app.directive 'featureSliceVisualizer', [
                 return experiment.getProbabilityDistribution rangesQuery, sampleCount
               .then (response) ->
                 {distribution, samples} = response
-                # Only update if there was no update to the charts since last time
-                if currentRun == updateChartCounter
-                  scope.conditionalProbDistr.values = distribution
 
-                getTargetClasses().forEach (targetClass, i) ->
-                  scope.scatterChart.data.push
-                    key: targetClass
-                    values: filterSamplesByClass samples, targetClass
-                    color: chartColors.targetClassColors[i]
+                # Only update if there was no update to the charts since last time
+                if currentRun < updateChartCounter
+                  return
+                
+                scope.conditionalProbDistr.values = distribution
+
+                if scope.selectedFeatures.length >= 2
+                  scope.scatterChart.data.length = 0
+                  getTargetClasses().forEach (targetClass, i) ->
+                    scope.scatterChart.data.push
+                      key: targetClass
+                      values: filterSamplesByClass samples, targetClass
+                      color: chartColors.targetClassColors[i]
 
               .fail console.error
+
+          # Prevent flooding server with requests
           if scope.promiseCDP?
             $timeout.cancel scope.promiseCDP
           scope.promiseCDP = $timeout updateConditionalProbDistrChart, 50
@@ -161,8 +172,6 @@ app.directive 'featureSliceVisualizer', [
             scatterChart.yAxis.axisLabel = scope.yFeature.name
             scatterChart.forceY = [scope.yFeature.min, scope.yFeature.max]
             scatterChart.forceX = [scope.xFeature.min, scope.xFeature.max]
-            # Clear current data
-            scope.scatterChart.data.length = 0
 
         updateChartsIfInitialized = ->
           if scope.initialized
