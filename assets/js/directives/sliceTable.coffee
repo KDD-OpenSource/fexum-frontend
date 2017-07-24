@@ -42,9 +42,9 @@ app.directive 'sliceTable', [
             .fail console.error
 
         scope.$on 'ws/calculation', (event, payload) ->
-          status = payload.data.status
+          isDone = payload.data.current_iteration >= payload.data.max_iteration
           type = payload.data.type
-          if status == 'done' and type == 'fixed_feature_set_hics'
+          if isDone and type == 'fixed_feature_set_hics'
             # TODO only update if it was for this subset
             updateTable()
 

@@ -124,11 +124,9 @@ app.controller 'AppCtrl', [
         .then $scope.retrieveRedundancies
 
     $scope.$on 'ws/calculation', (event, payload) ->
-      # Status is one of ['error', 'processing', 'done']
-      status = payload.data.status
       # Type is one of ['default_hics', 'fixed_feature_set_hics']
       type = payload.data.type
-      if status != 'error' and type == 'default_hics'
+      if type == 'default_hics'
         $scope.retrieveRarResults()
         $scope.retrieveRedundancies()
 
