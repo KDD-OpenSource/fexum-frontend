@@ -13,8 +13,9 @@
             strong {{currentDataset.name}}
       section
         md-subheader.md-primary Add new dataset
-        md-button.md-raised(ngf-pattern="'application/octet-stream,application/zip,application/x-zip-compressed'",
-          ngf-accept="'application/octet-stream,application/zip,application/x-zip-compressed'",
+        md-button.md-raised(ngf-pattern="'application/octet-stream,application/zip,application/x-zip-compressed,.zip'",
+          ngf-accept="'application/octet-stream,application/zip,application/x-zip-compressed,.zip'",
+          accept="'application/octet-stream,application/zip,application/x-zip-compressed,.zip'",
           ngf-select='upload($file)',
           ng-hide='uploadRunning') Select dataset csv
           md-tooltip Please compress your csv into a zip file first to speed up the process
