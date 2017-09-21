@@ -8,6 +8,7 @@ It allows the user to upload and explore datasets on an interactive feature map.
 
 ![screenshot](https://raw.githubusercontent.com/KDD-OpenSource/fexum-frontend/gallery/screenshot.png)
 
+The basis for this application has been made into a [paper](http://ecmlpkdd2017.ijs.si/papers/paperID700.pdf), which was submitted to and accepted by ECML PKDD 2017, to be published as part of the conference proceedings in the "Lecture Notes in Computer Science" (LNCS) series.
 
 ## Contributors
 * [Louis Kirsch](https://github.com/timediv)
